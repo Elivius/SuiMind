@@ -240,10 +240,10 @@ export default function WalletDashboard() {
                     >
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive"
-                            ? "bg-green-500/20"
-                            : tx.type === "send"
-                              ? "bg-red-500/20"
-                              : "bg-blue-500/20"
+                          ? "bg-green-500/20"
+                          : tx.type === "send"
+                            ? "bg-red-500/20"
+                            : "bg-blue-500/20"
                           }`}
                       >
                         {tx.type === "receive" ? (
@@ -285,7 +285,7 @@ export default function WalletDashboard() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) => `${name}: ${(percent ?? 100).toFixed(0)}%`}
                         outerRadius={100}
                         fill="#8884d8"
                         dataKey="value"
@@ -301,8 +301,8 @@ export default function WalletDashboard() {
                           borderRadius: "12px",
                           color: "white",
                         }}
-                        formatter={(value: number) =>
-                          `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                        formatter={(value) =>
+                          `$${(value ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         }
                       />
                       <Legend
@@ -341,10 +341,10 @@ export default function WalletDashboard() {
                           <h4 className="font-semibold text-white">{suggestion.title}</h4>
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${suggestion.priority === "high"
-                                ? "bg-red-500/20 text-red-400"
-                                : suggestion.priority === "medium"
-                                  ? "bg-yellow-500/20 text-yellow-400"
-                                  : "bg-blue-500/20 text-blue-400"
+                              ? "bg-red-500/20 text-red-400"
+                              : suggestion.priority === "medium"
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : "bg-blue-500/20 text-blue-400"
                               }`}
                           >
                             {suggestion.priority}
