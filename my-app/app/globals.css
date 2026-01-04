@@ -1,15 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
   /* Updated color scheme for SuiMind with Sui Blue theme and glassmorphism */
-  --background: oklch(0.98 0.01 240);
+  --background: oklch(98.128% 0.0101 238.855 / 0);
   --foreground: oklch(0.145 0.02 240);
   --card: oklch(0.99 0.005 240);
   --card-foreground: oklch(0.145 0.02 240);
