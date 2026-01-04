@@ -9,6 +9,9 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recha
 export default function WalletDashboard() {
   const [salary, setSalary] = useState("")
   const [expenses, setExpenses] = useState("")
+  const [showInsight, setShowInsight] = useState(false);
+
+
 
   const calculateBalance = () => {
     const salaryNum = Number.parseFloat(salary) || 0
@@ -92,7 +95,7 @@ export default function WalletDashboard() {
             <div className="flex items-center justify-between mb-8">
               <div>
                 <p className="text-white/60 text-sm mb-2">Total Balance</p>
-                <h2 className="text-5xl font-bold text-balance">
+                <h2 className="text-5xl font-bold text-balance" style={{ color: "white" }}>
                   ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </h2>
                 <div className="flex items-center gap-2 mt-3">
@@ -109,6 +112,34 @@ export default function WalletDashboard() {
                   )}
                 </div>
               </div>
+
+              <div className="flex justify-end" style={{}}>
+                <div className="px-4 py-3 rounded-xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20" onClick={() => setShowInsight(true)} style={{}}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="w-4 h-4 text-[#6FBEE5]" />
+                    <h4 className="text-sm font-semibold" style={{ color: "white" }}>AI Insight</h4>
+                  </div>
+                  <p className="text-xs text-white/70 leading-relaxed">
+                    Use this chatbox.
+                  </p>
+                </div>
+              </div>
+              {showInsight && (
+                <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                  <div className="bg-[#111] p-6 rounded-xl text-white w-[320px]">
+                    <h2 className="text-lg font-semibold mb-2">AI Insight</h2>
+                    <p>This is the new interface.</p>
+
+                    <button
+                      className="mt-4 px-4 py-2 bg-blue-500 rounded"
+                      onClick={() => setShowInsight(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
+
             </div>
 
             {/* Security Shield */}
@@ -118,15 +149,6 @@ export default function WalletDashboard() {
               <Zap className="w-4 h-4 text-green-400 ml-auto" />
             </div>
 
-            <div className="px-4 py-3 rounded-xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20">
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="w-4 h-4 text-[#6FBEE5]" />
-                <h4 className="text-sm font-semibold">AI Insight</h4>
-              </div>
-              <p className="text-xs text-white/70 leading-relaxed">
-                Your idle USDC could earn 8.2% APY on Scallop. Consider moving $2,000 to maximize returns.
-              </p>
-            </div>
           </div>
         </Card>
 
@@ -134,7 +156,7 @@ export default function WalletDashboard() {
           <div className="lg:col-span-2">
             <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full">
               <div className="p-6">
-                <h3 className="text-xl font-semibold mb-6">Income & Expenses</h3>
+                <h3 className="text-xl font-semibold mb-6" style={{ color: "white" }}>Income & Expenses</h3>
                 <div className="space-y-6">
                   {/* Salary Input */}
                   <div>
@@ -177,7 +199,7 @@ export default function WalletDashboard() {
                     <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-white/10 to-white/5">
                       <div>
                         <p className="text-white/60 text-sm mb-1">Available Balance</p>
-                        <p className="text-3xl font-bold">
+                        <p className="text-3xl font-bold" style={{ color: "white" }}>
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       </div>
@@ -231,7 +253,7 @@ export default function WalletDashboard() {
           <div className="lg:col-span-1">
             <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full">
               <div className="p-6 h-full flex flex-col">
-                <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
+                <h3 className="text-xl font-semibold mb-4" style={{ color: "white" }}>Recent Activity</h3>
                 <div className="space-y-4 flex-1">
                   {recentTransactions.map((tx) => (
                     <div
@@ -240,10 +262,10 @@ export default function WalletDashboard() {
                     >
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive"
-                            ? "bg-green-500/20"
-                            : tx.type === "send"
-                              ? "bg-red-500/20"
-                              : "bg-blue-500/20"
+                          ? "bg-green-500/20"
+                          : tx.type === "send"
+                            ? "bg-red-500/20"
+                            : "bg-blue-500/20"
                           }`}
                       >
                         {tx.type === "receive" ? (
@@ -255,7 +277,7 @@ export default function WalletDashboard() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{tx.amount}</p>
+                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-400" : tx.type === "send" ? "text-red-400" : "text-blue-400"}`}>{tx.amount}</p>
                         <p className="text-xs text-white/50">{tx.time}</p>
                         <p className="text-xs text-white/40 mt-1">
                           {tx.from && `From: ${tx.from}`}
@@ -275,7 +297,7 @@ export default function WalletDashboard() {
         <div className="mt-6">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5">
             <div className="p-6">
-              <h3 className="text-xl font-semibold mb-6">Financial Breakdown</h3>
+              <h3 className="text-xl font-semibold mb-6" style={{ color: "white" }}>Financial Breakdown</h3>
               {chartData.length > 0 ? (
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
@@ -285,7 +307,7 @@ export default function WalletDashboard() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name}: ${((percent?? 0)* 100).toFixed(0)}%`}
+                        label={({ name, percent }) => `${name}: ${(percent ?? 100).toFixed(0)}%`}
                         outerRadius={100}
                         fill="#8884d8"
                         dataKey="value"
@@ -301,8 +323,8 @@ export default function WalletDashboard() {
                           borderRadius: "12px",
                           color: "white",
                         }}
-                        formatter={(value: number | undefined) =>
-                          `$${(value??0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                        formatter={(value) =>
+                          `$${(value ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         }
                       />
                       <Legend
@@ -326,7 +348,7 @@ export default function WalletDashboard() {
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <Zap className="w-6 h-6 text-[#6FBEE5]" />
-                <h3 className="text-xl font-semibold">AI-Powered Suggestions</h3>
+                <h3 className="text-xl font-semibold" style={{ color: "white" }}>AI-Powered Suggestions</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {suggestions.map((suggestion) => (
@@ -341,10 +363,10 @@ export default function WalletDashboard() {
                           <h4 className="font-semibold text-white">{suggestion.title}</h4>
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${suggestion.priority === "high"
-                                ? "bg-red-500/20 text-red-400"
-                                : suggestion.priority === "medium"
-                                  ? "bg-yellow-500/20 text-yellow-400"
-                                  : "bg-blue-500/20 text-blue-400"
+                              ? "bg-red-500/20 text-red-400"
+                              : suggestion.priority === "medium"
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : "bg-blue-500/20 text-blue-400"
                               }`}
                           >
                             {suggestion.priority}
