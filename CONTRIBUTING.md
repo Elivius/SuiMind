@@ -8,10 +8,10 @@ For a project involving a Frontend, Smart Contracts, and an AI ADK, it is best p
 
 ```text
 SuiMind/
-├── frontend/       <# Your Next.js UI (currently 'my-app') #>
-├── contracts/      <# Sui Move Smart Contracts (Move.toml, sources/) #>
-├── ai-adk/         <# AI Agent logic / SDK (Python or Node.js) #>
-└── README.md       <# Main documentation #>
+├── frontend/
+├── smart-contracts/
+├── ai-agents/
+└── README.md
 ```
 
 **Benefits:**
@@ -27,12 +27,12 @@ SuiMind/
 
 ### Naming Conventions
 Prefix your branches to indicate the type of work:
-*   `feature/ai-sdk-setup(ai-adk)` (New features)
+*   `feature/ai-agents-setup(ai-agents)` (New features)
 *   `fix/wallet-connection(frontend)` (Bug fixes)
-*   `chore/cleanup(frontend)` (Maintenance/Configs)
-*   `docs/updated-readme(frontend)` (Documentation only)
+*   `chore/cleanup(smart-contracts)` (Maintenance/Configs)
+*   `docs/updated-readme(ai-agents)` (Documentation only)
 *   `refactor/simplify-logic(frontend)` (Code restructuring without behavior change)
-*   `style/format-code(frontend)` (Code formatting)
+*   `style/format-code(smart-contracts)` (Code formatting)
 
 ### How to Start a New Task
 When you start a new task (e.g., building the AI Agent), run:
@@ -43,7 +43,7 @@ git checkout main
 git pull
 
 # 2. Create your new branch
-git checkout -b feature/ai-sdk-setup(ai-adk)
+git checkout -b feature/ai-agents-setup(ai-agents)
 ```
 
 ---
@@ -51,8 +51,8 @@ git checkout -b feature/ai-sdk-setup(ai-adk)
 ## 3. Collaboration Workflow
 
 ### While Others are Working
-*   **Do Nothing.** You do not need to pull or track their feature branches (`feature/login`, `feature/contracts`) while they are still working on them.
-*   Focus entirely on your own branch (`feature/ai-sdk`).
+*   **Do Nothing.** You do not need to pull or track their feature branches (`feature/login(frontend)`, `feature/contracts(smart-contracts)`) while they are still working on them.
+*   Focus entirely on your own branch (`feature/ai-agents-setup(ai-agents)`).
 
 ### When Others Finish (They Merge to Main)
 Once a teammate's code is merged into `main`, you must "sync" your branch to get their changes.
@@ -65,7 +65,7 @@ git checkout main
 git pull origin main
 
 # 2. Go back to your branch
-git checkout feature/ai-sdk
+git checkout feature/ai-agents-setup(ai-agents)
 
 # 3. Merge main into your branch
 git merge main
