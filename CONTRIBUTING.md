@@ -43,7 +43,7 @@ git checkout main
 git pull
 
 # 2. Create your new branch
-git checkout -b feature/ai-agents-setup(ai-agents)
+git checkout -b feat/ai-agents-setup(ai-agents)
 ```
 
 ---
@@ -51,8 +51,8 @@ git checkout -b feature/ai-agents-setup(ai-agents)
 ## 3. Collaboration Workflow
 
 ### While Others are Working
-*   **Do Nothing.** You do not need to pull or track their feature branches (`feature/login(frontend)`, `feature/contracts(smart-contracts)`) while they are still working on them.
-*   Focus entirely on your own branch (`feature/ai-agents-setup(ai-agents)`).
+*   **Do Nothing.** You do not need to pull or track their feature branches (`feat/login(frontend)`, `feat/contracts(smart-contracts)`) while they are still working on them.
+*   Focus entirely on your own branch (`feat/ai-agents-setup(ai-agents)`).
 
 ### When Others Finish (They Merge to Main)
 Once a teammate's code is merged into `main`, you must "sync" your branch to get their changes.
@@ -65,7 +65,7 @@ git checkout main
 git pull origin main
 
 # 2. Go back to your branch
-git checkout feature/ai-agents-setup(ai-agents)
+git checkout feat/ai-agents-setup(ai-agents)
 
 # 3. Merge main into your branch
 git merge main
@@ -74,6 +74,6 @@ git merge main
 **Why?** This ensures your AI code works correctly with the latest Frontend or Contract code they just added.
 
 ### When You Finish
-1.  Push your branch: `git push -u origin feature/ai-sdk`
+1.  Push your branch: `git push -u origin feat/ai-agents-setup(ai-agents)`
 2.  Open a **Pull Request (PR)** on GitHub.
 3.  Once approved, merge into `main`.
