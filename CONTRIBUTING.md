@@ -27,7 +27,7 @@ SuiMind/
 
 ### Naming Conventions
 Prefix your branches to indicate the type of work:
-*   `feature/ai-agents-setup(ai-agents)` (New features)
+*   `feat/ai-agents-setup(ai-agents)` (New features)
 *   `fix/wallet-connection(frontend)` (Bug fixes)
 *   `chore/cleanup(smart-contracts)` (Maintenance/Configs)
 *   `docs/updated-readme(ai-agents)` (Documentation only)
