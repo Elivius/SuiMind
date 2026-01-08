@@ -27,7 +27,7 @@ SuiMind/
 
 ### Naming Conventions
 Prefix your branches to indicate the type of work:
-*   `feature/ai-sdk-setup(ai-adk)` (New features)
+*   `feat/ai-sdk-setup(ai-adk)` (New features)
 *   `fix/wallet-connection(frontend)` (Bug fixes)
 *   `chore/cleanup(frontend)` (Maintenance/Configs)
 *   `docs/updated-readme(frontend)` (Documentation only)
@@ -65,7 +65,7 @@ git checkout main
 git pull origin main
 
 # 2. Go back to your branch
-git checkout feature/ai-sdk
+git checkout feature/ai-sdk-setup(ai-adk)
 
 # 3. Merge main into your branch
 git merge main
