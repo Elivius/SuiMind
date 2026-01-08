@@ -10,7 +10,7 @@ For a project involving a Frontend, Smart Contracts, and an AI ADK, it is best p
 SuiMind/
 ├── frontend/       <# Your Next.js UI (currently 'my-app') #>
 ├── contracts/      <# Sui Move Smart Contracts (Move.toml, sources/) #>
-├── ai-sdk/         <# AI Agent logic / SDK (Python or Node.js) #>
+├── ai-adk/         <# AI Agent logic / SDK (Python or Node.js) #>
 └── README.md       <# Main documentation #>
 ```
 
@@ -27,12 +27,12 @@ SuiMind/
 
 ### Naming Conventions
 Prefix your branches to indicate the type of work:
-*   `feature/ai-sdk-setup` (New features)
-*   `fix/wallet-connection (frontend)` (Bug fixes)
-*   `chore/cleanup` (Maintenance/Configs)
-*   `docs/updated-readme` (Documentation only)
-*   `refactor/simplify-logic` (Code restructuring without behavior change)
-*   `style/format-code` (Code formatting)
+*   `feature/ai-sdk-setup(ai-adk)` (New features)
+*   `fix/wallet-connection(frontend)` (Bug fixes)
+*   `chore/cleanup(frontend)` (Maintenance/Configs)
+*   `docs/updated-readme(frontend)` (Documentation only)
+*   `refactor/simplify-logic(frontend)` (Code restructuring without behavior change)
+*   `style/format-code(frontend)` (Code formatting)
 
 ### How to Start a New Task
 When you start a new task (e.g., building the AI Agent), run:
@@ -43,7 +43,7 @@ git checkout main
 git pull
 
 # 2. Create your new branch
-git checkout -b feature/ai-sdk-initial-setup
+git checkout -b feature/ai-sdk-setup(ai-adk)
 ```
 
 ---
