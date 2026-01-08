@@ -28,7 +28,7 @@ SuiMind/
 ### Naming Conventions
 Prefix your branches to indicate the type of work:
 *   `feature/ai-sdk-setup` (New features)
-*   `fix/wallet-connection` (Bug fixes)
+*   `fix/wallet-connection (frontend)` (Bug fixes)
 *   `chore/cleanup` (Maintenance/Configs)
 *   `docs/updated-readme` (Documentation only)
 *   `refactor/simplify-logic` (Code restructuring without behavior change)
