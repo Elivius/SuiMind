@@ -1,394 +1,256 @@
 "use client"
 
+import { ArrowUpRight, TrendingUp, Wallet, Shield, Sparkles } from "lucide-react"
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Wallet, TrendingUp, ArrowUpRight, ArrowDownRight, Shield, Zap, Settings, Bell } from "lucide-react"
-import { useState } from "react"
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
 
-export default function WalletDashboard() {
-  const [salary, setSalary] = useState("")
-  const [expenses, setExpenses] = useState("")
-  const [showInsight, setShowInsight] = useState(false);
+// Data for testing only
+const portfolioData = [
+    { name: "Stocks", value: 400 },
+    { name: "Bonds", value: 300 },
+    { name: "Crypto", value: 300 },
+    { name: "Cash", value: 200 },
+];
+
+const cashflowData = [
+    { month: "Aug", cashflow: 1200 },
+    { month: "Sep", cashflow: 950 },
+    { month: "Oct", cashflow: 1400 },
+    { month: "Nov", cashflow: 1100 },
+    { month: "Dec", cashflow: 1600 },
+    { month: "Jan", cashflow: 1300 },
+];
+
+const COLORS = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"];
 
 
+function DashboardNav() {
+    return (
+        <div className="relative mb-2">
+            {/* Background glow */}
+            <div className="absolute -top-8 -left-12 w-80 h-35 bg-gradient-to-r from-[#6FBEE5]/30 to-[#4A9FD8]/30 blur-3xl" />
 
-  const calculateBalance = () => {
-    const salaryNum = Number.parseFloat(salary) || 0
-    const expensesNum = Number.parseFloat(expenses) || 0
-    return salaryNum - expensesNum
-  }
+            <nav className="relative z-10 flex justify-between items-center backdrop-blur-xl bg-white/5 border border-white/10 rounded-b-2xl p-6">
+                <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+                    <span className="text-white/60">/ Overview</span>
+                </div>
 
-  const balance = calculateBalance()
-
-  const chartData = [
-    { name: "Income", value: Number.parseFloat(salary) || 0, color: "#10B981" },
-    { name: "Expenses", value: Number.parseFloat(expenses) || 0, color: "#EF4444" },
-  ].filter((item) => item.value > 0)
-
-  const [recentTransactions] = useState([
-    { id: 1, type: "receive", amount: "+150 SUI", usd: "$450.00", time: "2 min ago", from: "Cetus DEX" },
-    { id: 2, type: "send", amount: "-50 USDC", usd: "$50.00", time: "1 hour ago", to: "0x1a2b...3c4d" },
-    { id: 3, type: "swap", amount: "100 SUI → 150 USDC", usd: "$150.00", time: "3 hours ago", protocol: "Cetus" },
-  ])
-
-  const [suggestions] = useState([
-    {
-      id: 1,
-      title: "Optimize Your Savings",
-      description: "You could save 15% more by reducing discretionary spending. Consider setting aside $500 monthly.",
-      icon: "💰",
-      priority: "high",
-    },
-    {
-      id: 2,
-      title: "Investment Opportunity",
-      description: "Based on your surplus, investing in DeFi protocols could yield 8-12% APY on stablecoins.",
-      icon: "📈",
-      priority: "medium",
-    },
-    {
-      id: 3,
-      title: "Budget Alert",
-      description: "Your expenses are trending upward. Review your spending categories to identify areas to optimize.",
-      icon: "⚠️",
-      priority: "medium",
-    },
-    {
-      id: 4,
-      title: "Emergency Fund",
-      description: "Build an emergency fund of 3-6 months of expenses for financial security.",
-      icon: "🛡️",
-      priority: "low",
-    },
-  ])
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#001B39] via-[#002B4F] to-[#003D66] text-white">
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-xl bg-white/5">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
-                <Wallet className="w-5 h-5" />
-              </div>
-              <h1 className="text-xl font-bold">SuiMind</h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
-                <Bell className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
-                <Settings className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
+                <Button className="bg-gradient-to-r from-[#6FBEE5] to-[#4A9FD8] hover:opacity-90 text-white border-0">
+                    <Wallet className="mr-2 w-4 h-4" />
+                    Connect Wallet
+                </Button>
+            </nav>
         </div>
-      </header>
+    )
+}
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Main Balance Card */}
-        <Card className="border-white/20 backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 mb-6 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#6FBEE5]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="relative p-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <p className="text-white/60 text-sm mb-2">Total Balance</p>
-                <h2 className="text-5xl font-bold text-balance" style={{ color: "white" }}>
-                  ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </h2>
-                <div className="flex items-center gap-2 mt-3">
-                  {balance >= 0 ? (
-                    <>
-                      <TrendingUp className="w-4 h-4 text-green-400" />
-                      <span className="text-green-400 text-sm font-medium">Positive Balance</span>
-                    </>
-                  ) : (
-                    <>
-                      <TrendingUp className="w-4 h-4 text-red-400 rotate-180" />
-                      <span className="text-red-400 text-sm font-medium">Deficit</span>
-                    </>
-                  )}
+function ExpensesAllocation() {
+    return (
+        <div className="relative mt-6">
+            {/* Background glow */}
+            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-96 h-32 bg-gradient-to-r from-[#6FBEE5]/25 to-[#4A9FD8]/25 blur-3xl" />
+
+            {/* Chart container */}
+            <div className="relative z-10 backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-6">
+                <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-white">Portfolio Allocation</h3>
+                    <p className="text-sm text-white/60">Asset distribution</p>
                 </div>
-              </div>
 
-              <div className="flex justify-end" style={{}}>
-                <div className="px-4 py-3 rounded-xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20" onClick={() => setShowInsight(true)} style={{}}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Zap className="w-4 h-4 text-[#6FBEE5]" />
-                    <h4 className="text-sm font-semibold" style={{ color: "white" }}>AI Insight</h4>
-                  </div>
-                  <p className="text-xs text-white/70 leading-relaxed">
-                    Use this chatbox.
-                  </p>
+                <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={portfolioData}
+                                dataKey="value"
+                                nameKey="name"
+                                innerRadius={70}
+                                outerRadius={100}
+                                label
+                            >
+                                {portfolioData.map((_, index) => (
+                                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: "rgba(0,0,0,0.8)",
+                                    border: "1px solid rgba(255,255,255,0.1)",
+                                    color: "#fff",
+                                }}
+                                labelStyle={{
+                                    color: "#ffffff",
+                                    fontWeight: 600,
+                                }}
+                                itemStyle={{
+                                    color: "#ffffff",
+                                }}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
                 </div>
-              </div>
-              {showInsight && (
-                <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
-                  <div className="bg-[#111] p-6 rounded-xl text-white w-[320px]">
-                    <h2 className="text-lg font-semibold mb-2">AI Insight</h2>
-                    <p>This is the new interface.</p>
-
-                    <button
-                      className="mt-4 px-4 py-2 bg-blue-500 rounded"
-                      onClick={() => setShowInsight(false)}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
-
             </div>
-
-            {/* Security Shield */}
-            <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-green-500/10 border border-green-500/20 mb-4">
-              <Shield className="w-5 h-5 text-green-400" />
-              <span className="text-sm text-green-400 font-medium">Protected by AI Security</span>
-              <Zap className="w-4 h-4 text-green-400 ml-auto" />
-            </div>
-
-          </div>
-        </Card>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full">
-              <div className="p-6">
-                <h3 className="text-xl font-semibold mb-6" style={{ color: "white" }}>Income & Expenses</h3>
-                <div className="space-y-6">
-                  {/* Salary Input */}
-                  <div>
-                    <label htmlFor="salary" className="block text-sm font-medium text-white/70 mb-2">
-                      Monthly Salary
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-lg">$</span>
-                      <input
-                        id="salary"
-                        type="number"
-                        placeholder="0.00"
-                        value={salary}
-                        onChange={(e) => setSalary(e.target.value)}
-                        className="w-full pl-8 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all text-lg"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Expenses Input */}
-                  <div>
-                    <label htmlFor="expenses" className="block text-sm font-medium text-white/70 mb-2">
-                      Monthly Expenses
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-lg">$</span>
-                      <input
-                        id="expenses"
-                        type="number"
-                        placeholder="0.00"
-                        value={expenses}
-                        onChange={(e) => setExpenses(e.target.value)}
-                        className="w-full pl-8 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all text-lg"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Balance Summary */}
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-white/10 to-white/5">
-                      <div>
-                        <p className="text-white/60 text-sm mb-1">Available Balance</p>
-                        <p className="text-3xl font-bold" style={{ color: "white" }}>
-                          ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </p>
-                      </div>
-                      <div
-                        className={`px-4 py-2 rounded-lg ${balance >= 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}
-                      >
-                        {balance >= 0 ? (
-                          <div className="flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5" />
-                            <span className="font-semibold">Surplus</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5 rotate-180" />
-                            <span className="font-semibold">Deficit</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Breakdown */}
-                    <div className="mt-4 space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-white/60">Income:</span>
-                        <span className="text-green-400 font-medium">
-                          +$
-                          {(Number.parseFloat(salary) || 0).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-white/60">Expenses:</span>
-                        <span className="text-red-400 font-medium">
-                          -$
-                          {(Number.parseFloat(expenses) || 0).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="lg:col-span-1">
-            <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full">
-              <div className="p-6 h-full flex flex-col">
-                <h3 className="text-xl font-semibold mb-4" style={{ color: "white" }}>Recent Activity</h3>
-                <div className="space-y-4 flex-1">
-                  {recentTransactions.map((tx) => (
-                    <div
-                      key={tx.id}
-                      className="flex items-start gap-3 pb-4 border-b border-white/10 last:border-0 last:pb-0"
-                    >
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive"
-                          ? "bg-green-500/20"
-                          : tx.type === "send"
-                            ? "bg-red-500/20"
-                            : "bg-blue-500/20"
-                          }`}
-                      >
-                        {tx.type === "receive" ? (
-                          <ArrowDownRight className="w-5 h-5 text-green-400" />
-                        ) : tx.type === "send" ? (
-                          <ArrowUpRight className="w-5 h-5 text-red-400" />
-                        ) : (
-                          <Zap className="w-5 h-5 text-blue-400" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-400" : tx.type === "send" ? "text-red-400" : "text-blue-400"}`}>{tx.amount}</p>
-                        <p className="text-xs text-white/50">{tx.time}</p>
-                        <p className="text-xs text-white/40 mt-1">
-                          {tx.from && `From: ${tx.from}`}
-                          {tx.to && `To: ${tx.to}`}
-                          {tx.protocol && `Via: ${tx.protocol}`}
-                        </p>
-                      </div>
-                      <span className="text-sm text-white/70">{tx.usd}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Card>
-          </div>
         </div>
+    )
+}
 
-        <div className="mt-6">
-          <Card className="border-white/20 backdrop-blur-xl bg-white/5">
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-6" style={{ color: "white" }}>Financial Breakdown</h3>
-              {chartData.length > 0 ? (
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={chartData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent ?? 100).toFixed(0)}%`}
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {chartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "rgba(0, 27, 57, 0.9)",
-                          border: "1px solid rgba(255, 255, 255, 0.2)",
-                          borderRadius: "12px",
-                          color: "white",
-                        }}
-                        formatter={(value) =>
-                          `$${(value ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                        }
-                      />
-                      <Legend
-                        wrapperStyle={{ color: "white" }}
-                        formatter={(value) => <span style={{ color: "white" }}>{value}</span>}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              ) : (
-                <div className="h-80 flex items-center justify-center">
-                  <p className="text-white/50">Enter your salary and expenses to see the breakdown</p>
-                </div>
-              )}
+function MonthlyCashflowRecords() {
+    return (
+        <div className="w-full h-full">
+            {/* Header */}
+            <div className="mb-4">
+                <h3 className="text-lg font-semibold text-white">
+                    Monthly Cash Flow
+                </h3>
+                <p className="text-sm text-white/60">
+                    Last 6 months
+                </p>
             </div>
-          </Card>
-        </div>
 
-        <div className="mt-6">
-          <Card className="border-white/20 backdrop-blur-xl bg-white/5">
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <Zap className="w-6 h-6 text-[#6FBEE5]" />
-                <h3 className="text-xl font-semibold" style={{ color: "white" }}>AI-Powered Suggestions</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {suggestions.map((suggestion) => (
-                  <div
-                    key={suggestion.id}
-                    className="p-5 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 hover:border-[#6FBEE5]/30 transition-all hover:shadow-lg hover:shadow-[#6FBEE5]/10"
-                  >
-                    <div className="flex items-start gap-3 mb-3">
-                      <span className="text-2xl">{suggestion.icon}</span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-white">{suggestion.title}</h4>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${suggestion.priority === "high"
-                              ? "bg-red-500/20 text-red-400"
-                              : suggestion.priority === "medium"
-                                ? "bg-yellow-500/20 text-yellow-400"
-                                : "bg-blue-500/20 text-blue-400"
-                              }`}
-                          >
-                            {suggestion.priority}
-                          </span>
+            {/* Chart area (FIXED HEIGHT) */}
+            <div className="h-[280px]">
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={cashflowData}>
+                        <XAxis
+                            dataKey="month"
+                            stroke="rgba(255, 255, 255, 1)"
+                        />
+                        <YAxis
+                            stroke="rgba(255, 255, 255, 1)"
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: "rgba(0,0,0,0.85)",
+                                border: "1px solid rgba(255,255,255,0.15)",
+                            }}
+                            labelStyle={{ color: "#fff" }}
+                            itemStyle={{ color: "#fff" }}
+                            cursor={{ fill: "rgba(255,255,255,0.1)" }}
+                        />
+                        <Bar
+                            dataKey="cashflow"
+                            radius={[10, 10, 0, 0]}
+                            fill="#5AADEB"
+                        />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        // <div className="min-h-screen bg-gradient-to-tr from-[#6FBEE5] via-[#4A9FD8] to-[#00FFD1]"> Another options for the background color 1
+        // <div className="min-h-screen bg-gradient-to-br from-[#E0F7FA] via-[#B2EBF2] to-[#80DEEA]"> Another options for the background color 2
+        <div className="min-h-screen bg-gray-900">
+            <DashboardNav />
+
+            <main className="container mx-auto px-4 lg:px-8 py-8 space-y-5">
+                {/* Portfolio Overview */}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-3xl font-bold text-white">Portfolio</h1>
+                            <p className="text-white/60">Track your Sui assets in real-time</p>
                         </div>
-                        <p className="text-sm text-white/70 leading-relaxed">{suggestion.description}</p>
-                      </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full mt-2 text-[#6FBEE5] hover:text-[#5DAED5] hover:bg-[#6FBEE5]/10"
-                    >
-                      Learn More
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
+
+                    {/* Balance Card */}
+                    <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-10 min-h-[520px]">
+                        <div className="space-y-6">
+                            <div className="flex items-start justify-between">
+                                <div className="space-y-2">
+                                    <p className="text-white/100 font-bold text-2xl">Cash Flow </p>
+                                    <div className="flex items-baseline gap-3">
+                                        <h2 className="text-5xl font-bold text-white">$401.84K</h2>
+                                        <div className="flex items-center gap-1 text-green-400">
+                                            <ArrowUpRight className="w-5 h-5" />
+                                            <span className="text-lg font-semibold">+2.34%</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-white/40 text-sm">+$9,234.12 last 24h</p>
+                                </div>
+                            </div>
+
+                            <MonthlyCashflowRecords />
+                        </div>
+                    </Card>
+
+                    {/* Quick Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <p className="text-white/60 text-sm">Available Balance</p>
+                                    <p className="text-2xl font-bold text-white">$283.28K</p>
+                                    <p className="text-white/40 text-xs">8,542 SUI</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5]/20 to-[#4A9FD8]/20 flex items-center justify-center">
+                                    <Wallet className="w-6 h-6 text-[#6FBEE5]" />
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <p className="text-white/60 text-sm">Income</p>
+                                    <p className="text-2xl font-bold text-white">$93.38K</p>
+                                    <div className="flex items-center gap-1 text-green-400 text-xs">
+                                        <TrendingUp className="w-3 h-3" />
+                                        <span>5.2% APY</span>
+                                    </div>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5]/20 to-[#4A9FD8]/20 flex items-center justify-center">
+                                    <TrendingUp className="w-6 h-6 text-[#6FBEE5]" />
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <p className="text-white/60 text-sm">Expenses</p>
+                                    <p className="text-2xl font-bold text-white">$25.18K</p>
+                                    <p className="text-white/40 text-xs">47 items</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5]/20 to-[#4A9FD8]/20 flex items-center justify-center">
+                                    <Sparkles className="w-6 h-6 text-[#6FBEE5]" />
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* AI Recommendations */}
+                <Card className="backdrop-blur-xl bg-gradient-to-br from-[#6FBEE5]/10 to-[#4A9FD8]/10 border-white/20 p-8">
+                    <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FD8] flex items-center justify-center shrink-0">
+                            <Sparkles className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="space-y-3 flex-1">
+                            <h3 className="text-xl font-semibold text-white">AI Recommendation</h3>
+                            <p className="text-white/80 leading-relaxed">
+                                Your 2,500 SUI in the wallet could earn 6.8% APY on Scallop (2.6% higher than current average). Moving
+                                these funds could generate an additional $1,700 annually.
+                            </p>
+                            <Button className="bg-white text-[#001B39] hover:bg-white/90">View Opportunity</Button>
+                        </div>
+                    </div>
+                </Card>
+
+                {/* Assets Section */}
+                <div className="space-y-4">
+                    <h2 className="text-2xl font-bold text-white">Expenses Allocation</h2>
+                    <div>
+                        <ExpensesAllocation />
+                    </div>
+                </div>
+            </main>
         </div>
-      </div>
-    </div>
-  )
+    )
 }
