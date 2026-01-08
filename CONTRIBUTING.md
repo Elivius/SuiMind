@@ -51,7 +51,7 @@ git checkout -b feat/ai-agents-setup(ai-agents)
 ## 3. Collaboration Workflow
 
 ### While Others are Working
-*   **Do Nothing.** You do not need to pull or track their feature branches (`feat/login(frontend)`, `feat/contracts(smart-contracts)`) while they are still working on them.
+*   **Do Nothing.** You do not need to pull or track their feature branches (`feat/login(frontend)`, `feat/zklogin(smart-contracts)`) while they are still working on them.
 *   Focus entirely on your own branch (`feat/ai-agents-setup(ai-agents)`).
 
 ### When Others Finish (They Merge to Main)
