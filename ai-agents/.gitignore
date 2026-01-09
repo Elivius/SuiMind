@@ -20,5 +20,5 @@ htmlcov/
 *.swp
 
 # Others
-cmd.txt
+command.txt
 .adk/
