@@ -9,10 +9,10 @@ import Silk from "@/components/ui/Silk"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
-  { label: "Home", href: "page" },
-  { label: "Monthly Cashflow", href: "Monthly_Cashflow" },
-  { label: "Recent Activity", href: "#" },
-  { label: "AI Chatbox", href: "#" },
+  { label: "Home", href: "/" },
+  { label: "Monthly Cashflow", href: "/Monthly_Cashflow" },
+  { label: "Recent Activity", href: "/Recent_Activity" },
+  { label: "AI Chatbox", href: "/AI_Chatbox" },
 ];
 
 export default function WalletDashboard() {
@@ -281,7 +281,7 @@ export default function WalletDashboard() {
                   <Button
                     variant="ghost"
                     className="justify-start text-xl text-white font-semibold mb-6 p-0 h-auto hover:bg-transparent hover:text-2xl"
-                    onClick={() => router.push('/recentactivity')}
+                    onClick={() => router.push('/Recent_Activity')}
                   >
                     Recent Activity
                   </Button>

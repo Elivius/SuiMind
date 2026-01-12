@@ -10,8 +10,8 @@ import Silk from "@/components/ui/Silk"
 const items = [
     { label: "Home", href: "/" },
     { label: "Monthly Cashflow", href: "/Monthly_Cashflow" },
-    { label: "Recent Activity", href: "#" },
-    { label: "AI Chatbox", href: "#" },
+    { label: "Recent Activity", href: "/Recent_Activity" },
+    { label: "AI Chatbox", href: "/AI_Chatbox" },
 ];
 
 // Data for testing only

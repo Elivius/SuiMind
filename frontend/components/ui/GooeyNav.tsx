@@ -1,4 +1,7 @@
+"use client"
+
 import React, { useRef, useEffect, useState } from 'react';
+import { useRouter } from "next/navigation"
 
 interface GooeyNavItem {
   label: string;
@@ -97,11 +100,20 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     Object.assign(textRef.current.style, styles);
     textRef.current.innerText = element.innerText;
   };
+  const router = useRouter();
+
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, index: number) => {
+    const href = e.currentTarget.getAttribute('href');
+    if (activeIndex === index) {
+      if (e.button === 0) e.preventDefault();
+      return;
+    }
+
+    e.preventDefault();
     const liEl = e.currentTarget;
-    if (activeIndex === index) return;
     setActiveIndex(index);
     updateEffectPosition(liEl);
+
     if (filterRef.current) {
       const particles = filterRef.current.querySelectorAll('.particle');
       particles.forEach(p => filterRef.current!.removeChild(p));
@@ -114,6 +126,11 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     if (filterRef.current) {
       makeParticles(filterRef.current);
     }
+
+    // Delay navigation to let the gooey animation play
+    setTimeout(() => {
+      if (href) router.push(href);
+    }, 300);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLAnchorElement>, index: number) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -294,20 +311,26 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             }}
           >
             {items.map((item, index) => (
-              <li
-                key={index}
-                className={`rounded-full relative cursor-pointer transition-[background-color_color_box-shadow] duration-300 ease shadow-[0_0_0.5px_1.5px_transparent] text-white ${activeIndex === index ? 'active' : ''
-                  }`}
-              >
-                <a
-                  href={item.href}
-                  onClick={e => handleClick(e, index)}
-                  onKeyDown={e => handleKeyDown(e, index)}
-                  className="outline-none py-[0.6em] px-[1em] inline-block"
+              <React.Fragment key={index}>
+                <li
+                  className={`rounded-full relative cursor-pointer transition-[background-color_color_box-shadow] duration-300 ease shadow-[0_0_0.5px_1.5px_transparent] text-white ${activeIndex === index ? 'active' : ''
+                    }`}
                 >
-                  {item.label}
-                </a>
-              </li>
+                  <a
+                    href={item.href}
+                    onClick={e => handleClick(e, index)}
+                    onKeyDown={e => handleKeyDown(e, index)}
+                    className="outline-none py-[0.6em] px-[1em] inline-block"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+                {item.label === "Recent Activity" && (
+                  <div className="flex items-center text-white select-none pointer-events-none text-sm px-1">
+                    |
+                  </div>
+                )}
+              </React.Fragment>
             ))}
           </ul>
         </nav>
