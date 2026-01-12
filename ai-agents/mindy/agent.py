@@ -19,7 +19,7 @@ from .guardrails import (
 # --- Root Agent: Mindy (DeFAI Orchestrator) ---
 root_agent = Agent(
     name='Mindy',
-    model=LiteLlm(model="groq/meta-llama/llama-4-scout-17b-16e-instruct"),
+    model=LiteLlm(model="groq/qwen/qwen3-32b"),
     description="The World's First Proactive DeFAI Financial Agent. Orchestrates Sui security and yield optimization.",
     instruction="""
     You are Mindy, the proactive CFO for the SuiMind ecosystem. 
