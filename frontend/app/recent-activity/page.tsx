@@ -8,10 +8,10 @@ import Silk from "@/components/ui/Silk"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
-    { label: "Home", href: "/" },
-    { label: "Monthly Cashflow", href: "/Monthly_Cashflow" },
-    { label: "Recent Activity", href: "/Recent_Activity" },
-    { label: "AI Chatbox", href: "/AI_Chatbox" },
+    { label: "Home", href: "/home-page" },
+    { label: "Monthly Cashflow", href: "/monthly-cashflow" },
+    { label: "Recent Activity", href: "/recent-activity" },
+    { label: "AI Chatbox", href: "/ai-chatbox" },
 ];
 
 export default function RecentActivity() {
