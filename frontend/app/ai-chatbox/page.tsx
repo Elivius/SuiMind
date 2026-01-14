@@ -2,16 +2,15 @@
 
 import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
-import { Wallet, ArrowUpRight, ArrowDownRight, Zap, Settings, Bell } from "lucide-react"
-import { useState } from "react"
+import { Wallet, ArrowUpRight, Zap, Settings, Bell } from "lucide-react"
 import Silk from "@/components/ui/Silk"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
-    { label: "Home", href: "/" },
-    { label: "Monthly Cashflow", href: "/Monthly_Cashflow" },
-    { label: "Recent Activity", href: "/Recent_Activity" },
-    { label: "AI Chatbox", href: "/AI_Chatbox" },
+    { label: "Home", href: "/home-page" },
+    { label: "Monthly Cashflow", href: "/monthly-cashflow" },
+    { label: "Recent Activity", href: "/recent-activity" },
+    { label: "AI Chatbox", href: "/ai-chatbox" },
 ];
 
 export default function AIChatboxPage() {
