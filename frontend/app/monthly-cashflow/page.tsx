@@ -4,8 +4,9 @@ import { ArrowUpRight, TrendingUp, Wallet, Shield, Sparkles, Bell, Settings } fr
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
+import { useRouter } from "next/navigation"
 import GooeyNav from "@/components/ui/GooeyNav"
-import Silk from "@/components/ui/Silk"
+import DarkVeil from "@/components/ui/DarkVeil"
 
 const items = [
     { label: "Home", href: "/home-page" },
@@ -36,17 +37,18 @@ const FLAT_COLORS = [
 
 
 function DashboardHeader() {
+    const router = useRouter()
     return (
-        <header className="border-b border-white/10 backdrop-blur-xl bg-white/5">
-            <div className="w-full px-6 py-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
-                            <Wallet className="w-5 h-5 text-white" />
+        <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 sticky top-0 z-40">
+            <div className="w-full px-4 sm:px-6 py-4">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
+                            <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
-                        <h1 className="text-xl font-bold text-white">SuiMind</h1>
+                        <h1 className="text-lg sm:text-xl font-bold text-white">SuiMind</h1>
                     </div>
-                    <div style={{ height: '45px', position: 'relative' }}>
+                    <div className="hidden md:block" style={{ height: '45px', position: 'relative' }}>
                         <GooeyNav
                             items={items}
                             particleCount={5}
@@ -58,15 +60,27 @@ function DashboardHeader() {
                             colors={[1, 2, 3, 1, 2, 3, 1, 4]}
                         />
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                        <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
                             <Bell className="w-5 h-5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
+                        <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
                             <Settings className="w-5 h-5" />
                         </Button>
                     </div>
                 </div>
+            </div>
+            {/* Mobile Nav */}
+            <div className="md:hidden border-t border-white/5 px-4 py-2 overflow-x-auto flex gap-6 no-scrollbar">
+                {items.map((item, idx) => (
+                    <button
+                        key={item.href}
+                        onClick={() => router.push(item.href)}
+                        className={`text-sm font-medium whitespace-nowrap py-1 ${idx === 1 ? 'text-[#6FBEE5]' : 'text-white/60'}`}
+                    >
+                        {item.label}
+                    </button>
+                ))}
             </div>
         </header>
     )
@@ -81,7 +95,7 @@ function ExpensesAllocation() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#6FBEE5]/10 rounded-full blur-[80px]" />
 
             {/* Chart container */}
-            <div className="relative z-10 backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[40px] p-8 shadow-2xl">
+            <div className="relative z-10 backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[30px] sm:rounded-[40px] p-5 sm:p-8 shadow-2xl">
                 <div className="h-[320px] relative">
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
@@ -92,20 +106,20 @@ function ExpensesAllocation() {
                                 <linearGradient id="grad4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#38bdf8" /><stop offset="100%" stopColor="#0284c7" /></linearGradient>
                                 <linearGradient id="grad5" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F472B6" /><stop offset="100%" stopColor="#DB2777" /></linearGradient>
                                 <linearGradient id="grad6" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FB923C" /><stop offset="100%" stopColor="#EA580C" /></linearGradient>
-                                <linearGradient id="grad7" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#4ADE80" /><stop offset="100%" stopColor="#16A34A" /></linearGradient>
+                                <linearGradient id="grad7" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#38bdf8" /><stop offset="100%" stopColor="#0ea5e9" /></linearGradient>
                                 <linearGradient id="grad8" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#2DD4BF" /><stop offset="100%" stopColor="#0D9488" /></linearGradient>
                                 <linearGradient id="grad9" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#A78BFA" /><stop offset="100%" stopColor="#7C3AED" /></linearGradient>
                                 <linearGradient id="grad10" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F87171" /><stop offset="100%" stopColor="#DC2626" /></linearGradient>
                                 <linearGradient id="grad11" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#60A5FA" /><stop offset="100%" stopColor="#2563EB" /></linearGradient>
-                                <linearGradient id="grad12" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#34D399" /><stop offset="100%" stopColor="#059669" /></linearGradient>
+                                <linearGradient id="grad12" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#06b6d4" /><stop offset="100%" stopColor="#0891b2" /></linearGradient>
                                 <linearGradient id="grad13" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FBBF24" /><stop offset="100%" stopColor="#D97706" /></linearGradient>
                                 <linearGradient id="grad14" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#C084FC" /><stop offset="100%" stopColor="#9333EA" /></linearGradient>
                                 <linearGradient id="grad15" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FB7185" /><stop offset="100%" stopColor="#E11D48" /></linearGradient>
                                 <linearGradient id="grad16" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#22D3EE" /><stop offset="100%" stopColor="#0891B2" /></linearGradient>
-                                <linearGradient id="grad17" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#86EFAC" /><stop offset="100%" stopColor="#22C55E" /></linearGradient>
+                                <linearGradient id="grad17" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#7dd3fc" /><stop offset="100%" stopColor="#0ea5e9" /></linearGradient>
                                 <linearGradient id="grad18" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#93C5FD" /><stop offset="100%" stopColor="#3B82F6" /></linearGradient>
                                 <linearGradient id="grad19" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FDA4AF" /><stop offset="100%" stopColor="#F43F5E" /></linearGradient>
-                                <linearGradient id="grad20" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#5EEAD4" /><stop offset="100%" stopColor="#14B8A6" /></linearGradient>
+                                <linearGradient id="grad20" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#22d3ee" /><stop offset="100%" stopColor="#0891b2" /></linearGradient>
                             </defs>
                             <Pie
                                 data={expensesData}
@@ -255,14 +269,13 @@ const cashflowData = [
 export default function DashboardPage() {
     return (
         <div className="relative min-h-screen overflow-hidden bg-[#001B39] text-white">
-            {/* Silk Background */}
-            <Silk
+            {/* DarkVeil Background */}
+            <DarkVeil
                 className="fixed inset-0 z-0 pointer-events-none opacity-40"
-                color="#5bafff"
-                speed={3.0}
-                scale={1.2}
-                noiseIntensity={1.5}
-                rotation={0}
+                speed={0.3}
+                hueShift={0}
+                noiseIntensity={0.05}
+                warpAmount={0.2}
             />
 
             <div className="relative z-10">
@@ -281,16 +294,16 @@ export default function DashboardPage() {
                         </div>
 
                         {/* Balance Card */}
-                        <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-10 min-h-[550px]">
+                        <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-5 sm:p-10 min-h-auto lg:min-h-[550px]">
                             <div className="space-y-6">
                                 <div className="flex items-start justify-between">
                                     <div className="space-y-2">
-                                        <p className="text-white/100 font-bold text-2xl">Monthly Cash Flow </p>
-                                        <div className="flex items-baseline gap-3">
-                                            <h2 className="text-5xl font-bold text-white">$401.84K</h2>
-                                            <div className="flex items-center gap-1 text-green-400">
-                                                <ArrowUpRight className="w-5 h-5" />
-                                                <span className="text-lg font-semibold">+2.34%</span>
+                                        <p className="text-white/70 font-bold text-xl sm:text-2xl">Monthly Cash Flow </p>
+                                        <div className="flex flex-wrap items-baseline gap-3">
+                                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">$401.84K</h2>
+                                            <div className="flex items-center gap-1 text-sky-400">
+                                                <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                                                <span className="text-base sm:text-lg font-semibold">+2.34%</span>
                                             </div>
                                         </div>
                                         <p className="text-white/40 text-sm">+$9,234.12 last 24h</p>
@@ -321,7 +334,7 @@ export default function DashboardPage() {
                                     <div className="space-y-1">
                                         <p className="text-white/60 text-sm">Income</p>
                                         <p className="text-2xl font-bold text-white">$93.38K</p>
-                                        <div className="flex items-center gap-1 text-green-400 text-xs">
+                                        <div className="flex items-center gap-1 text-sky-400 text-xs">
                                             <TrendingUp className="w-3 h-3" />
                                             <span>5.2% APY</span>
                                         </div>
@@ -348,7 +361,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* AI Recommendations */}
-                    <Card className="backdrop-blur-xl bg-gradient-to-br from-[#6FBEE5]/10 to-[#4A9FD8]/10 border-white/20 p-8">
+                    <Card className="backdrop-blur-xl bg-gradient-to-br from-[#6FBEE5]/10 to-[#4A9FD8]/10 border-white/20 p-5 sm:p-8">
                         <div className="flex items-start gap-4">
                             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FD8] flex items-center justify-center shrink-0">
                                 <Sparkles className="w-6 h-6 text-white" />
