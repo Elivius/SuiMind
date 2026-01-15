@@ -21,8 +21,6 @@ export default function WalletDashboard() {
   const [expenses, setExpenses] = useState("")
   const [showInsight, setShowInsight] = useState(false);
 
-
-
   const calculateBalance = () => {
     const salaryNum = Number.parseFloat(salary) || 0
     const expensesNum = Number.parseFloat(expenses) || 0

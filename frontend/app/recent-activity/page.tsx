@@ -221,7 +221,7 @@ export default function RecentActivity() {
                                 <div className="p-6 h-full flex flex-col">
                                     <div className="flex items-center gap-2 mb-6">
                                         <Zap className="w-6 h-6 text-[#6FBEE5]" />
-                                        <h3 className="text-xl font-semibold text-white">AI Assistant</h3>
+                                        <h3 className="text-xl font-semibold text-white">Mindy AI</h3>
                                     </div>
 
                                     {/* Chat Messages Area */}
