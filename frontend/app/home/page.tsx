@@ -9,10 +9,10 @@ import DarkVeil from "@/components/ui/DarkVeil"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
-  { label: "Home", href: "/home-page" },
+  { label: "Home", href: "/home" },
   { label: "Monthly Cashflow", href: "/monthly-cashflow" },
   { label: "Recent Activity", href: "/recent-activity" },
-  { label: "AI Chatbox", href: "/ai-chatbox" },
+  { label: "Mindy AI", href: "/mindy-ai" },
 ];
 
 export default function WalletDashboard() {
@@ -340,13 +340,13 @@ export default function WalletDashboard() {
               </Card>
             </div>
 
-            {/* AI Chatbox */}
+            {/* Mindy AI */}
             <div className="lg:col-span-1">
               <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full">
                 <div className="p-6 h-full flex flex-col">
                   <div className="flex items-center gap-2 mb-4">
                     <Zap className="w-5 h-5 text-[#6FBEE5]" />
-                    <h3 className="text-xl font-semibold" style={{ color: "white" }}>AI Assistant</h3>
+                    <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
                   </div>
 
                   {/* Chat Messages Area */}

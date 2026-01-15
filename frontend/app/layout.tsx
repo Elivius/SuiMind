@@ -10,7 +10,6 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "SuiMind - AI-Powered DeFi Wallet",
   description: "The World's First Proactive DeFAI Financial Agent on Sui Network",
-  generator: "v0.app",
   icons: {
     icon: [
       {

@@ -11,7 +11,7 @@ export default function LoginPage() {
 
     const handleWalletConnect = () => {
         // Mock wallet connect
-        router.push("/home-page")
+        router.push("/home")
     }
 
     const handleGoogleLogin = () => {

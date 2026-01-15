@@ -9,10 +9,10 @@ import GooeyNav from "@/components/ui/GooeyNav"
 import DarkVeil from "@/components/ui/DarkVeil"
 
 const items = [
-    { label: "Home", href: "/home-page" },
+    { label: "Home", href: "/home" },
     { label: "Monthly Cashflow", href: "/monthly-cashflow" },
     { label: "Recent Activity", href: "/recent-activity" },
-    { label: "AI Chatbox", href: "/ai-chatbox" },
+    { label: "Mindy AI", href: "/mindy-ai" },
 ];
 
 // Data for testing only

@@ -8,13 +8,13 @@ import DarkVeil from "@/components/ui/DarkVeil"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
-    { label: "Home", href: "/home-page" },
+    { label: "Home", href: "/home" },
     { label: "Monthly Cashflow", href: "/monthly-cashflow" },
     { label: "Recent Activity", href: "/recent-activity" },
-    { label: "AI Chatbox", href: "/ai-chatbox" },
+    { label: "Mindy AI", href: "/mindy-ai" },
 ];
 
-export default function AIChatboxPage() {
+export default function MindyAIPage() {
     const router = useRouter()
     return (
         <div className="relative min-h-screen bg-[#001B39] text-white">
