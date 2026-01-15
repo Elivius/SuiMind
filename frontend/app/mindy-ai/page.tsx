@@ -10,10 +10,10 @@ const items = [
     { label: "Home", href: "/home-page" },
     { label: "Monthly Cashflow", href: "/monthly-cashflow" },
     { label: "Recent Activity", href: "/recent-activity" },
-    { label: "AI Chatbox", href: "/ai-chatbox" },
+    { label: "Mindy AI", href: "/mindy-ai" },
 ];
 
-export default function AIChatboxPage() {
+export default function MindyAIPage() {
     return (
         <div className="relative min-h-screen bg-[#001B39] text-white">
             {/* Silk Background */}
