@@ -31,6 +31,7 @@ Prefix your branches to indicate the type of work:
 *   `fix/wallet-connection(frontend)` (Bug fixes)
 *   `chore/cleanup(smart-contracts)` (Maintenance/Configs)
 *   `docs/updated-readme(ai-agents)` (Documentation only)
+*   `refactor/simplify-logic(frontend)` (Code restructuring without behavior change)
 *   `style/format-code(smart-contracts)` (Code formatting)
 
 ### How to Start a New Task
