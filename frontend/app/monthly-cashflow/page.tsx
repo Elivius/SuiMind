@@ -11,7 +11,7 @@ const items = [
     { label: "Home", href: "/home-page" },
     { label: "Monthly Cashflow", href: "/monthly-cashflow" },
     { label: "Recent Activity", href: "/recent-activity" },
-    { label: "AI Chatbox", href: "/ai-chatbox" },
+    { label: "Mindy AI", href: "/mindy-ai" },
 ];
 
 // Data for testing only
