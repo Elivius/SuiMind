@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button"
 import { Wallet, TrendingUp, ArrowUpRight, ArrowDownRight, Shield, Zap, Settings, Bell } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Silk from "@/components/ui/Silk"
+import DarkVeil from "@/components/ui/DarkVeil"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
@@ -77,28 +77,28 @@ export default function WalletDashboard() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#001B39] text-white">
-      {/* Silk Background */}
-      <Silk
+      {/* DarkVeil Background */}
+      <DarkVeil
         className="fixed inset-0 z-0 pointer-events-none opacity-40"
-        color="#5bafff"
-        speed={3.0}
-        scale={1.2}
-        noiseIntensity={1.5}
-        rotation={0}
+        speed={0.3}
+        hueShift={0}
+        noiseIntensity={0.05}
+        warpAmount={0.2}
       />
 
       <div className="relative z-10">
         {/* Header */}
-        <header className="border-b border-white/10 backdrop-blur-xl bg-white/5">
-          <div className="w-full px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
-                  <Wallet className="w-5 h-5" />
+        <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 sticky top-0 z-40">
+          <div className="w-full px-4 sm:px-6 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
+                  <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <h1 className="text-xl font-bold">SuiMind</h1>
+                <h1 className="text-lg sm:text-xl font-bold">SuiMind</h1>
               </div>
-              <div style={{ height: '45px', position: 'relative' }}>
+
+              <div className="hidden md:block" style={{ height: '45px', position: 'relative' }}>
                 <GooeyNav
                   items={items}
                   particleCount={5}
@@ -110,34 +110,48 @@ export default function WalletDashboard() {
                   colors={[1, 2, 3, 1, 2, 3, 1, 4]}
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
+
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
                   <Bell className="w-5 h-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
+                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
                   <Settings className="w-5 h-5" />
                 </Button>
+                {/* Mobile Nav Button Placeholder or just use the icons */}
               </div>
             </div>
+          </div>
+          {/* Mobile Nav - simple horizontal scroll for now or similar */}
+          <div className="md:hidden border-t border-white/5 px-4 py-2 overflow-x-auto flex gap-6 no-scrollbar">
+            {items.map((item, idx) => (
+              <button
+                key={item.href}
+                onClick={() => router.push(item.href)}
+                className={`text-sm font-medium whitespace-nowrap py-1 ${idx === 0 ? 'text-[#6FBEE5]' : 'text-white/60'}`}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
         </header>
 
         <div className="w-full px-6 py-8">
           {/* Main Balance Card */}
-          <Card className="border-white/20 backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 mb-6 overflow-hidden relative">
+          <Card className="border-white/20 backdrop-blur-xl bg-gradient-to-br from-white/5 to-white/10 mb-6 overflow-hidden relative">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#6FBEE5]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="relative p-8">
-              <div className="flex items-center justify-between">
+            <div className="relative p-5 sm:p-8">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 {/* Left side: Balance + AI Insight */}
-                <div>
-                  <p className="text-white text-xl font-bold mb-2">Total Balance</p>
-                  <div className="flex items-center gap-4">
-                    <h2 className="text-7xl font-bold" style={{ color: "white" }}>
+                <div className="flex-1">
+                  <p className="text-white/70 text-base sm:text-xl font-bold mb-2">Total Balance</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
                       ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </h2>
                     {/* AI Insight beside the number */}
                     <div
-                      className="px-7 py-5 rounded-xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 cursor-pointer hover:bg-[#6FBEE5]/20 transition-all"
+                      className="inline-flex flex-col px-5 sm:px-7 py-3 sm:py-5 rounded-xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 cursor-pointer hover:bg-[#6FBEE5]/20 transition-all self-start sm:self-center"
                       onClick={() => setShowInsight(true)}
                     >
                       <div className="flex items-center gap-2 mb-1">
@@ -150,18 +164,20 @@ export default function WalletDashboard() {
                 </div>
 
                 {/* Right side: Send & Receive Buttons */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-row lg:flex-col gap-3">
                   <Button
-                    className="px-8 py-7 text-base font-semibold bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-xl shadow-lg shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all"
+                    className="flex-1 lg:flex-none px-4 sm:px-8 py-4 sm:py-7 text-sm sm:text-base font-semibold bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-xl shadow-lg shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all"
                   >
-                    <ArrowUpRight className="w-5 h-5 mr-2" />
-                    Send
+                    <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+                    <span className="hidden sm:inline">Send</span>
+                    <span className="sm:hidden">Send</span>
                   </Button>
                   <Button
-                    className="px-8 py-7 text-base font-semibold bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white border-0 rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all"
+                    className="flex-1 lg:flex-none px-4 sm:px-8 py-4 sm:py-7 text-sm sm:text-base font-semibold bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-xl shadow-lg shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all"
                   >
-                    <ArrowDownRight className="w-5 h-5 mr-2" />
-                    Receive
+                    <ArrowDownRight className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+                    <span className="hidden sm:inline">Receive</span>
+                    <span className="sm:hidden">Recv</span>
                   </Button>
                 </div>
               </div>
@@ -185,9 +201,9 @@ export default function WalletDashboard() {
             </div>
           </Card>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div className="lg:col-span-2">
-              <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-[65vh]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="md:col-span-2 lg:col-span-2">
+              <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[65vh]">
                 <div className="p-6">
                   <Button
                     variant="ghost"
@@ -239,7 +255,7 @@ export default function WalletDashboard() {
                         <div>
                           <p className="text-white text-sm mb-1">Available Balance</p>
                           {balance > 0 ? (
-                            <p className="text-3xl font-bold text-green-400">
+                            <p className="text-2xl sm:text-3xl font-bold text-sky-400">
                               ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
                           ) : balance === 0 ? (
@@ -253,7 +269,7 @@ export default function WalletDashboard() {
                           )}
                         </div>
                         <div
-                          className={`px-4 py-2 rounded-lg ${balance >= 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}
+                          className={`px-4 py-2 rounded-lg ${balance >= 0 ? "bg-sky-500/20 text-sky-400" : "bg-red-500/20 text-red-400"}`}
                         >
                           {balance >= 0 ? (
                             <div className="flex items-center gap-2">
@@ -300,7 +316,7 @@ export default function WalletDashboard() {
                             }`}
                         >
                           {tx.type === "receive" ? (
-                            <ArrowDownRight className="w-5 h-5 text-green-400" />
+                            <ArrowDownRight className="w-5 h-5 text-sky-400" />
                           ) : tx.type === "send" ? (
                             <ArrowUpRight className="w-5 h-5 text-red-400" />
                           ) : (
@@ -308,7 +324,7 @@ export default function WalletDashboard() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-400" : tx.type === "send" ? "text-red-400" : "text-blue-300"}`}>{tx.amount}</p>
+                          <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-sky-400" : tx.type === "send" ? "text-red-400" : "text-blue-300"}`}>{tx.amount}</p>
                           <p className="text-xs text-white">{tx.time}</p>
                           <p className="text-xs text-white mt-1">
                             {tx.from && `From: ${tx.from}`}
