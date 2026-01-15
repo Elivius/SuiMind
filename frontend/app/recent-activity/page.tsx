@@ -9,10 +9,10 @@ import DarkVeil from "@/components/ui/DarkVeil"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
-    { label: "Home", href: "/home-page" },
+    { label: "Home", href: "/home" },
     { label: "Monthly Cashflow", href: "/monthly-cashflow" },
     { label: "Recent Activity", href: "/recent-activity" },
-    { label: "AI Chatbox", href: "/ai-chatbox" },
+    { label: "Mindy AI", href: "/mindy-ai" },
 ];
 
 export default function RecentActivity() {
@@ -215,7 +215,7 @@ export default function RecentActivity() {
                             </Card>
                         </div>
 
-                        {/* AI Chatbox */}
+                        {/* Mindy AI */}
                         <div className="lg:col-span-1 sticky top-[100px] self-start transition-all duration-500 ease-in-out">
                             <Card className="border-white/20 backdrop-blur-xl bg-white/5 flex flex-col h-[500px] shadow-2xl shadow-blue-500/5 hover:shadow-[#6FBEE5]/10 transition-shadow duration-500">
                                 <div className="p-6 h-full flex flex-col">

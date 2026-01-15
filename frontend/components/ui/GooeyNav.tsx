@@ -188,7 +188,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             transition: color 0.3s ease;
           }
           .effect.text.active {
-            color: #001B39;
+            color: white;
           }
           .effect.filter {
             filter: url('#goo');
@@ -280,7 +280,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             }
           }
           li.active {
-            color: #001B39;
+            color: white;
             text-shadow: none;
           }
           li.active::after {
