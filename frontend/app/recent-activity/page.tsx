@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Wallet, ArrowUpRight, ArrowDownRight, Zap, Settings, Bell } from "lucide-react"
 import { useState } from "react"
-import Silk from "@/components/ui/Silk"
+import { useRouter } from "next/navigation"
+import DarkVeil from "@/components/ui/DarkVeil"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
@@ -15,6 +16,7 @@ const items = [
 ];
 
 export default function RecentActivity() {
+    const router = useRouter()
     const [recentTransactions] = useState([
         { id: 1, type: "receive", amount: "+150 SUI", usd: "$450.00", time: "2 min ago", from: "Cetus DEX", status: "Completed" },
         { id: 2, type: "send", amount: "-50 USDC", usd: "$50.00", time: "1 hour ago", to: "0x1a2b...3c4d", status: "Pending" },
@@ -40,28 +42,27 @@ export default function RecentActivity() {
 
     return (
         <div className="relative min-h-screen bg-[#001B39] text-white">
-            {/* Silk Background */}
-            <Silk
+            {/* DarkVeil Background */}
+            <DarkVeil
                 className="fixed inset-0 z-0 pointer-events-none opacity-40"
-                color="#5bafff"
-                speed={3.0}
-                scale={1.2}
-                noiseIntensity={1.5}
-                rotation={0}
+                speed={0.3}
+                hueShift={0}
+                noiseIntensity={0.05}
+                warpAmount={0.2}
             />
 
             <div className="relative z-10">
                 {/* Header */}
                 <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 sticky top-0 z-40">
-                    <div className="w-full px-6 py-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
-                                    <Wallet className="w-5 h-5 text-white" />
+                    <div className="w-full px-4 sm:px-6 py-4">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
+                                    <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                                 </div>
-                                <h1 className="text-xl font-bold">SuiMind</h1>
+                                <h1 className="text-lg sm:text-xl font-bold">SuiMind</h1>
                             </div>
-                            <div style={{ height: '45px', position: 'relative' }}>
+                            <div className="hidden md:block" style={{ height: '45px', position: 'relative' }}>
                                 <GooeyNav
                                     items={items}
                                     particleCount={5}
@@ -73,35 +74,48 @@ export default function RecentActivity() {
                                     colors={[1, 2, 3, 1, 2, 3, 1, 4]}
                                 />
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
+                            <div className="flex items-center gap-1 sm:gap-2">
+                                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
                                     <Bell className="w-5 h-5" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
+                                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
                                     <Settings className="w-5 h-5" />
                                 </Button>
                             </div>
                         </div>
+                    </div>
+                    {/* Mobile Nav */}
+                    <div className="md:hidden border-t border-white/5 px-4 py-2 overflow-x-auto flex gap-6 no-scrollbar">
+                        {items.map((item, idx) => (
+                            <button
+                                key={item.href}
+                                onClick={() => router.push(item.href)}
+                                className={`text-sm font-medium whitespace-nowrap py-1 ${idx === 2 ? 'text-[#6FBEE5]' : 'text-white/60'}`}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
                     </div>
                 </header>
 
                 <main className="w-full px-6 py-8">
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                         <div className="lg:col-span-3">
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-3xl font-bold">Recent Activity</h2>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+                                <h2 className="text-2xl sm:text-3xl font-bold">Recent Activity</h2>
                                 <div className="flex gap-2">
-                                    <Button variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10">
+                                    <Button variant="outline" className="flex-1 sm:flex-none border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm sm:text-base">
                                         Filter
                                     </Button>
-                                    <Button variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10">
+                                    <Button variant="outline" className="flex-1 sm:flex-none border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm sm:text-base">
                                         Export
                                     </Button>
                                 </div>
                             </div>
 
                             <Card className="border-white/20 backdrop-blur-xl bg-white/5 overflow-hidden">
-                                <div className="overflow-x-auto">
+                                {/* Desktop Table */}
+                                <div className="hidden md:block overflow-x-auto">
                                     <table className="w-full text-left">
                                         <thead>
                                             <tr className="border-b border-white/10 bg-white/5">
@@ -117,10 +131,10 @@ export default function RecentActivity() {
                                                 <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive" ? "bg-green-500/20" :
+                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive" ? "bg-sky-500/20" :
                                                                 tx.type === "send" ? "bg-red-500/20" : "bg-blue-500/20"
                                                                 }`}>
-                                                                {tx.type === "receive" ? <ArrowDownRight className="w-5 h-5 text-green-400" /> :
+                                                                {tx.type === "receive" ? <ArrowDownRight className="w-5 h-5 text-sky-400" /> :
                                                                     tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-red-400" /> :
                                                                         <Zap className="w-5 h-5 text-blue-400" />}
                                                             </div>
@@ -128,7 +142,7 @@ export default function RecentActivity() {
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <p className={`font-semibold ${tx.type === "receive" ? "text-green-400" :
+                                                        <p className={`font-semibold ${tx.type === "receive" ? "text-sky-400" :
                                                             tx.type === "send" ? "text-red-400" : "text-blue-300"
                                                             }`}>{tx.amount}</p>
                                                         <p className="text-xs text-white">{tx.usd}</p>
@@ -142,7 +156,7 @@ export default function RecentActivity() {
                                                         {tx.time}
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${tx.status === "Completed" ? "bg-green-500/10 text-green-400" :
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${tx.status === "Completed" ? "bg-sky-500/10 text-sky-400" :
                                                             tx.status === "Pending" ? "bg-yellow-500/10 text-yellow-400" :
                                                                 tx.status === "Cancelled" ? "bg-red-500/10 text-red-400" :
                                                                     "bg-white/10 text-white"
@@ -154,6 +168,49 @@ export default function RecentActivity() {
                                             ))}
                                         </tbody>
                                     </table>
+                                </div>
+
+                                {/* Mobile List */}
+                                <div className="md:hidden divide-y divide-white/10">
+                                    {recentTransactions.map((tx) => (
+                                        <div key={tx.id} className="p-4 space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.type === "receive" ? "bg-sky-500/20" :
+                                                        tx.type === "send" ? "bg-red-500/20" : "bg-blue-500/20"
+                                                        }`}>
+                                                        {tx.type === "receive" ? <ArrowDownRight className="w-4 h-4 text-sky-400" /> :
+                                                            tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-red-400" /> :
+                                                                <Zap className="w-4 h-4 text-blue-400" />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
+                                                        <p className="text-[10px] text-white/50">{tx.time}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className={`text-sm font-bold ${tx.type === "receive" ? "text-sky-400" :
+                                                        tx.type === "send" ? "text-red-400" : "text-blue-300"
+                                                        }`}>{tx.amount}</p>
+                                                    <p className="text-[10px] text-white/50">{tx.usd}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between gap-2">
+                                                <p className="text-[11px] text-white/70 truncate flex-1">
+                                                    {tx.from && `From: ${tx.from}`}
+                                                    {tx.to && `To: ${tx.to}`}
+                                                    {tx.protocol && `Via: ${tx.protocol}`}
+                                                </p>
+                                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${tx.status === "Completed" ? "bg-sky-500/10 text-sky-400" :
+                                                    tx.status === "Pending" ? "bg-yellow-500/10 text-yellow-400" :
+                                                        tx.status === "Cancelled" ? "bg-red-500/10 text-red-400" :
+                                                            "bg-white/10 text-white"
+                                                    }`}>
+                                                    {tx.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </Card>
                         </div>
