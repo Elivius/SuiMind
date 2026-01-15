@@ -7,7 +7,7 @@ import Silk from "@/components/ui/Silk"
 import GooeyNav from "@/components/ui/GooeyNav"
 
 const items = [
-    { label: "Home", href: "/home-page" },
+    { label: "Home", href: "/home" },
     { label: "Monthly Cashflow", href: "/monthly-cashflow" },
     { label: "Recent Activity", href: "/recent-activity" },
     { label: "Mindy AI", href: "/mindy-ai" },

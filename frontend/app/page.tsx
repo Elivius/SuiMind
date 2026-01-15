@@ -15,12 +15,12 @@ export default function LoginPage() {
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault()
         // Mock login
-        router.push("/home-page")
+        router.push("/home")
     }
 
     const handleWalletConnect = () => {
         // Mock wallet connect
-        router.push("/home-page")
+        router.push("/home")
     }
 
     return (
