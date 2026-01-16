@@ -1,12 +1,12 @@
 "use client"
 
-import { Card } from "@/components/ui/Card"
-import { Button } from "@/components/ui/Button"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Wallet, TrendingUp, ArrowUpRight, ArrowDownRight, Shield, Zap, Settings, Bell } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import DarkVeil from "@/components/ui/DarkVeil"
-import GooeyNav from "@/components/ui/GooeyNav"
+import DarkVeil from "@/components/ui/dark-veil"
+import GooeyNav from "@/components/ui/gooey-nav"
 
 const items = [
   { label: "Home", href: "/home" },
@@ -20,8 +20,6 @@ export default function WalletDashboard() {
   const [salary, setSalary] = useState("")
   const [expenses, setExpenses] = useState("")
   const [showInsight, setShowInsight] = useState(false);
-
-
 
   const calculateBalance = () => {
     const salaryNum = Number.parseFloat(salary) || 0

@@ -1,12 +1,12 @@
 "use client"
 
-import { Card } from "@/components/ui/Card"
-import { Button } from "@/components/ui/Button"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Wallet, ArrowUpRight, ArrowDownRight, Zap, Settings, Bell } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import DarkVeil from "@/components/ui/DarkVeil"
-import GooeyNav from "@/components/ui/GooeyNav"
+import DarkVeil from "@/components/ui/dark-veil"
+import GooeyNav from "@/components/ui/gooey-nav"
 
 const items = [
     { label: "Home", href: "/home" },
@@ -221,7 +221,7 @@ export default function RecentActivity() {
                                 <div className="p-6 h-full flex flex-col">
                                     <div className="flex items-center gap-2 mb-6">
                                         <Zap className="w-6 h-6 text-[#6FBEE5]" />
-                                        <h3 className="text-xl font-semibold text-white">AI Assistant</h3>
+                                        <h3 className="text-xl font-semibold text-white">Mindy AI</h3>
                                     </div>
 
                                     {/* Chat Messages Area */}
