@@ -61,8 +61,8 @@ export default function RecentActivity() {
 
     return (
         <div className="w-full px-6 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-                <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
+                <div className="xl:col-span-3">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6">
                         <h2 className="text-2xl sm:text-3xl font-bold">Recent Activity</h2>
                         <div className="flex flex-wrap items-center gap-3">
@@ -246,7 +246,7 @@ export default function RecentActivity() {
                 </div>
 
                 {/* Mindy AI */}
-                <div className="lg:col-span-1 sticky top-[100px] self-start transition-all duration-500 ease-in-out">
+                <div className="xl:col-span-1 xl:sticky xl:top-[100px] xl:self-start transition-all duration-500 ease-in-out">
                     <Card className="border-white/20 backdrop-blur-xl bg-white/5 flex flex-col h-[500px] shadow-2xl shadow-blue-500/5 hover:shadow-[#6FBEE5]/10 transition-shadow duration-500">
                         <div className="p-6 h-full flex flex-col">
                             <div className="flex items-center gap-2 mb-6">

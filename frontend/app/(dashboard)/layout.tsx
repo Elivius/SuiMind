@@ -159,7 +159,7 @@ export default function DashboardLayout({
                 </div>
 
                 {/* Mobile Bottom Navigation */}
-                <nav className="min-[1025px]:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 backdrop-blur-xl bg-[#001B39]/90">
+                <nav className="min-[1025px]:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 backdrop-blur-xl bg-[#001B39]/40">
                     <div className="flex items-center justify-around py-2 px-2 safe-area-inset-bottom">
                         {navItems.map((item) => {
                             const Icon = item.icon
