@@ -59,6 +59,12 @@ export default function DashboardLayout({
         console.log("Disconnecting wallet...")
     }
 
+    const isLoginPage = pathname === "/login"
+
+    if (isLoginPage) {
+        return <div className="relative min-h-screen bg-[#001B39] text-white">{children}</div>
+    }
+
     return (
         <div className="relative min-h-screen bg-[#001B39] text-white">
             {/* DarkVeil Background */}
