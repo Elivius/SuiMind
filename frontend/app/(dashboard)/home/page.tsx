@@ -2,23 +2,62 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react"
+import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap, Pencil, Eye } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 export default function WalletDashboard() {
   const router = useRouter()
-  const [salary, setSalary] = useState("")
-  const [expenses, setExpenses] = useState("")
+  const [salary, setSalary] = useState("0")
+  const [expenses, setExpenses] = useState("0")
+  const [activeSalary, setActiveSalary] = useState("0")
+  const [passiveSalary, setPassiveSalary] = useState("0")
   const [showInsight, setShowInsight] = useState(false)
+  const [isInsightClosing, setIsInsightClosing] = useState(false)
+  const [showSalaryModal, setShowSalaryModal] = useState(false)
+  const [isSalaryClosing, setIsSalaryClosing] = useState(false)
+  const [showExpensesModal, setShowExpensesModal] = useState(false)
+  const [isExpensesClosing, setIsExpensesClosing] = useState(false)
+
+  const closeInsightModal = () => {
+    setIsInsightClosing(true)
+    setTimeout(() => {
+      setShowInsight(false)
+      setIsInsightClosing(false)
+    }, 300)
+  }
+
+  const closeSalaryModal = () => {
+    setIsSalaryClosing(true)
+    setTimeout(() => {
+      setShowSalaryModal(false)
+      setIsSalaryClosing(false)
+    }, 300)
+  }
+
+  const closeExpensesModal = () => {
+    setIsExpensesClosing(true)
+    setTimeout(() => {
+      setShowExpensesModal(false)
+      setIsExpensesClosing(false)
+    }, 300)
+  }
+  const [expenseCategories] = useState([
+    { id: 1, name: "Rent & Utilities", amount: "1200", icon: "🏠" },
+    { id: 2, name: "Groceries", amount: "400", icon: "🛒" },
+    { id: 3, name: "Transportation", amount: "150", icon: "🚗" },
+    { id: 4, name: "Entertainment", amount: "200", icon: "🎬" },
+    { id: 5, name: "Healthcare", amount: "100", icon: "🏥" },
+  ])
 
   const calculateBalance = () => {
     const salaryNum = Number.parseFloat(salary) || 0
-    const expensesNum = Number.parseFloat(expenses) || 0
-    return salaryNum - expensesNum
+    const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
+    return salaryNum - totalExpenses
   }
 
   const walletBalance = 123.0
+  const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
   const balance = calculateBalance()
 
   const [recentTransactions] = useState([
@@ -101,47 +140,55 @@ export default function WalletDashboard() {
               >
                 <ArrowDownRight className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
                 <span className="hidden sm:inline">Receive</span>
-                <span className="sm:hidden">Recv</span>
+                <span className="sm:hidden">Receive</span>
               </Button>
             </div>
           </div>
 
-          {/* AI Insight Modal */}
-          {showInsight && (
-            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
-              <div className="bg-[#111] p-6 rounded-xl text-white w-[320px]">
-                <h2 className="text-lg font-semibold mb-2">AI Insight</h2>
-                <p>This is the new interface.</p>
 
-                <button
-                  className="mt-4 px-4 py-2 bg-blue-500 rounded"
-                  onClick={() => setShowInsight(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="md:col-span-2 lg:col-span-2">
-          <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[65vh]">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="md:col-span-2 xl:col-span-2">
+          <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
             <div className="p-6">
               <Button
                 variant="ghost"
                 className="justify-start text-xl text-white font-semibold mb-6 p-0 h-auto hover:bg-transparent hover:text-2xl"
-                onClick={() => router.push('/monthly-cashflow')}
+                onClick={() => router.push('/insights')}
               >
                 Monthly Cashflow
               </Button>
               <div className="space-y-6">
                 {/* Salary Input */}
                 <div>
-                  <label htmlFor="salary" className="block text-sm font-medium text-white mb-2">
-                    Monthly Salary
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label htmlFor="salary" className="text-sm font-medium text-white">
+                      Monthly Salary
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowSalaryModal(true)}
+                      className="group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
+                    >
+                      <Pencil className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} />
+                      <span className="text-sm font-medium underline underline-offset-4 decoration-[#6FBEE5]/30 group-hover:decoration-[#5DAED5]">
+                        Edit Salary
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Active/Passive Display */}
+                  <div className="flex gap-4 mb-3">
+                    <div className="text-[10px] text-white/50 uppercase tracking-wider">
+                      Active: <span className="text-white/80">${Number(activeSalary).toLocaleString()}</span>
+                    </div>
+                    <div className="text-[10px] text-white/50 uppercase tracking-wider">
+                      Passive: <span className="text-white/80">${Number(passiveSalary).toLocaleString()}</span>
+                    </div>
+                  </div>
+
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-lg">$</span>
                     <input
@@ -149,61 +196,72 @@ export default function WalletDashboard() {
                       type="number"
                       placeholder="0.00"
                       value={salary}
-                      onChange={(e) => setSalary(e.target.value)}
-                      className="w-full pl-8 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all text-lg"
+                      readOnly
+                      className="w-full pl-8 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none transition-all text-lg cursor-not-allowed opacity-80"
                     />
                   </div>
                 </div>
 
                 {/* Expenses Input */}
                 <div>
-                  <label htmlFor="expenses" className="block text-sm font-medium text-white mb-2">
-                    Monthly Expenses
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label htmlFor="expenses" className="text-sm font-medium text-white">
+                      Monthly Expenses
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowExpensesModal(true)}
+                      className="group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
+                    >
+                      <Eye className="w-4 h-4" />
+                      <span className="text-sm font-medium underline underline-offset-4 decoration-[#6FBEE5]/30 group-hover:decoration-[#5DAED5]">
+                        View More
+                      </span>
+                    </button>
+                  </div>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-lg">$</span>
                     <input
                       id="expenses"
                       type="number"
                       placeholder="0.00"
-                      value={expenses}
-                      onChange={(e) => setExpenses(e.target.value)}
-                      className="w-full pl-8 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all text-lg"
+                      value={totalExpenses}
+                      readOnly
+                      className="w-full pl-8 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none transition-all text-lg cursor-not-allowed opacity-80"
                     />
                   </div>
                 </div>
 
-                {/* Balance Summary */}
                 <div className="pt-4 border-t border-white/10">
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-white/10 to-white/5">
-                    <div>
-                      <p className="text-white text-sm mb-1">Available Balance</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-gradient-to-br from-white/10 to-white/5 gap-4">
+                    <div className="min-w-0">
+                      <p className="text-white/60 text-xs sm:text-sm mb-1">Available Balance</p>
                       {balance > 0 ? (
-                        <p className="text-2xl sm:text-3xl font-bold text-sky-400">
+                        <p className="text-2xl sm:text-3xl font-bold text-sky-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : balance === 0 ? (
-                        <p className="text-3xl font-bold text-white">
+                        <p className="text-2xl sm:text-3xl font-bold text-white truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : (
-                        <p className="text-3xl font-bold text-red-400">
+                        <p className="text-2xl sm:text-3xl font-bold text-red-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       )}
                     </div>
                     <div
-                      className={`px-4 py-2 rounded-lg ${balance >= 0 ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}
+                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg self-start sm:self-center shrink-0 ${balance >= 0 ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}
                     >
                       {balance >= 0 ? (
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-5 h-5" />
-                          <span className="font-semibold">Surplus</span>
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
+                          <span className="text-xs sm:text-sm font-semibold">Surplus</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-5 h-5 rotate-180" />
-                          <span className="font-semibold">Deficit</span>
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 rotate-180" />
+                          <span className="text-xs sm:text-sm font-semibold">Deficit</span>
                         </div>
                       )}
                     </div>
@@ -215,8 +273,8 @@ export default function WalletDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="lg:col-span-1">
-          <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full">
+        <div className="xl:col-span-1">
+          <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-120">
             <div className="p-6 h-full flex flex-col">
               <Button
                 variant="ghost"
@@ -265,7 +323,7 @@ export default function WalletDashboard() {
         </div>
 
         {/* Mindy AI */}
-        <div className="lg:col-span-1">
+        <div className="xl:col-span-1">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full">
             <div className="p-6 h-full flex flex-col">
               <div className="flex items-center gap-2 mb-4">
@@ -346,6 +404,155 @@ export default function WalletDashboard() {
           </div>
         </Card>
       </div>
+      {/* AI Insight Modal */}
+      {showInsight && (
+        <div className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 ${isInsightClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <Card className={`bg-[#111] border-white/20 p-6 rounded-2xl text-white w-full max-w-md shadow-2xl transition-all duration-300 ${isInsightClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-200`}>
+            <div className="flex items-center gap-2 mb-4">
+              <Zap className="w-5 h-5 text-[#6FBEE5]" />
+              <h2 className="text-xl font-bold">AI Financial Insight</h2>
+            </div>
+            <p className="text-white/70 leading-relaxed mb-6">
+              Based on your current cashflow, we suggest diversifying into Sui-native liquid staking protocols. You could potentially increase your passive income by 8-12% annually.
+            </p>
+            <Button
+              className="w-full bg-[#6FBEE5] hover:bg-[#5DAED5] text-white py-6 rounded-xl font-bold shadow-lg shadow-[#6FBEE5]/20"
+              onClick={closeInsightModal}
+            >
+              Got it, thanks!
+            </Button>
+          </Card>
+        </div>
+      )}
+
+      {/* Salary Edit Modal */}
+      {showSalaryModal && (
+        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 ${isSalaryClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <Card className={`bg-[#001B39] border-white/20 p-6 rounded-3xl text-white w-full max-w-sm shadow-2xl transition-all duration-300 ${isSalaryClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-300`}>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center">
+                  <Pencil className="w-5 h-5 text-[#6FBEE5]" />
+                </div>
+                <h2 className="text-xl font-bold">Edit Salary</h2>
+              </div>
+              <button
+                onClick={closeSalaryModal}
+                className="text-white/40 hover:text-white transition-colors"
+              >
+                <Zap className="w-5 h-5 rotate-45" />
+              </button>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-xs font-medium text-white/70 mb-2">Active Salary</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6FBEE5]">$</span>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    value={activeSalary}
+                    onChange={(e) => setActiveSalary(e.target.value)}
+                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 transition-all text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-white/70 mb-2">Passive Salary</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6FBEE5]">$</span>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    value={passiveSalary}
+                    onChange={(e) => setPassiveSalary(e.target.value)}
+                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 transition-all text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white/10">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-white/60 text-sm">Total:</span>
+                  <span className="text-xl font-bold text-[#6FBEE5]">
+                    ${(Number(activeSalary) + Number(passiveSalary)).toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="ghost"
+                    className="flex-1 py-5 rounded-xl border border-white/10 text-white/70 hover:bg-white/5 h-auto text-xs"
+                    onClick={closeSalaryModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white py-5 rounded-xl font-bold shadow-lg shadow-[#6FBEE5]/20 h-auto text-xs"
+                    onClick={() => {
+                      setSalary((Number(activeSalary) + Number(passiveSalary)).toString())
+                      closeSalaryModal()
+                    }}
+                  >
+                    Save
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+      {/* Expenses Breakdown Modal */}
+      {showExpensesModal && (
+        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 ${isExpensesClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <Card className={`bg-[#001B39] border-white/20 p-6 rounded-3xl text-white w-full max-w-sm shadow-2xl transition-all duration-300 ${isExpensesClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-300`}>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center">
+                  <Eye className="w-5 h-5 text-[#6FBEE5]" />
+                </div>
+                <h2 className="text-xl font-bold">Expenses</h2>
+              </div>
+              <button
+                onClick={closeExpensesModal}
+                className="text-white/40 hover:text-white transition-colors"
+              >
+                <Zap className="w-5 h-5 rotate-45" />
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-6">
+              {expenseCategories.map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="text-sm font-medium text-white/80">{item.name}</span>
+                  </div>
+                  <span className="text-sm font-bold text-[#6FBEE5]">${Number(item.amount).toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-5 border-t border-white/10">
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-white/60 text-sm">Total:</span>
+                <span className="text-2xl font-bold text-[#6FBEE5]">
+                  ${expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0).toLocaleString()}
+                </span>
+              </div>
+
+              <Button
+                className="w-full bg-[#3A8FBC] hover:bg-[#2E7A9F] text-white py-5 rounded-xl font-bold shadow-lg shadow-[#3A8FBC]/20 h-auto text-sm transition-all"
+                onClick={closeExpensesModal}
+              >
+                Close
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
