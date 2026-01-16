@@ -60,7 +60,7 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-[#001B39] text-white">
+        <div className="relative min-h-screen bg-[#001B39] text-white">
             {/* DarkVeil Background */}
             <DarkVeil
                 className="fixed inset-0 z-0 pointer-events-none opacity-40"
