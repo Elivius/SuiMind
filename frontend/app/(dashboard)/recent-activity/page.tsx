@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowUpRight, ArrowDownRight, Zap } from "lucide-react"
+import { ArrowUpRight, ArrowDownRight, Zap, ChevronDown } from "lucide-react"
 import { useState } from "react"
 
 export default function RecentActivity() {
@@ -26,22 +26,90 @@ export default function RecentActivity() {
         { id: 17, type: "send", amount: "-20 USDC", usd: "$20.00", time: "3 days ago", to: "0x9a8b...7c6d", status: "Completed" },
         { id: 18, type: "swap", amount: "50 SUI → 75 USDC", usd: "$75.00", time: "4 days ago", protocol: "Cetus", status: "Completed" },
         { id: 19, type: "receive", amount: "+30 SUI", usd: "$90.00", time: "5 days ago", from: "Staking Rewards", status: "Completed" },
-        { id: 20, type: "send", amount: "-5 SUI", usd: "$15.00", time: "6 days ago", to: "0x1234...5678", status: "Completed" },
+        { id: 20, type: "send", amount: "-5 SUI", usd: "$15.00", time: "6 days ago", to: "gggg", status: "Completed" },
     ])
+
+    const [typeFilter, setTypeFilter] = useState("all")
+    const [statusFilter, setStatusFilter] = useState("all")
+    const [timeFilter, setTimeFilter] = useState("all")
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 10
+
+    const filteredTransactions = recentTransactions.filter(tx => {
+        const matchesType = typeFilter === "all" || tx.type === typeFilter
+        const matchesStatus = statusFilter === "all" || tx.status === statusFilter
+
+        // Time filter logic (mocked since 'time' is a relative string in the data)
+        let matchesTime = true
+        if (timeFilter !== "all") {
+            if (timeFilter === "24h") matchesTime = tx.time.includes("min") || tx.time.includes("hour")
+            if (timeFilter === "7d") matchesTime = !tx.time.includes("month") // simplistic mock
+        }
+
+        return matchesType && matchesStatus && matchesTime
+    })
+
+    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage)
+    const paginatedTransactions = filteredTransactions.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    )
+
+    const handleFilterChange = () => {
+        setCurrentPage(1)
+    }
 
     return (
         <div className="w-full px-6 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                 <div className="lg:col-span-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6">
                         <h2 className="text-2xl sm:text-3xl font-bold">Recent Activity</h2>
-                        <div className="flex gap-2">
-                            <Button variant="outline" className="flex-1 sm:flex-none border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm sm:text-base">
-                                Filter
-                            </Button>
-                            <Button variant="outline" className="flex-1 sm:flex-none border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm sm:text-base">
-                                Export
-                            </Button>
+                        <div className="flex flex-wrap items-center gap-3">
+                            {/* Type Filter */}
+                            <div className="relative group">
+                                <select
+                                    className="appearance-none bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 hover:bg-white/10 transition-all cursor-pointer"
+                                    value={typeFilter}
+                                    onChange={(e) => { setTypeFilter(e.target.value); handleFilterChange(); }}
+                                >
+                                    <option value="all" className="bg-[#001B39]">All Types</option>
+                                    <option value="send" className="bg-[#001B39]">Send</option>
+                                    <option value="receive" className="bg-[#001B39]">Receive</option>
+                                    <option value="swap" className="bg-[#001B39]">Swap</option>
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
+                            </div>
+
+                            {/* Status Filter */}
+                            <div className="relative group">
+                                <select
+                                    className="appearance-none bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 hover:bg-white/10 transition-all cursor-pointer"
+                                    value={statusFilter}
+                                    onChange={(e) => { setStatusFilter(e.target.value); handleFilterChange(); }}
+                                >
+                                    <option value="all" className="bg-[#001B39]">All Status</option>
+                                    <option value="Completed" className="bg-[#001B39]">Completed</option>
+                                    <option value="Pending" className="bg-[#001B39]">Pending</option>
+                                    <option value="Cancelled" className="bg-[#001B39]">Cancelled</option>
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
+                            </div>
+
+                            {/* Time Filter */}
+                            <div className="relative group">
+                                <select
+                                    className="appearance-none bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 hover:bg-white/10 transition-all cursor-pointer"
+                                    value={timeFilter}
+                                    onChange={(e) => { setTimeFilter(e.target.value); handleFilterChange(); }}
+                                >
+                                    <option value="all" className="bg-[#001B39]">All Time</option>
+                                    <option value="24h" className="bg-[#001B39]">Last 24 Hours</option>
+                                    <option value="7d" className="bg-[#001B39]">Last 7 Days</option>
+                                    <option value="30d" className="bg-[#001B39]">Last 30 Days</option>
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
+                            </div>
                         </div>
                     </div>
 
@@ -59,23 +127,23 @@ export default function RecentActivity() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/10">
-                                    {recentTransactions.map((tx) => (
+                                    {paginatedTransactions.map((tx) => (
                                         <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive" ? "bg-sky-500/20" :
-                                                        tx.type === "send" ? "bg-red-500/20" : "bg-blue-500/20"
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive" ? "bg-green-500/60" :
+                                                        tx.type === "send" ? "bg-red-500/60" : "bg-blue-500/60"
                                                         }`}>
-                                                        {tx.type === "receive" ? <ArrowDownRight className="w-5 h-5 text-sky-400" /> :
-                                                            tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-red-400" /> :
-                                                                <Zap className="w-5 h-5 text-blue-400" />}
+                                                        {tx.type === "receive" ? <ArrowDownRight className="w-5 h-5 text-green-500" /> :
+                                                            tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-red-500" /> :
+                                                                <Zap className="w-5 h-5 text-blue-500" />}
                                                     </div>
                                                     <span className="capitalize font-medium text-white">{tx.type}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <p className={`font-semibold ${tx.type === "receive" ? "text-sky-400" :
-                                                    tx.type === "send" ? "text-red-400" : "text-blue-300"
+                                                <p className={`font-semibold ${tx.type === "receive" ? "text-green-500" :
+                                                    tx.type === "send" ? "text-red-500" : "text-blue-500"
                                                     }`}>{tx.amount}</p>
                                                 <p className="text-xs text-white">{tx.usd}</p>
                                             </td>
@@ -88,7 +156,7 @@ export default function RecentActivity() {
                                                 {tx.time}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${tx.status === "Completed" ? "bg-sky-500/10 text-sky-400" :
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${tx.status === "Completed" ? "bg-green-500/10 text-green-500" :
                                                     tx.status === "Pending" ? "bg-yellow-500/10 text-yellow-400" :
                                                         tx.status === "Cancelled" ? "bg-red-500/10 text-red-400" :
                                                             "bg-white/10 text-white"
@@ -104,16 +172,16 @@ export default function RecentActivity() {
 
                         {/* Mobile List */}
                         <div className="md:hidden divide-y divide-white/10">
-                            {recentTransactions.map((tx) => (
+                            {paginatedTransactions.map((tx) => (
                                 <div key={tx.id} className="p-4 space-y-3">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.type === "receive" ? "bg-sky-500/20" :
                                                 tx.type === "send" ? "bg-red-500/20" : "bg-blue-500/20"
                                                 }`}>
-                                                {tx.type === "receive" ? <ArrowDownRight className="w-4 h-4 text-sky-400" /> :
-                                                    tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-red-400" /> :
-                                                        <Zap className="w-4 h-4 text-blue-400" />}
+                                                {tx.type === "receive" ? <ArrowDownRight className="w-4 h-4 text-green-500" /> :
+                                                    tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-red-500" /> :
+                                                        <Zap className="w-4 h-4 text-blue-500" />}
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
@@ -121,8 +189,8 @@ export default function RecentActivity() {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className={`text-sm font-bold ${tx.type === "receive" ? "text-sky-400" :
-                                                tx.type === "send" ? "text-red-400" : "text-blue-300"
+                                            <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" :
+                                                tx.type === "send" ? "text-red-500" : "text-blue-500"
                                                 }`}>{tx.amount}</p>
                                             <p className="text-[10px] text-white/50">{tx.usd}</p>
                                         </div>
@@ -133,7 +201,7 @@ export default function RecentActivity() {
                                             {tx.to && `To: ${tx.to}`}
                                             {tx.protocol && `Via: ${tx.protocol}`}
                                         </p>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${tx.status === "Completed" ? "bg-sky-500/10 text-sky-400" :
+                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${tx.status === "Completed" ? "bg-green-500/10 text-green-500" :
                                             tx.status === "Pending" ? "bg-yellow-500/10 text-yellow-400" :
                                                 tx.status === "Cancelled" ? "bg-red-500/10 text-red-400" :
                                                     "bg-white/10 text-white"
@@ -143,6 +211,36 @@ export default function RecentActivity() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+
+                        {/* Pagination Controls */}
+                        <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between gap-4">
+                            <p className="text-sm text-white/50">
+                                Showing {paginatedTransactions.length} of {filteredTransactions.length} transactions
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={currentPage === 1}
+                                    onClick={() => setCurrentPage(prev => prev - 1)}
+                                    className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30"
+                                >
+                                    Previous
+                                </Button>
+                                <span className="text-sm text-white px-2">
+                                    Page {currentPage} of {totalPages || 1}
+                                </span>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={currentPage === totalPages || totalPages === 0}
+                                    onClick={() => setCurrentPage(prev => prev + 1)}
+                                    className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30"
+                                >
+                                    Next
+                                </Button>
+                            </div>
                         </div>
                     </Card>
                 </div>

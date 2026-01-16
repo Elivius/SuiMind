@@ -18,6 +18,7 @@ export default function WalletDashboard() {
     return salaryNum - expensesNum
   }
 
+  const walletBalance = 123.0
   const balance = calculateBalance()
 
   const [recentTransactions] = useState([
@@ -61,7 +62,7 @@ export default function WalletDashboard() {
   return (
     <div className="w-full px-6 py-8">
       {/* Main Balance Card */}
-      <Card className="border-white/20 backdrop-blur-xl bg-gradient-to-br from-white/5 to-white/10 mb-6 overflow-hidden relative">
+      <Card className="border-white/20 backdrop-blur-xl bg-gradient-to-br from-white/5 to-white/5 mb-6 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#6FBEE5]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="relative p-5 sm:p-8">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -70,7 +71,7 @@ export default function WalletDashboard() {
               <p className="text-white/70 text-base sm:text-xl font-bold mb-2">Total Balance</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
-                  ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </h2>
                 {/* AI Insight beside the number */}
                 <div
@@ -96,7 +97,7 @@ export default function WalletDashboard() {
                 <span className="sm:hidden">Send</span>
               </Button>
               <Button
-                className="flex-1 lg:flex-none px-4 sm:px-8 py-4 sm:py-7 text-sm sm:text-base font-semibold bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-xl shadow-lg shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all"
+                className="flex-1 lg:flex-none px-4 sm:px-8 py-4 sm:py-7 text-sm sm:text-base font-semibold bg-gradient-to-r from-[#22C55E] to-[#16A34A] hover:from-[#4ADE80] hover:to-[#22C55E] text-white border-0 rounded-xl shadow-lg shadow-[#22C55E]/20 hover:shadow-[#22C55E]/40 transition-all"
               >
                 <ArrowDownRight className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
                 <span className="hidden sm:inline">Receive</span>
@@ -192,7 +193,7 @@ export default function WalletDashboard() {
                       )}
                     </div>
                     <div
-                      className={`px-4 py-2 rounded-lg ${balance >= 0 ? "bg-sky-500/20 text-sky-400" : "bg-red-500/20 text-red-400"}`}
+                      className={`px-4 py-2 rounded-lg ${balance >= 0 ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}
                     >
                       {balance >= 0 ? (
                         <div className="flex items-center gap-2">
@@ -232,22 +233,22 @@ export default function WalletDashboard() {
                   >
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive"
-                        ? "bg-green-500/20"
+                        ? "bg-green-500/60"
                         : tx.type === "send"
-                          ? "bg-red-500/20"
-                          : "bg-blue-500/20"
+                          ? "bg-red-500/60"
+                          : "bg-blue-500/60"
                         }`}
                     >
                       {tx.type === "receive" ? (
-                        <ArrowDownRight className="w-5 h-5 text-sky-400" />
+                        <ArrowDownRight className="w-5 h-5 text-green-500" />
                       ) : tx.type === "send" ? (
-                        <ArrowUpRight className="w-5 h-5 text-red-400" />
+                        <ArrowUpRight className="w-5 h-5 text-red-500" />
                       ) : (
-                        <Zap className="w-5 h-5 text-blue-400" />
+                        <Zap className="w-5 h-5 text-blue-500" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-sky-400" : tx.type === "send" ? "text-red-400" : "text-blue-300"}`}>{tx.amount}</p>
+                      <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.amount}</p>
                       <p className="text-xs text-white">{tx.time}</p>
                       <p className="text-xs text-white mt-1">
                         {tx.from && `From: ${tx.from}`}
