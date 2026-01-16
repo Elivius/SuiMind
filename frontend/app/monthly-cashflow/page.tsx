@@ -2,11 +2,11 @@
 
 import { ArrowUpRight, TrendingUp, Wallet, Shield, Sparkles, Bell, Settings } from "lucide-react"
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
-import { Card } from "@/components/ui/Card"
-import { Button } from "@/components/ui/Button"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import GooeyNav from "@/components/ui/GooeyNav"
-import DarkVeil from "@/components/ui/DarkVeil"
+import GooeyNav from "@/components/ui/gooey-nav"
+import DarkVeil from "@/components/ui/dark-veil"
 
 const items = [
     { label: "Home", href: "/home" },
