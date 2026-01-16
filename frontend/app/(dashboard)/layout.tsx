@@ -1,6 +1,6 @@
 "use client"
 
-import { Wallet, Settings, Bell } from "lucide-react"
+import { Wallet, Settings, Bell, Home, Clock, Bot, Lightbulb } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import DarkVeil from "@/components/ui/dark-veil"
@@ -8,10 +8,10 @@ import GooeyNav from "@/components/ui/gooey-nav"
 import Footer from "@/components/ui/footer"
 
 const navItems = [
-    { label: "Home", href: "/home" },
-    { label: "Monthly Cashflow", href: "/monthly-cashflow" },
-    { label: "Recent Activity", href: "/recent-activity" },
-    { label: "Mindy AI", href: "/mindy-ai" },
+    { label: "Home", href: "/home", icon: Home },
+    { label: "Insights", href: "/insights", icon: Lightbulb },
+    { label: "Recent Activity", href: "/recent-activity", icon: Clock },
+    { label: "Mindy AI", href: "/mindy-ai", icon: Bot },
 ]
 
 export default function DashboardLayout({
@@ -38,7 +38,7 @@ export default function DashboardLayout({
 
             <div className="relative z-10 flex flex-col min-h-screen">
                 {/* Header */}
-                <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 sticky top-0 z-40">
+                <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 fixed top-0 left-0 right-0 z-40">
                     <div className="w-full px-4 sm:px-6 py-4">
                         <div className="flex items-center justify-between gap-4">
                             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -48,7 +48,7 @@ export default function DashboardLayout({
                                 <h1 className="text-lg sm:text-xl font-bold">SuiMind</h1>
                             </div>
 
-                            <div className="hidden md:block" style={{ height: '45px', position: 'relative' }}>
+                            <div className="hidden lg:block" style={{ height: '45px', position: 'relative' }}>
                                 <GooeyNav
                                     items={navItems}
                                     particleCount={5}
@@ -71,27 +71,40 @@ export default function DashboardLayout({
                             </div>
                         </div>
                     </div>
-                    {/* Mobile Nav */}
-                    <div className="md:hidden border-t border-white/5 px-4 py-2 overflow-x-auto flex gap-6 no-scrollbar">
-                        {navItems.map((item, idx) => (
-                            <button
-                                key={item.href}
-                                onClick={() => router.push(item.href)}
-                                className={`text-sm font-medium whitespace-nowrap py-1 ${pathname === item.href ? 'text-[#6FBEE5]' : 'text-white/60'}`}
-                            >
-                                {item.label}
-                            </button>
-                        ))}
-                    </div>
                 </header>
 
-                {/* Main Content */}
-                <main className="flex-1">
+                {/* Main Content - add padding top for fixed header, padding bottom on mobile for fixed bottom nav */}
+                <main className="flex-1 pt-[72px] pb-20 lg:pb-0">
                     {children}
                 </main>
 
-                {/* Footer */}
-                <Footer />
+                {/* Footer - hidden on mobile */}
+                <div className="hidden lg:block">
+                    <Footer />
+                </div>
+
+                {/* Mobile Bottom Navigation */}
+                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 backdrop-blur-xl bg-[#001B39]/90">
+                    <div className="flex items-center justify-around py-2 px-2 safe-area-inset-bottom">
+                        {navItems.map((item) => {
+                            const Icon = item.icon
+                            const isActive = pathname === item.href
+                            return (
+                                <button
+                                    key={item.href}
+                                    onClick={() => router.push(item.href)}
+                                    className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 min-w-[60px] ${isActive
+                                        ? 'text-[#6FBEE5] bg-[#6FBEE5]/10'
+                                        : 'text-white/50 hover:text-white/70'
+                                        }`}
+                                >
+                                    <Icon className={`w-5 h-5 ${isActive ? 'scale-110' : ''} transition-transform`} />
+                                    <span className="text-[10px] font-medium">{item.label}</span>
+                                </button>
+                            )
+                        })}
+                    </div>
+                </nav>
             </div>
         </div>
     )
