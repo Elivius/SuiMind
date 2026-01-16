@@ -2,10 +2,12 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation"
+import { LucideIcon } from 'lucide-react';
 
 interface GooeyNavItem {
   label: string;
   href: string;
+  icon?: LucideIcon;
 }
 
 export interface GooeyNavProps {
@@ -32,7 +34,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLUListElement>(null);
   const filterRef = useRef<HTMLSpanElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(initialActiveIndex);
 
   const noise = (n = 1) => n / 2 - Math.random() * n;
@@ -98,7 +100,6 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     };
     Object.assign(filterRef.current.style, styles);
     Object.assign(textRef.current.style, styles);
-    textRef.current.innerText = element.innerText;
   };
   const router = useRouter();
 
@@ -313,6 +314,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             {items.map((item, index) => (
               <React.Fragment key={index}>
                 <li
+                  data-label={item.label}
                   className={`rounded-full relative cursor-pointer transition-[background-color_color_box-shadow] duration-300 ease shadow-[0_0_0.5px_1.5px_transparent] text-white ${activeIndex === index ? 'active' : ''
                     }`}
                 >
@@ -320,14 +322,15 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
                     href={item.href}
                     onClick={e => handleClick(e, index)}
                     onKeyDown={e => handleKeyDown(e, index)}
-                    className="outline-none py-[0.6em] px-[1em] inline-block"
+                    className="outline-none py-[0.6em] px-[1em] inline-flex items-center gap-2"
                   >
+                    {item.icon && <item.icon className="w-4 h-4" />}
                     {item.label}
                   </a>
                 </li>
                 {item.label === "Recent Activity" && (
-                  <div className="flex items-center text-white select-none pointer-events-none text-sm px-1">
-                    |
+                  <div className="flex items-center self-stretch mx-3">
+                    <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/90 to-transparent" />
                   </div>
                 )}
               </React.Fragment>
@@ -335,7 +338,15 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
           </ul>
         </nav>
         <span className="effect filter" ref={filterRef} />
-        <span className="effect text" ref={textRef} />
+        <div className="effect text" ref={textRef}>
+          {items[activeIndex]?.icon && (
+            <span className="inline-flex items-center gap-2">
+              {React.createElement(items[activeIndex].icon, { className: "w-4 h-4" })}
+              {items[activeIndex]?.label}
+            </span>
+          )}
+          {!items[activeIndex]?.icon && items[activeIndex]?.label}
+        </div>
       </div>
       <svg style={{ visibility: 'hidden', position: 'absolute' }} width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
         <defs>

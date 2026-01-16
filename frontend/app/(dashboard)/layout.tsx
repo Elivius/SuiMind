@@ -1,6 +1,7 @@
 "use client"
 
-import { Wallet, Settings, Bell } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { Wallet, Bell, Home, Clock, Bot, Lightbulb, Copy, LogOut, ChevronDown, Check } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import DarkVeil from "@/components/ui/dark-veil"
@@ -8,11 +9,14 @@ import GooeyNav from "@/components/ui/gooey-nav"
 import Footer from "@/components/ui/footer"
 
 const navItems = [
-    { label: "Home", href: "/home" },
-    { label: "Monthly Cashflow", href: "/monthly-cashflow" },
-    { label: "Recent Activity", href: "/recent-activity" },
-    { label: "Mindy AI", href: "/mindy-ai" },
+    { label: "Home", href: "/home", icon: Home },
+    { label: "Insights", href: "/insights", icon: Lightbulb },
+    { label: "Recent Activity", href: "/recent-activity", icon: Clock },
+    { label: "Mindy AI", href: "/mindy-ai", icon: Bot },
 ]
+
+// Mock wallet address - replace with actual wallet connection logic
+const WALLET_ADDRESS = "0x7b62d94a0b62c5c37c7b62d94a0b62c57c75"
 
 export default function DashboardLayout({
     children,
@@ -21,9 +25,39 @@ export default function DashboardLayout({
 }) {
     const router = useRouter()
     const pathname = usePathname()
+    const [walletDropdownOpen, setWalletDropdownOpen] = useState(false)
+    const [copied, setCopied] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement>(null)
 
     // Determine active nav index based on current path
     const activeIndex = navItems.findIndex(item => pathname === item.href)
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setWalletDropdownOpen(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
+
+    const truncateAddress = (address: string) => {
+        return `${address.slice(0, 6)}...${address.slice(-4)}`
+    }
+
+    const handleCopyAddress = async () => {
+        await navigator.clipboard.writeText(WALLET_ADDRESS)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+    }
+
+    const handleDisconnect = () => {
+        // Add your wallet disconnect logic here
+        setWalletDropdownOpen(false)
+        console.log("Disconnecting wallet...")
+    }
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-[#001B39] text-white">
@@ -38,7 +72,7 @@ export default function DashboardLayout({
 
             <div className="relative z-10 flex flex-col min-h-screen">
                 {/* Header */}
-                <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 sticky top-0 z-40">
+                <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 fixed top-0 left-0 right-0 z-40">
                     <div className="w-full px-4 sm:px-6 py-4">
                         <div className="flex items-center justify-between gap-4">
                             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -48,7 +82,8 @@ export default function DashboardLayout({
                                 <h1 className="text-lg sm:text-xl font-bold">SuiMind</h1>
                             </div>
 
-                            <div className="hidden md:block" style={{ height: '45px', position: 'relative' }}>
+                            {/* Center Nav - Absolute positioned for true center */}
+                            <div className="hidden min-[1025px]:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ height: '45px' }}>
                                 <GooeyNav
                                     items={navItems}
                                     particleCount={5}
@@ -65,33 +100,86 @@ export default function DashboardLayout({
                                 <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
                                     <Bell className="w-5 h-5" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
-                                    <Settings className="w-5 h-5" />
-                                </Button>
+
+                                {/* Wallet Connect Button with Dropdown */}
+                                <div className="relative" ref={dropdownRef}>
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setWalletDropdownOpen(!walletDropdownOpen)}
+                                        className="flex items-center gap-2 px-3 py-2 h-9 sm:h-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white/90 hover:text-white"
+                                    >
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                                        <span className="text-sm font-medium hidden sm:inline">{truncateAddress(WALLET_ADDRESS)}</span>
+                                        <span className="text-sm font-medium sm:hidden">{`${WALLET_ADDRESS.slice(0, 4)}...${WALLET_ADDRESS.slice(-3)}`}</span>
+                                        <ChevronDown className={`w-4 h-4 transition-transform ${walletDropdownOpen ? 'rotate-180' : ''}`} />
+                                    </Button>
+
+                                    {/* Dropdown Menu */}
+                                    {walletDropdownOpen && (
+                                        <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-white/10 bg-[#001B39]/95 backdrop-blur-xl shadow-xl overflow-hidden">
+                                            {/* Connected Status */}
+                                            <div className="px-4 py-3 border-b border-white/10">
+                                                <p className="text-xs text-white/50">Connected</p>
+                                                <p className="text-sm font-medium text-white/90 mt-0.5">{truncateAddress(WALLET_ADDRESS)}</p>
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div className="py-1">
+                                                <button
+                                                    onClick={handleCopyAddress}
+                                                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${copied ? 'text-emerald-400' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                                                >
+                                                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                                    {copied ? "Copied!" : "Copy Address"}
+                                                </button>
+                                                <button
+                                                    onClick={handleDisconnect}
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors"
+                                                >
+                                                    <LogOut className="w-4 h-4" />
+                                                    Disconnect
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    {/* Mobile Nav */}
-                    <div className="md:hidden border-t border-white/5 px-4 py-2 overflow-x-auto flex gap-6 no-scrollbar">
-                        {navItems.map((item, idx) => (
-                            <button
-                                key={item.href}
-                                onClick={() => router.push(item.href)}
-                                className={`text-sm font-medium whitespace-nowrap py-1 ${pathname === item.href ? 'text-[#6FBEE5]' : 'text-white/60'}`}
-                            >
-                                {item.label}
-                            </button>
-                        ))}
-                    </div>
                 </header>
 
-                {/* Main Content */}
-                <main className="flex-1">
+                {/* Main Content - add padding top for fixed header, padding bottom on mobile for fixed bottom nav */}
+                <main className="flex-1 pt-[72px] pb-20 min-[1025px]:pb-0">
                     {children}
                 </main>
 
-                {/* Footer */}
-                <Footer />
+                {/* Footer - hidden on mobile */}
+                <div className="hidden min-[1025px]:block">
+                    <Footer />
+                </div>
+
+                {/* Mobile Bottom Navigation */}
+                <nav className="min-[1025px]:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 backdrop-blur-xl bg-[#001B39]/90">
+                    <div className="flex items-center justify-around py-2 px-2 safe-area-inset-bottom">
+                        {navItems.map((item) => {
+                            const Icon = item.icon
+                            const isActive = pathname === item.href
+                            return (
+                                <button
+                                    key={item.href}
+                                    onClick={() => router.push(item.href)}
+                                    className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 min-w-[60px] ${isActive
+                                        ? 'text-[#6FBEE5] bg-[#6FBEE5]/10'
+                                        : 'text-white/50 hover:text-white/70'
+                                        }`}
+                                >
+                                    <Icon className={`w-5 h-5 ${isActive ? 'scale-110' : ''} transition-transform`} />
+                                    <span className="text-[10px] font-medium">{item.label}</span>
+                                </button>
+                            )
+                        })}
+                    </div>
+                </nav>
             </div>
         </div>
     )
