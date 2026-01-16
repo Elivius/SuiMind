@@ -1,9 +1,9 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Card } from "@/components/ui/Card"
-import { Button } from "@/components/ui/Button"
-import Aurora from "@/components/ui/Aurora"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import Aurora from "@/components/ui/aurora"
 import { Wallet, Chrome } from "lucide-react"
 
 export default function LoginPage() {
