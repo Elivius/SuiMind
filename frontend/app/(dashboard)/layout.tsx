@@ -83,7 +83,7 @@ export default function DashboardLayout({
                             </div>
 
                             {/* Center Nav - Absolute positioned for true center */}
-                            <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ height: '45px' }}>
+                            <div className="hidden min-[1025px]:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ height: '45px' }}>
                                 <GooeyNav
                                     items={navItems}
                                     particleCount={5}
@@ -149,17 +149,17 @@ export default function DashboardLayout({
                 </header>
 
                 {/* Main Content - add padding top for fixed header, padding bottom on mobile for fixed bottom nav */}
-                <main className="flex-1 pt-[72px] pb-20 lg:pb-0">
+                <main className="flex-1 pt-[72px] pb-20 min-[1025px]:pb-0">
                     {children}
                 </main>
 
                 {/* Footer - hidden on mobile */}
-                <div className="hidden lg:block">
+                <div className="hidden min-[1025px]:block">
                     <Footer />
                 </div>
 
                 {/* Mobile Bottom Navigation */}
-                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 backdrop-blur-xl bg-[#001B39]/90">
+                <nav className="min-[1025px]:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 backdrop-blur-xl bg-[#001B39]/90">
                     <div className="flex items-center justify-around py-2 px-2 safe-area-inset-bottom">
                         {navItems.map((item) => {
                             const Icon = item.icon
