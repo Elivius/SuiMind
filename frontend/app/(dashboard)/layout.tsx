@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import DarkVeil from "@/components/ui/dark-veil"
 import GooeyNav from "@/components/ui/gooey-nav"
 import Footer from "@/components/ui/footer"
+import { truncateAddress } from "@/lib/utils"
 
 const navItems = [
     { label: "Home", href: "/home", icon: Home },
@@ -32,6 +33,17 @@ export default function DashboardLayout({
 
     const isLoginPage = pathname === "/login"
 
+    const handleCopyAddress = async () => {
+        await navigator.clipboard.writeText(WALLET_ADDRESS)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+    }
+
+    const handleDisconnect = () => {
+        // Add wallet disconnect logic here
+        setWalletDropdownOpen(false)
+    }
+
     // Determine active nav index based on current path
     const activeIndex = navItems.findIndex(item => pathname === item.href)
 
@@ -45,22 +57,6 @@ export default function DashboardLayout({
         document.addEventListener("mousedown", handleClickOutside)
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [])
-
-    const truncateAddress = (address: string) => {
-        return `${address.slice(0, 6)}...${address.slice(-4)}`
-    }
-
-    const handleCopyAddress = async () => {
-        await navigator.clipboard.writeText(WALLET_ADDRESS)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-    }
-
-    const handleDisconnect = () => {
-        // Add your wallet disconnect logic here
-        setWalletDropdownOpen(false)
-        console.log("Disconnecting wallet...")
-    }
 
     return (
         <div className="relative min-h-screen bg-[#001B39] text-white">
