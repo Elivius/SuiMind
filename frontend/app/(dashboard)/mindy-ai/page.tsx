@@ -7,7 +7,7 @@ import { ArrowUpRight, Zap } from "lucide-react"
 export default function MindyAIPage() {
     return (
         <div className="w-full mx-auto px-4 sm:px-6 py-4 sm:py-6">
-            <div className="flex flex-col h-[calc(100vh-280px)] md:h-[calc(100vh-250px)]">
+            <div className="flex flex-col h-[calc(100vh-280px)] md:h-[calc(120vh-250px)]">
                 <Card className="flex-1 border-white/20 backdrop-blur-xl bg-white/5 flex flex-col mb-6">
                     {/* Chat Messages Area */}
                     <div className="flex-1 p-6 space-y-6 overflow-y-auto h-[600px]">
