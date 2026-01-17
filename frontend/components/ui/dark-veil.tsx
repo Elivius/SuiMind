@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Renderer, Program, Mesh, Triangle, Vec2 } from 'ogl';
 
 const vertex = `
@@ -95,6 +95,14 @@ export default function DarkVeil({
   className
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Small delay for smooth fade-in after hydration
+    const timeout = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timeout);
+  }, []);
+
   useEffect(() => {
     const canvas = ref.current as HTMLCanvasElement;
     if (!canvas) return;
@@ -157,7 +165,7 @@ export default function DarkVeil({
     };
   }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale]);
   return (
-    <div className={className}>
+    <div className={`${className} transition-opacity duration-[1500ms] ease-out ${isVisible ? 'opacity-60' : 'opacity-0'}`}>
       <canvas ref={ref} className="w-full h-full block" />
     </div>
   );

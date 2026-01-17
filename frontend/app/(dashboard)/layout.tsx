@@ -44,7 +44,7 @@ export default function DashboardLayout({
         <div className="relative min-h-screen bg-black text-white">
             {/* DarkVeil Background */}
             <DarkVeil
-                className="fixed inset-0 z-0 pointer-events-none opacity-60"
+                className="fixed inset-0 z-0 pointer-events-none"
                 speed={0.25}
                 hueShift={0}
                 noiseIntensity={0.02}
