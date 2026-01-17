@@ -42,6 +42,7 @@ export default function WalletDashboard() {
       setIsExpensesClosing(false)
     }, 300)
   }
+  
   const [expenseCategories] = useState([
     { id: 1, name: "Rent & Utilities", amount: "1200", icon: "🏠" },
     { id: 2, name: "Groceries", amount: "400", icon: "🛒" },
