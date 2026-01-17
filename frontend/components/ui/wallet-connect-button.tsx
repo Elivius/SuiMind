@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
     useConnectWallet,
     useCurrentAccount,
@@ -16,10 +17,12 @@ export function WalletConnectButton() {
     const { mutate: connect, isPending } = useConnectWallet();
     const { mutate: disconnect } = useDisconnectWallet();
     const wallets = useWallets().filter((wallet) => !isEnokiWallet(wallet));
+    const router = useRouter();
 
     const [showWalletList, setShowWalletList] = useState(false);
     const [showAccountMenu, setShowAccountMenu] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [isDisconnecting, setIsDisconnecting] = useState(false);
     const accountMenuRef = useRef<HTMLDivElement>(null);
     const walletListRef = useRef<HTMLDivElement>(null);
 
@@ -53,6 +56,16 @@ export function WalletConnectButton() {
             setTimeout(() => setCopied(false), 2000);
         }
     };
+
+    // Disconnecting state - show loading
+    if (isDisconnecting) {
+        return (
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-800/80 backdrop-blur-sm text-gray-400 font-medium rounded-lg border border-gray-700">
+                <div className="w-4 h-4 border-2 border-gray-600 border-t-gray-300 rounded-full animate-spin" />
+                <span className="text-sm">Disconnecting...</span>
+            </div>
+        );
+    }
 
     // Connected state - show account info
     if (currentAccount) {
@@ -90,8 +103,10 @@ export function WalletConnectButton() {
                             </button>
                             <button
                                 onClick={() => {
-                                    disconnect();
+                                    setIsDisconnecting(true);
                                     setShowAccountMenu(false);
+                                    disconnect();
+                                    router.push("/login");
                                 }}
                                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-gray-700 rounded-lg transition-colors"
                             >
