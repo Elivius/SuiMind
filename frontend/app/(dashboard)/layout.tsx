@@ -26,14 +26,14 @@ export default function DashboardLayout({
     // Prevent flash of white screen
     if (!currentAccount && !isLoginPage) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen bg-black flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-gray-600 border-t-gray-300 rounded-full animate-spin" />
             </div>
         )
     }
 
     return (
-        <div className="relative min-h-screen bg-[#001B39] text-white">
+        <div className="relative min-h-screen bg-black text-white">
             {/* DarkVeil Background - shared across all pages */}
             <DarkVeil
                 className="fixed inset-0 z-0 pointer-events-none opacity-60"
