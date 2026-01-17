@@ -29,18 +29,18 @@ const socialLinks = [
 export default function Footer() {
     return (
         <footer className="relative z-10 border-t border-white/10 bg-white/5 backdrop-blur-xl">
-            <div className="w-full px-6 py-12">
+            <div className="w-full px-6 py-6">
                 {/* Main Footer Content */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-4">
                     {/* Brand Section */}
                     <div className="lg:col-span-2">
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-3 mb-2">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
                                 <Wallet className="w-5 h-5 text-white" />
                             </div>
                             <span className="text-xl font-bold text-white">SuiMind</span>
                         </div>
-                        <p className="text-white/60 text-sm leading-relaxed max-w-sm mb-6">
+                        <p className="text-white/60 text-sm leading-relaxed max-w-sm mb-4">
                             AI-powered financial intelligence on the Sui blockchain.
                             Empowering users with smart insights and seamless DeFi experiences.
                         </p>
@@ -111,7 +111,7 @@ export default function Footer() {
                 </div>
 
                 {/* Hackathon Badge & Bottom Bar */}
-                <div className="pt-8 border-t border-white/10">
+                <div className="pt-4 border-t border-white/10">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         {/* Hackathon Badge */}
                         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#6FBEE5]/10 to-[#4A9FCC]/10 border border-[#6FBEE5]/20">
@@ -130,7 +130,7 @@ export default function Footer() {
                     </div>
 
                     {/* Powered by Sui */}
-                    <div className="mt-6 text-center">
+                    <div className="mt-3 text-center">
                         <p className="text-white/30 text-xs uppercase tracking-widest">
                             Powered by Sui Network & Advanced AI
                         </p>
