@@ -71,7 +71,7 @@ void main(){
     col.rgb+=(rand(gl_FragCoord.xy+uTime)-0.5)*uNoise;
     gl_FragColor=vec4(clamp(col.rgb,0.0,1.0),1.0);
 }
-`;
+`
 
 type Props = {
   hueShift?: number;
