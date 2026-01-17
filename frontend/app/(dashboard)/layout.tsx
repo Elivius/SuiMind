@@ -10,7 +10,7 @@ import GooeyNav from "@/components/ui/gooey-nav"
 import Footer from "@/components/ui/footer"
 import { truncateAddress } from "@/lib/utils"
 
-const navItems = [
+const navigation = [
     { label: "Home", href: "/home", icon: Home },
     { label: "Insights", href: "/insights", icon: Lightbulb },
     { label: "Recent Activity", href: "/recent-activity", icon: Clock },
@@ -45,7 +45,7 @@ export default function DashboardLayout({
     }
 
     // Determine active nav index based on current path
-    const activeIndex = navItems.findIndex(item => pathname === item.href)
+    const activeIndex = navigation.findIndex(item => pathname === item.href)
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -92,7 +92,7 @@ export default function DashboardLayout({
                                 {/* Center Nav - Absolute positioned for true center */}
                                 <div className="hidden min-[1025px]:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ height: '45px' }}>
                                     <GooeyNav
-                                        items={navItems}
+                                        items={navigation}
                                         particleCount={5}
                                         particleDistances={[90, 10]}
                                         particleR={100}
@@ -172,7 +172,7 @@ export default function DashboardLayout({
                 {!isLoginPage && (
                     <nav className="min-[1025px]:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 backdrop-blur-xl bg-[#001B39]/40">
                         <div className="flex items-center justify-around py-2 px-2 safe-area-inset-bottom">
-                            {navItems.map((item) => {
+                            {navigation.map((item) => {
                                 const Icon = item.icon
                                 const isActive = pathname === item.href
                                 return (
