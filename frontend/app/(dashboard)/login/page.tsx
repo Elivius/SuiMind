@@ -1,21 +1,31 @@
 "use client"
 
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useCurrentAccount } from "@mysten/dapp-kit"
 import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Wallet, Chrome } from "lucide-react"
+import { Wallet } from "lucide-react"
+import { GoogleLoginButton } from "@/components/ui/google-login-button"
+import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
 
 export default function LoginPage() {
+    const currentAccount = useCurrentAccount()
     const router = useRouter()
 
-    const handleWalletConnect = () => {
-        // Mock wallet connect
-        router.push("/home")
-    }
+    useEffect(() => {
+        if (currentAccount) {
+            router.push("/home")
+        }
+    }, [currentAccount, router])
 
-    const handleGoogleLogin = () => {
-        // Mock google login
-        router.push("/home")
+    // Show redirecting state when connected
+    if (currentAccount) {
+        return (
+            <div className="flex flex-col items-center justify-center gap-4">
+                <div className="w-8 h-8 border-2 border-gray-600 border-t-gray-300 rounded-full animate-spin" />
+                <p className="text-white/50 text-sm">Redirecting...</p>
+            </div>
+        )
     }
 
     return (
@@ -41,30 +51,15 @@ export default function LoginPage() {
                         <p className="text-white/50 text-lg font-medium tracking-wide">Select your preferred login method</p>
                     </div>
 
-                    <Button
-                        onClick={handleWalletConnect}
-                        className="w-full py-6 sm:py-8 text-base sm:text-lg font-bold bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-[#8835EF] hover:to-[#0FE185] text-white border-0 rounded-2xl shadow-lg shadow-[#9945FF]/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
-                    >
-                        <Wallet className="w-6 h-6" />
-                        Connect Sui Wallet
-                    </Button>
+                    <WalletConnectButton />
 
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-white/10"></div>
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-[#001B39]/50 backdrop-blur-sm px-4 text-white/30 font-medium tracking-widest">or</span>
-                        </div>
+                    <div className="flex items-center gap-4">
+                        <div className="flex-1 h-px bg-white/10"></div>
+                        <span className="text-white/30 text-xs font-medium tracking-widest uppercase">or</span>
+                        <div className="flex-1 h-px bg-white/10"></div>
                     </div>
 
-                    <button
-                        onClick={handleGoogleLogin}
-                        className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 text-base font-semibold group/google"
-                    >
-                        <Chrome className="w-5 h-5 text-white/70 group-hover/google:text-white transition-colors" />
-                        Continue with Google
-                    </button>
+                    <GoogleLoginButton />
                 </div>
             </Card>
 

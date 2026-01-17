@@ -1,6 +1,8 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import { useEffect } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { useCurrentAccount } from "@mysten/dapp-kit"
 import DarkVeil from "@/components/ui/dark-veil"
 import { Header, MobileNav, Footer } from "@/components/layout"
 
@@ -9,8 +11,26 @@ export default function DashboardLayout({
 }: {
     children: React.ReactNode
 }) {
+    const currentAccount = useCurrentAccount()
+    const router = useRouter()
     const pathname = usePathname()
     const isLoginPage = pathname === "/login"
+
+    // Redirect to login if not connected (except on login page)
+    useEffect(() => {
+        if (!currentAccount && !isLoginPage) {
+            router.push("/login")
+        }
+    }, [currentAccount, isLoginPage, router])
+
+    // Prevent flash of white screen
+    if (!currentAccount && !isLoginPage) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-gray-600 border-t-gray-300 rounded-full animate-spin" />
+            </div>
+        )
+    }
 
     return (
         <div className="relative min-h-screen bg-[#001B39] text-white">
