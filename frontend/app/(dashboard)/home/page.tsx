@@ -170,7 +170,7 @@ export default function WalletDashboard() {
                     <button
                       type="button"
                       onClick={() => setShowSalaryModal(true)}
-                      className="group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
+                      className="cursor-pointer group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
                     >
                       <Pencil className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} />
                       <span className="text-sm font-medium underline underline-offset-4 decoration-[#6FBEE5]/30 group-hover:decoration-[#5DAED5]">
@@ -211,7 +211,7 @@ export default function WalletDashboard() {
                     <button
                       type="button"
                       onClick={() => setShowExpensesModal(true)}
-                      className="group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
+                      className="cursor-pointer group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
                     >
                       <Eye className="w-4 h-4" />
                       <span className="text-sm font-medium underline underline-offset-4 decoration-[#6FBEE5]/30 group-hover:decoration-[#5DAED5]">
@@ -438,7 +438,7 @@ export default function WalletDashboard() {
               </div>
               <button
                 onClick={closeSalaryModal}
-                className="text-white/40 hover:text-white transition-colors"
+                className="cursor-pointer text-white/40 hover:text-white transition-colors"
               >
                 <Zap className="w-5 h-5 rotate-45" />
               </button>
@@ -517,7 +517,7 @@ export default function WalletDashboard() {
               </div>
               <button
                 onClick={closeExpensesModal}
-                className="text-white/40 hover:text-white transition-colors"
+                className="cursor-pointer text-white/40 hover:text-white transition-colors"
               >
                 <Zap className="w-5 h-5 rotate-45" />
               </button>
