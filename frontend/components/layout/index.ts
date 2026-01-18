@@ -1,3 +1,4 @@
-export { Header } from "./header"
-export { MobileNav } from "./mobile-nav"
-export { Footer } from "./footer"
+export * from "./footer"
+export * from "./header"
+export * from "./mobile-nav"
+export * from "./loading-screen"
