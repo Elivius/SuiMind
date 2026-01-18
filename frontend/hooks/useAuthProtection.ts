@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 
 const AUTH_GRACE_PERIOD_MS = 1000
@@ -9,8 +9,6 @@ const AUTH_GRACE_PERIOD_MS = 1000
 export function useAuthProtection() {
     const currentAccount = useCurrentAccount()
     const router = useRouter()
-    const pathname = usePathname()
-    const isLoginPage = pathname === "/login"
     const [isAuthChecking, setIsAuthChecking] = useState(true)
 
     // Handle auth checking grace period
@@ -25,16 +23,13 @@ export function useAuthProtection() {
 
     // Redirect to login if not connected after grace period
     useEffect(() => {
-        if (!isAuthChecking && !currentAccount && !isLoginPage) {
+        if (!isAuthChecking && !currentAccount) {
             router.push("/login")
         }
-    }, [isAuthChecking, currentAccount, isLoginPage, router])
+    }, [isAuthChecking, currentAccount, router])
 
     // Show spinner if checking auth OR if unauthorized (pending redirect)
-    const isLoading = (isAuthChecking || !currentAccount) && !isLoginPage
+    const isLoading = isAuthChecking || !currentAccount
 
-    return {
-        isLoading,
-        isLoginPage
-    }
+    return { isLoading }
 }
