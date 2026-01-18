@@ -171,3 +171,20 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(111, 190, 229, 0.6);
 }
+
+/* Subtle bounce animation */
+@keyframes bounce-subtle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 3s ease-in-out infinite;
+}

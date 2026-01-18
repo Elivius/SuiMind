@@ -6,8 +6,8 @@ import { Analytics } from "@vercel/analytics/next"
 import { DarkVeil, FloatingOrbs } from "@/components/ui"
 import "./globals.css"
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
   title: "SuiMind - AI-Powered DeFi Wallet",
@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased bg-black text-white`}>
+      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased bg-black text-white`}>
         <DarkVeil
           className="fixed inset-0 z-0 pointer-events-none"
           speed={0.25}
