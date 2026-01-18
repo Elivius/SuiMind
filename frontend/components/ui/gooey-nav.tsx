@@ -328,7 +328,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
                     href={item.href}
                     onClick={e => handleClick(e, index)}
                     onKeyDown={e => handleKeyDown(e, index)}
-                    className="outline-none py-[0.6em] px-[1em] inline-flex items-center gap-2"
+                    className="cursor-pointer outline-none py-[0.6em] px-[1em] inline-flex items-center gap-2"
                   >
                     {item.icon && <item.icon className="w-4 h-4" />}
                     {item.label}

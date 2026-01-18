@@ -27,7 +27,7 @@ export function GoogleLoginButton() {
                 }
             }}
             disabled={isPending}
-            className="w-full flex items-center justify-center gap-3 py-4 sm:py-5 px-6 bg-white/5 text-white font-semibold text-base sm:text-lg rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cursor-pointer w-full flex items-center justify-center gap-3 py-4 sm:py-5 px-6 bg-white/5 text-white font-semibold text-base sm:text-lg rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
             <svg viewBox="0 0 24 24" width="20" height="20" className="flex-shrink-0">
                 <path

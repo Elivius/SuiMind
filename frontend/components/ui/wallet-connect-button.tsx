@@ -73,7 +73,7 @@ export function WalletConnectButton() {
             <div className="relative" ref={accountMenuRef}>
                 <button
                     onClick={() => setShowAccountMenu(!showAccountMenu)}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-gray-800/80 backdrop-blur-sm text-white font-medium rounded-lg border border-gray-700 hover:border-cyan-500/50 hover:bg-gray-700/80 transition-all duration-200"
+                    className="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-gray-800/80 backdrop-blur-sm text-white font-medium rounded-lg border border-gray-700 hover:border-cyan-500/50 hover:bg-gray-700/80 transition-all duration-200"
                 >
                     <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
                     <span className="text-sm">{truncateAddress(currentAccount.address)}</span>
@@ -92,7 +92,7 @@ export function WalletConnectButton() {
                         <div className="p-1">
                             <button
                                 onClick={handleCopyAddress}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+                                className="cursor-pointer w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
                             >
                                 {copied ? (
                                     <Check className="w-4 h-4 text-emerald-400" />
@@ -108,7 +108,7 @@ export function WalletConnectButton() {
                                     disconnect();
                                     router.push("/login");
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-gray-700 rounded-lg transition-colors"
+                                className="cursor-pointer w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-gray-700 rounded-lg transition-colors"
                             >
                                 <LogOut className="w-4 h-4" />
                                 Disconnect
@@ -126,7 +126,7 @@ export function WalletConnectButton() {
             <button
                 onClick={() => setShowWalletList(!showWalletList)}
                 disabled={isPending}
-                className="w-full flex items-center justify-center gap-3 py-4 sm:py-5 px-6 bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg shadow-[#9945FF]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="cursor-pointer w-full flex items-center justify-center gap-3 py-4 sm:py-5 px-6 bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg shadow-[#9945FF]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <Wallet className="w-5 h-5 sm:w-6 sm:h-6" />
                 <span>{isPending ? "Connecting..." : "Connect Sui Wallet"}</span>
@@ -147,7 +147,7 @@ export function WalletConnectButton() {
                                 <button
                                     key={wallet.name}
                                     onClick={() => handleConnect(wallet)}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-white hover:bg-gray-700 rounded-lg transition-colors"
+                                    className="cursor-pointer w-full flex items-center gap-3 px-3 py-2.5 text-left text-white hover:bg-gray-700 rounded-lg transition-colors"
                                 >
                                     {wallet.icon ? (
                                         <img

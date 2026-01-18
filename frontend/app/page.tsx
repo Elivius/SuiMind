@@ -118,7 +118,7 @@ export default function LandingPage() {
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/70">
                     {["Features", "Security", "Insights"].map((item, i) => (
                         <ScrollReveal key={item} delay={100 * i} direction="none" duration={800}>
-                            <button className="hover:text-white transition-colors">{item}</button>
+                            <button className="cursor-pointer hover:text-white transition-colors">{item}</button>
                         </ScrollReveal>
                     ))}
                 </div>
@@ -308,7 +308,7 @@ export default function LandingPage() {
                 <div className="flex gap-8 text-white/40 text-sm font-medium">
                     {["Twitter", "Discord", "Docs"].map((item, i) => (
                         <ScrollReveal key={item} delay={200 * i} direction="none">
-                            <button className="hover:text-white transition-colors">{item}</button>
+                            <button className="cursor-pointer hover:text-white transition-colors">{item}</button>
                         </ScrollReveal>
                     ))}
                 </div>

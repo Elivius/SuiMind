@@ -17,7 +17,7 @@ export function MobileNav() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 min-w-[60px] ${isActive
+                            className={`cursor-pointer flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 min-w-[60px] ${isActive
                                 ? 'text-[#6FBEE5] bg-[#6FBEE5]/10'
                                 : 'text-white/50 hover:text-white/70'
                                 }`}
