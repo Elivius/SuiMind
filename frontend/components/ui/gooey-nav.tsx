@@ -133,11 +133,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     if (filterRef.current) {
       makeParticles(filterRef.current);
     }
-
-    // Delay navigation to let the gooey animation play
-    setTimeout(() => {
-      if (href) router.push(href);
-    }, 300);
+    if (href) router.push(href);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLAnchorElement>, index: number) => {
     if (e.key === 'Enter' || e.key === ' ') {
