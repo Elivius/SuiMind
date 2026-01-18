@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Aurora, Button, Card } from "@/components/ui"
+import { Button, Card } from "@/components/ui"
 import { useState, useEffect, useRef, ReactNode } from "react"
 import {
     Wallet,
@@ -93,17 +93,7 @@ export default function LandingPage() {
     const router = useRouter()
 
     return (
-        <div className="relative min-h-screen bg-[#001B39] text-white overflow-x-hidden selection:bg-[#6FBEE5]/30 scroll-smooth">
-            {/* Background Effect */}
-            <div className="fixed inset-0 z-0">
-                <Aurora
-                    colorStops={["#00D2FF", "#3A7BD5", "#00D2FF"]}
-                    amplitude={0.6}
-                    blend={0.6}
-                    speed={0.4}
-                />
-            </div>
-
+        <div className="relative min-h-screen text-white overflow-x-hidden selection:bg-[#6FBEE5]/30 scroll-smooth">
             {/* Navbar */}
             <nav className="relative z-50 flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
                 <ScrollReveal direction="none" duration={800}>
@@ -139,7 +129,7 @@ export default function LandingPage() {
                     <ScrollReveal delay={100} distance={20}>
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] text-xs font-bold uppercase tracking-widest mb-8">
                             <Bot className="w-4 h-4" />
-                            Empowering Sui Financials with AI
+                            Empowering Sui Financial with AI
                         </div>
                     </ScrollReveal>
 
