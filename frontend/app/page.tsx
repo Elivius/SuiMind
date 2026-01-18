@@ -1,9 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import Aurora from "@/components/ui/aurora"
+import { Aurora, Button, Card } from "@/components/ui"
 import { useState, useEffect, useRef, ReactNode } from "react"
 import {
     Wallet,

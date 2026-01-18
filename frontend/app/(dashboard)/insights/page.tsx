@@ -2,8 +2,7 @@
 
 import { ArrowUpRight, TrendingUp, Wallet, Sparkles } from "lucide-react"
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, Card } from "@/components/ui"
 
 // Data for testing only
 const expensesData = [

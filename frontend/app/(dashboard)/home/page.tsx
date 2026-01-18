@@ -1,7 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, Card } from "@/components/ui"
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap, Pencil, Eye } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -42,7 +41,7 @@ export default function WalletDashboard() {
       setIsExpensesClosing(false)
     }, 300)
   }
-  
+
   const [expenseCategories] = useState([
     { id: 1, name: "Rent & Utilities", amount: "1200", icon: "🏠" },
     { id: 2, name: "Groceries", amount: "400", icon: "🛒" },

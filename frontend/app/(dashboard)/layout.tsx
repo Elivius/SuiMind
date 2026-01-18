@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useCurrentAccount } from "@mysten/dapp-kit"
-import DarkVeil from "@/components/ui/dark-veil"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { FloatingOrbs } from "@/components/ui/floating-orbs"
+import { DarkVeil, LoadingSpinner, FloatingOrbs } from "@/components/ui"
 import { Header, MobileNav, Footer } from "@/components/layout"
 
 const AUTH_GRACE_PERIOD_MS = 1000
