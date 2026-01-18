@@ -1,7 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, Card } from "@/components/ui"
 import { ArrowUpRight, ArrowDownRight, Zap, ChevronDown } from "lucide-react"
 import { useState } from "react"
 

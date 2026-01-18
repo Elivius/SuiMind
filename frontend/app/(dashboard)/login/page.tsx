@@ -3,10 +3,8 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useCurrentAccount } from "@mysten/dapp-kit"
-import { Card } from "@/components/ui/card"
+import { Card, GoogleLoginButton, WalletConnectButton } from "@/components/ui"
 import { Wallet } from "lucide-react"
-import { GoogleLoginButton } from "@/components/ui/google-login-button"
-import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
 
 export default function LoginPage() {
     const currentAccount = useCurrentAccount()
