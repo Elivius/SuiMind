@@ -1,42 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
-import { useCurrentAccount } from "@mysten/dapp-kit"
-import { DarkVeil, LoadingSpinner, FloatingOrbs } from "@/components/ui"
-import { Header, MobileNav, Footer } from "@/components/layout"
-
-const AUTH_GRACE_PERIOD_MS = 1000
+import { DarkVeil, FloatingOrbs } from "@/components/ui"
+import { Header, MobileNav, Footer, LoadingScreen } from "@/components/layout"
+import { useAuthProtection } from "@/hooks/useAuthProtection"
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const currentAccount = useCurrentAccount()
-    const router = useRouter()
-    const pathname = usePathname()
-    const isLoginPage = pathname === "/login"
-    const [isAuthChecking, setIsAuthChecking] = useState(true)
-
-    // Handle auth checking grace period
-    useEffect(() => {
-        if (currentAccount) {
-            setIsAuthChecking(false)
-        } else {
-            const timeout = setTimeout(() => setIsAuthChecking(false), AUTH_GRACE_PERIOD_MS)
-            return () => clearTimeout(timeout)
-        }
-    }, [currentAccount])
-
-    // Redirect to login if not connected after grace period
-    useEffect(() => {
-        if (!isAuthChecking && !currentAccount && !isLoginPage) {
-            router.push("/login")
-        }
-    }, [isAuthChecking, currentAccount, isLoginPage, router])
-
-    const isLoading = isAuthChecking && !isLoginPage
+    const { isLoading, isLoginPage } = useAuthProtection()
 
     return (
         <div className="relative min-h-screen bg-black text-white">
@@ -54,9 +27,7 @@ export default function DashboardLayout({
 
             <div className="relative z-10 flex flex-col min-h-screen">
                 {isLoading ? (
-                    <div className="flex-1 flex items-center justify-center">
-                        <LoadingSpinner />
-                    </div>
+                    <LoadingScreen message="Verifying access..." />
                 ) : (
                     <>
                         {/* Header - only show when NOT on login page */}

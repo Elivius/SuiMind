@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { Card, GoogleLoginButton, WalletConnectButton } from "@/components/ui"
+import { LoadingScreen } from "@/components/layout"
 import { Wallet } from "lucide-react"
 
 export default function LoginPage() {
@@ -19,10 +20,7 @@ export default function LoginPage() {
     // Show redirecting state when connected
     if (currentAccount) {
         return (
-            <div className="flex flex-col items-center justify-center gap-4">
-                <div className="w-8 h-8 border-2 border-gray-600 border-t-gray-300 rounded-full animate-spin" />
-                <p className="text-white/50 text-sm">Redirecting...</p>
-            </div>
+            <LoadingScreen message="Redirecting..." />
         )
     }
 
