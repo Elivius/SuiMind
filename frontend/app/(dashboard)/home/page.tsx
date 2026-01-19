@@ -1,47 +1,22 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, Card } from "@/components/ui"
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap, Pencil, Eye } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useModal } from "@/hooks/useModal"
 
 export default function WalletDashboard() {
   const router = useRouter()
   const [salary, setSalary] = useState("0")
-  const [expenses, setExpenses] = useState("0")
   const [activeSalary, setActiveSalary] = useState("0")
   const [passiveSalary, setPassiveSalary] = useState("0")
-  const [showInsight, setShowInsight] = useState(false)
-  const [isInsightClosing, setIsInsightClosing] = useState(false)
-  const [showSalaryModal, setShowSalaryModal] = useState(false)
-  const [isSalaryClosing, setIsSalaryClosing] = useState(false)
-  const [showExpensesModal, setShowExpensesModal] = useState(false)
-  const [isExpensesClosing, setIsExpensesClosing] = useState(false)
 
-  const closeInsightModal = () => {
-    setIsInsightClosing(true)
-    setTimeout(() => {
-      setShowInsight(false)
-      setIsInsightClosing(false)
-    }, 300)
-  }
+  // Use reusable modal hook for all modals
+  const insightModal = useModal()
+  const salaryModal = useModal()
+  const expensesModal = useModal()
 
-  const closeSalaryModal = () => {
-    setIsSalaryClosing(true)
-    setTimeout(() => {
-      setShowSalaryModal(false)
-      setIsSalaryClosing(false)
-    }, 300)
-  }
-
-  const closeExpensesModal = () => {
-    setIsExpensesClosing(true)
-    setTimeout(() => {
-      setShowExpensesModal(false)
-      setIsExpensesClosing(false)
-    }, 300)
-  }
   const [expenseCategories] = useState([
     { id: 1, name: "Rent & Utilities", amount: "1200", icon: "🏠" },
     { id: 2, name: "Groceries", amount: "400", icon: "🛒" },
@@ -115,7 +90,7 @@ export default function WalletDashboard() {
                 {/* AI Insight beside the number */}
                 <div
                   className="inline-flex flex-col px-5 sm:px-7 py-3 sm:py-5 rounded-xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 cursor-pointer hover:bg-[#6FBEE5]/20 transition-all self-start sm:self-center"
-                  onClick={() => setShowInsight(true)}
+                  onClick={insightModal.open}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Zap className="w-4 h-4 text-[#6FBEE5]" />
@@ -169,8 +144,8 @@ export default function WalletDashboard() {
                     </label>
                     <button
                       type="button"
-                      onClick={() => setShowSalaryModal(true)}
-                      className="group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
+                      onClick={salaryModal.open}
+                      className="cursor-pointer group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
                     >
                       <Pencil className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} />
                       <span className="text-sm font-medium underline underline-offset-4 decoration-[#6FBEE5]/30 group-hover:decoration-[#5DAED5]">
@@ -210,8 +185,8 @@ export default function WalletDashboard() {
                     </label>
                     <button
                       type="button"
-                      onClick={() => setShowExpensesModal(true)}
-                      className="group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
+                      onClick={expensesModal.open}
+                      className="cursor-pointer group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
                     >
                       <Eye className="w-4 h-4" />
                       <span className="text-sm font-medium underline underline-offset-4 decoration-[#6FBEE5]/30 group-hover:decoration-[#5DAED5]">
@@ -405,9 +380,9 @@ export default function WalletDashboard() {
         </Card>
       </div>
       {/* AI Insight Modal */}
-      {showInsight && (
-        <div className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 ${isInsightClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <Card className={`bg-[#111] border-white/20 p-6 rounded-2xl text-white w-full max-w-md shadow-2xl transition-all duration-300 ${isInsightClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-200`}>
+      {insightModal.isOpen && (
+        <div className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 ${insightModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <Card className={`bg-[#111] border-white/20 p-6 rounded-2xl text-white w-full max-w-md shadow-2xl transition-all duration-300 ${insightModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-200`}>
             <div className="flex items-center gap-2 mb-4">
               <Zap className="w-5 h-5 text-[#6FBEE5]" />
               <h2 className="text-xl font-bold">AI Financial Insight</h2>
@@ -417,7 +392,7 @@ export default function WalletDashboard() {
             </p>
             <Button
               className="w-full bg-[#6FBEE5] hover:bg-[#5DAED5] text-white py-6 rounded-xl font-bold shadow-lg shadow-[#6FBEE5]/20"
-              onClick={closeInsightModal}
+              onClick={insightModal.close}
             >
               Got it, thanks!
             </Button>
@@ -426,9 +401,9 @@ export default function WalletDashboard() {
       )}
 
       {/* Salary Edit Modal */}
-      {showSalaryModal && (
-        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 ${isSalaryClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <Card className={`bg-[#001B39] border-white/20 p-6 rounded-3xl text-white w-full max-w-sm shadow-2xl transition-all duration-300 ${isSalaryClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-300`}>
+      {salaryModal.isOpen && (
+        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 ${salaryModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <Card className={`bg-[#001B39] border-white/20 p-6 rounded-3xl text-white w-full max-w-sm shadow-2xl transition-all duration-300 ${salaryModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-300`}>
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center">
@@ -437,8 +412,8 @@ export default function WalletDashboard() {
                 <h2 className="text-xl font-bold">Edit Salary</h2>
               </div>
               <button
-                onClick={closeSalaryModal}
-                className="text-white/40 hover:text-white transition-colors"
+                onClick={salaryModal.close}
+                className="cursor-pointer text-white/40 hover:text-white transition-colors"
               >
                 <Zap className="w-5 h-5 rotate-45" />
               </button>
@@ -485,7 +460,7 @@ export default function WalletDashboard() {
                   <Button
                     variant="ghost"
                     className="flex-1 py-5 rounded-xl border border-white/10 text-white/70 hover:bg-white/5 h-auto text-xs"
-                    onClick={closeSalaryModal}
+                    onClick={salaryModal.close}
                   >
                     Cancel
                   </Button>
@@ -493,7 +468,7 @@ export default function WalletDashboard() {
                     className="flex-1 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white py-5 rounded-xl font-bold shadow-lg shadow-[#6FBEE5]/20 h-auto text-xs"
                     onClick={() => {
                       setSalary((Number(activeSalary) + Number(passiveSalary)).toString())
-                      closeSalaryModal()
+                      salaryModal.close()
                     }}
                   >
                     Save
@@ -505,9 +480,9 @@ export default function WalletDashboard() {
         </div>
       )}
       {/* Expenses Breakdown Modal */}
-      {showExpensesModal && (
-        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 ${isExpensesClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <Card className={`bg-[#001B39] border-white/20 p-6 rounded-3xl text-white w-full max-w-sm shadow-2xl transition-all duration-300 ${isExpensesClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-300`}>
+      {expensesModal.isOpen && (
+        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <Card className={`bg-[#001B39] border-white/20 p-6 rounded-3xl text-white w-full max-w-sm shadow-2xl transition-all duration-300 ${expensesModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-300`}>
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center">
@@ -516,8 +491,8 @@ export default function WalletDashboard() {
                 <h2 className="text-xl font-bold">Expenses</h2>
               </div>
               <button
-                onClick={closeExpensesModal}
-                className="text-white/40 hover:text-white transition-colors"
+                onClick={expensesModal.close}
+                className="cursor-pointer text-white/40 hover:text-white transition-colors"
               >
                 <Zap className="w-5 h-5 rotate-45" />
               </button>
@@ -545,7 +520,7 @@ export default function WalletDashboard() {
 
               <Button
                 className="w-full bg-[#3A8FBC] hover:bg-[#2E7A9F] text-white py-5 rounded-xl font-bold shadow-lg shadow-[#3A8FBC]/20 h-auto text-sm transition-all"
-                onClick={closeExpensesModal}
+                onClick={expensesModal.close}
               >
                 Close
               </Button>
