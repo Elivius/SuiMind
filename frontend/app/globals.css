@@ -4,29 +4,31 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color scheme for SuiMind with Sui Blue theme and glassmorphism */
-  --background: oklch(98.128% 0.0101 238.855 / 0);
-  --foreground: oklch(0.145 0.02 240);
-  --card: oklch(0.99 0.005 240);
-  --card-foreground: oklch(0.145 0.02 240);
-  --popover: oklch(0.99 0.005 240);
-  --popover-foreground: oklch(0.145 0.02 240);
+  color-scheme: dark;
+
+  /* Dark theme with deep Sui Blues and glassmorphism (Forcing Dark Defaults) */
+  --background: oklch(0.15 0.03 230);
+  --foreground: oklch(0.98 0.005 240);
+  --card: oklch(0.18 0.03 230);
+  --card-foreground: oklch(0.98 0.005 240);
+  --popover: oklch(0.18 0.03 230);
+  --popover-foreground: oklch(0.98 0.005 240);
 
   /* Sui Blue primary colors */
-  --primary: oklch(0.55 0.15 220);
-  --primary-foreground: oklch(0.99 0.005 240);
+  --primary: oklch(0.7 0.18 210);
+  --primary-foreground: oklch(0.15 0.03 230);
 
-  --secondary: oklch(0.94 0.01 240);
-  --secondary-foreground: oklch(0.205 0.02 240);
-  --muted: oklch(0.95 0.01 240);
-  --muted-foreground: oklch(0.5 0.02 240);
-  --accent: oklch(0.6 0.18 210);
-  --accent-foreground: oklch(0.99 0.005 240);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.99 0.005 240);
-  --border: oklch(0.9 0.01 240);
-  --input: oklch(0.9 0.01 240);
-  --ring: oklch(0.55 0.15 220);
+  --secondary: oklch(0.25 0.03 230);
+  --secondary-foreground: oklch(0.98 0.005 240);
+  --muted: oklch(0.25 0.03 230);
+  --muted-foreground: oklch(0.65 0.02 240);
+  --accent: oklch(0.7 0.18 210);
+  --accent-foreground: oklch(0.98 0.005 240);
+  --destructive: oklch(0.5 0.2 27);
+  --destructive-foreground: oklch(0.98 0.005 240);
+  --border: oklch(0.25 0.03 230);
+  --input: oklch(0.25 0.03 230);
+  --ring: oklch(0.7 0.18 210);
 
   /* Chart colors with blue/teal theme */
   --chart-1: oklch(0.6 0.18 210);
@@ -168,4 +170,21 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(111, 190, 229, 0.6);
+}
+
+/* Subtle bounce animation */
+@keyframes bounce-subtle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 3s ease-in-out infinite;
 }

@@ -36,6 +36,12 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   const filterRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(initialActiveIndex);
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch flash
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const noise = (n = 1) => n / 2 - Math.random() * n;
   const getXY = (distance: number, pointIndex: number, totalPoints: number): [number, number] => {
@@ -127,11 +133,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     if (filterRef.current) {
       makeParticles(filterRef.current);
     }
-
-    // Delay navigation to let the gooey animation play
-    setTimeout(() => {
-      if (href) router.push(href);
-    }, 300);
+    if (href) router.push(href);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLAnchorElement>, index: number) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -322,7 +324,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
                     href={item.href}
                     onClick={e => handleClick(e, index)}
                     onKeyDown={e => handleKeyDown(e, index)}
-                    className="outline-none py-[0.6em] px-[1em] inline-flex items-center gap-2"
+                    className="cursor-pointer outline-none py-[0.6em] px-[1em] inline-flex items-center gap-2"
                   >
                     {item.icon && <item.icon className="w-4 h-4" />}
                     {item.label}
@@ -338,14 +340,14 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
           </ul>
         </nav>
         <span className="effect filter" ref={filterRef} />
-        <div className="effect text" ref={textRef}>
-          {items[activeIndex]?.icon && (
+        <div className={`effect text ${!mounted ? 'opacity-0' : ''}`} ref={textRef}>
+          {mounted && items[activeIndex]?.icon && (
             <span className="inline-flex items-center gap-2">
               {React.createElement(items[activeIndex].icon, { className: "w-4 h-4" })}
               {items[activeIndex]?.label}
             </span>
           )}
-          {!items[activeIndex]?.icon && items[activeIndex]?.label}
+          {mounted && !items[activeIndex]?.icon && items[activeIndex]?.label}
         </div>
       </div>
       <svg style={{ visibility: 'hidden', position: 'absolute' }} width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">

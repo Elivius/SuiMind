@@ -26,7 +26,7 @@ const socialLinks = [
     { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
 ]
 
-export default function Footer() {
+export function Footer() {
     return (
         <footer className="relative z-10 border-t border-white/10 bg-white/5 backdrop-blur-xl">
             <div className="w-full px-6 py-6">
