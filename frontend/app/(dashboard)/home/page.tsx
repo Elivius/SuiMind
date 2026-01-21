@@ -5,9 +5,12 @@ import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap, Pencil, Eye } from "luci
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useModal } from "@/hooks/useModal"
+import { useGetBalance } from "@/hooks/useGetBalance"
 
 export default function WalletDashboard() {
   const router = useRouter()
+  const { data: balanceData, isLoading: isBalanceLoading } = useGetBalance()
+
   const [salary, setSalary] = useState("0")
   const [activeSalary, setActiveSalary] = useState("0")
   const [passiveSalary, setPassiveSalary] = useState("0")
@@ -31,7 +34,8 @@ export default function WalletDashboard() {
     return salaryNum - totalExpenses
   }
 
-  const walletBalance = 123.0
+  // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
+  const walletBalance = balanceData?.totalBalance ? Number(balanceData.totalBalance) / 1_000_000_000 : 0
   const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
   const balance = calculateBalance()
 
@@ -85,7 +89,11 @@ export default function WalletDashboard() {
               <p className="text-white/70 text-base sm:text-xl font-bold mb-2">Total Balance</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
-                  ${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {isBalanceLoading ? (
+                    <span className="animate-pulse">...</span>
+                  ) : (
+                    `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SUI`
+                  )}
                 </h2>
                 {/* AI Insight beside the number */}
                 <div

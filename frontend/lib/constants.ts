@@ -8,5 +8,4 @@ export const navigation = [
     { label: "Mindy AI", href: "/mindy-ai", icon: Bot },
 ]
 
-// Mock wallet address - replace with actual wallet connection logic
-export const WALLET_ADDRESS = "0x7b62d94a0b62c5c37c7b62d94a0b62c57c75"
+export const SUI_COIN_TYPE = "0x2::sui::SUI";
