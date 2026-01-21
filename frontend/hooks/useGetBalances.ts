@@ -1,6 +1,5 @@
 import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
 import { SUI_COIN_TYPE } from "@/lib/constants";
-import type { SuiClient } from '@mysten/sui/client';
 
 export function useGetBalances() {
     const account = useCurrentAccount();
@@ -9,7 +8,7 @@ export function useGetBalances() {
         return { isLoading: false, isError: false, data: null, error: null, refetch: async () => null };
     }
 
-    const { isLoading, isError, data, error, refetch } = useSuiClientQuery(
+    return useSuiClientQuery(
         "getBalance",
         {
             owner: account.address,
@@ -17,6 +16,4 @@ export function useGetBalances() {
         },
         { queryKey: ["balance", account.address] }
     );
-
-    return { isLoading, isError, data, error, refetch };
 }
