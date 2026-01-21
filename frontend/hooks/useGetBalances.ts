@@ -4,16 +4,15 @@ import { SUI_COIN_TYPE } from "@/lib/constants";
 export function useGetBalances() {
     const account = useCurrentAccount();
 
-    if (!account) {
-        return { isLoading: false, isError: false, data: null, error: null, refetch: async () => null };
-    }
-
     return useSuiClientQuery(
         "getBalance",
         {
-            owner: account.address,
+            owner: account?.address as string,
             coinType: SUI_COIN_TYPE,
         },
-        { queryKey: ["balance", account.address] }
+        {
+            enabled: !!account,
+            queryKey: ["balance", account?.address]
+        }
     );
 }
