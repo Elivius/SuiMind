@@ -5,11 +5,11 @@ import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap, Pencil, Eye } from "luci
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useModal } from "@/hooks/useModal"
-import { useGetBalance } from "@/hooks/useGetBalance"
+import { useGetBalances } from "@/hooks/useGetBalances"
 
 export default function WalletDashboard() {
   const router = useRouter()
-  const { data: balanceData, isLoading: isBalanceLoading } = useGetBalance()
+  const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
 
   const [salary, setSalary] = useState("0")
   const [activeSalary, setActiveSalary] = useState("0")

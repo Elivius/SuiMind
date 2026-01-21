@@ -1,8 +1,8 @@
 import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
 import { SUI_COIN_TYPE } from "@/lib/constants";
-// import type { SuiClient } from '@mysten/sui/client';
+import type { SuiClient } from '@mysten/sui/client';
 
-export function useGetBalance() {
+export function useGetBalances() {
     const account = useCurrentAccount();
 
     if (!account) {
