@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, Card } from "@/components/ui"
-import { ArrowUpRight, ArrowDownRight, Zap, ChevronDown } from "lucide-react"
+import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat } from "lucide-react"
 import { useState } from "react"
 
 export default function RecentActivity() {
@@ -130,12 +130,12 @@ export default function RecentActivity() {
                                         <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive" ? "bg-green-500/60" :
-                                                        tx.type === "send" ? "bg-red-500/60" : "bg-blue-500/60"
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${tx.type === "receive" ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20" :
+                                                        tx.type === "send" ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20" : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
                                                         }`}>
-                                                        {tx.type === "receive" ? <ArrowDownRight className="w-5 h-5 text-green-500" /> :
-                                                            tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-red-500" /> :
-                                                                <Zap className="w-5 h-5 text-blue-500" />}
+                                                        {tx.type === "receive" ? <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" /> :
+                                                            tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" /> :
+                                                                <Repeat className="w-5 h-5 text-white stroke-[3px]" />}
                                                     </div>
                                                     <span className="capitalize font-medium text-white">{tx.type}</span>
                                                 </div>
@@ -175,12 +175,12 @@ export default function RecentActivity() {
                                 <div key={tx.id} className="p-4 space-y-3">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.type === "receive" ? "bg-sky-500/20" :
-                                                tx.type === "send" ? "bg-red-500/20" : "bg-blue-500/20"
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md ${tx.type === "receive" ? "bg-gradient-to-br from-green-400 to-green-600" :
+                                                tx.type === "send" ? "bg-gradient-to-br from-red-400 to-red-600" : "bg-gradient-to-br from-blue-400 to-blue-600"
                                                 }`}>
-                                                {tx.type === "receive" ? <ArrowDownRight className="w-4 h-4 text-green-500" /> :
-                                                    tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-red-500" /> :
-                                                        <Zap className="w-4 h-4 text-blue-500" />}
+                                                {tx.type === "receive" ? <ArrowDownLeft className="w-4 h-4 text-white stroke-[3px]" /> :
+                                                    tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-white stroke-[3px]" /> :
+                                                        <Repeat className="w-4 h-4 text-white stroke-[3px]" />}
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
