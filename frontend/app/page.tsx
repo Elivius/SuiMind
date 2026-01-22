@@ -23,12 +23,12 @@ export default function LandingPage() {
             {/* Navbar */}
             <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-10 w-full mx-auto">
                 <FadeReveal direction="none" duration={800}>
-                    <Link href="/home" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <div className="flex items-center gap-2">
                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20">
                             <Wallet className="w-7 h-7 text-white" />
                         </div>
                         <span className="text-4xl font-black tracking-tighter">SuiMind</span>
-                    </Link>
+                    </div>
                 </FadeReveal>
 
                 <FadeReveal direction="none" duration={800}>
@@ -65,19 +65,13 @@ export default function LandingPage() {
                     </FadeReveal>
 
                     <FadeReveal delay={700} distance={20}>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
                             <Button
                                 onClick={() => router.push("/login")}
-                                className="w-full sm:w-auto sm:min-w-[220px] justify-center px-10 py-8 text-lg font-bold bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-2xl shadow-xl shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all hover:scale-[1.05] active:scale-[0.98]"
+                                className="w-full sm:w-auto sm:min-w-[250px] justify-center px-10 py-8 text-xl font-bold bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-2xl shadow-xl shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all hover:scale-[1.05] active:scale-[0.98]"
                             >
                                 Start for Free
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="w-full sm:w-auto sm:min-w-[220px] justify-center px-10 py-8 text-lg font-bold border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 rounded-2xl text-white transition-all"
-                            >
-                                View Live Demo
+                                <ArrowRight className="ml-2 w-6 h-6" />
                             </Button>
                         </div>
                     </FadeReveal>
@@ -170,7 +164,7 @@ export default function LandingPage() {
                 {/* CTA SECTION */}
                 <section className="px-6 py-40 text-center">
                     <FadeReveal direction="up" distance={100} scale={0.95}>
-                        <div className="max-w-6xl mx-auto p-12 sm:p-26 rounded-[4rem] bg-gradient-to-br from-[#06b6d4] via-[#3b82f6] to-[#8b5cf6] relative overflow-hidden shadow-2xl shadow-indigo-500/30 border border-white/20">
+                        <div className="max-w-6xl mx-auto p-12 sm:p-26 rounded-[4rem] bg-gradient-to-br from-[#06b6d4]/30 via-[#3b82f6]/30 to-[#8b5cf6]/30 relative overflow-hidden shadow-2xl shadow-indigo-500/30 border border-white/20">
                             <FadeReveal delay={200} distance={20} direction="none">
                                 <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter mb-8 relative z-10 leading-[1.1]">
                                     Ready to Upgrade Your <br />Financial Mindset?
