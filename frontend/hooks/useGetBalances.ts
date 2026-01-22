@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { graphql } from '@mysten/sui/graphql/schemas/latest';
 import { gqlClient } from "@/lib/suiClient";
 
-const GET_BALANCE_QUERY = graphql(`
-  query getBalance($address: SuiAddress!, $coinType: String!) {
+const GET_BALANCES_QUERY = graphql(`
+  query getBalances($address: SuiAddress!, $coinType: String!) {
     address(address: $address) {
       balance(coinType: $coinType) {
         totalBalance
@@ -19,12 +19,12 @@ export function useGetBalances() {
   const address = account?.address;
 
   return useQuery({
-    queryKey: ["get-balance", address],
+    queryKey: ["get-balances", address],
     queryFn: async () => {
       if (!address) return null;
 
       const result = await gqlClient.query({
-        query: GET_BALANCE_QUERY,
+        query: GET_BALANCES_QUERY,
         variables: {
           address,
           coinType: SUI_COIN_TYPE,
