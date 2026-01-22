@@ -3,12 +3,11 @@
 import { Button, Card } from "@/components/ui"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
-  X, Repeat
+  X, Repeat, Loader2
 } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useModal } from "@/hooks/useModal"
-import { useGetBalances } from "@/hooks/useGetBalances"
+import { useModal, useGetBalances } from "@/hooks"
 
 export default function WalletDashboard() {
   const router = useRouter()
@@ -93,7 +92,9 @@ export default function WalletDashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
                   {isBalanceLoading ? (
-                    <span className="animate-pulse">...</span>
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-white/30" />
+                    </div>
                   ) : (
                     `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SUI`
                   )}
