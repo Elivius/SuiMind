@@ -5,7 +5,7 @@ import { graphql } from '@mysten/sui/graphql/schemas/latest';
 import { gqlClient } from "@/lib/suiClient";
 
 const GET_BALANCE_QUERY = graphql(`
-  query getBalance($address: String!, $coinType: String) {
+  query getBalance($address: SuiAddress!, $coinType: String!) {
     address(address: $address) {
       balance(coinType: $coinType) {
         totalBalance
