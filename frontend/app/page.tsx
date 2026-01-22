@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Button, Card } from "@/components/ui"
 import { FadeReveal } from "@/components/ui/fade-reveal"
 import {
@@ -12,6 +13,7 @@ import {
     BarChart3,
     CheckCircle2
 } from "lucide-react"
+import { Footer } from "@/components/layout"
 
 export default function LandingPage() {
     const router = useRouter()
@@ -19,28 +21,20 @@ export default function LandingPage() {
     return (
         <div className="relative min-h-screen text-white overflow-x-hidden selection:bg-[#6FBEE5]/30 scroll-smooth">
             {/* Navbar */}
-            <nav className="relative z-50 flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
+            <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-10 w-full mx-auto">
                 <FadeReveal direction="none" duration={800}>
-                    <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20">
-                            <Wallet className="w-5 h-5 text-white" />
+                    <Link href="/home" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20">
+                            <Wallet className="w-7 h-7 text-white" />
                         </div>
-                        <span className="text-2xl font-black tracking-tighter">SuiMind</span>
-                    </div>
+                        <span className="text-4xl font-black tracking-tighter">SuiMind</span>
+                    </Link>
                 </FadeReveal>
 
-                <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/70">
-                    {["Features", "Security", "Insights"].map((item, i) => (
-                        <FadeReveal key={item} delay={100 * i} direction="none" duration={800}>
-                            <button className="cursor-pointer hover:text-white transition-colors">{item}</button>
-                        </FadeReveal>
-                    ))}
-                </div>
-
-                <FadeReveal direction="none" duration={800} delay={400}>
+                <FadeReveal direction="none" duration={800}>
                     <Button
                         onClick={() => router.push("/login")}
-                        className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md rounded-xl px-6"
+                        className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md rounded-xl px-9 py-6 text-lg font-bold transition-all hover:scale-105 active:scale-95"
                     >
                         Launch App
                     </Button>
@@ -49,7 +43,7 @@ export default function LandingPage() {
 
             <main className="relative z-10">
                 {/* HERO SECTION */}
-                <section className="px-6 pt-20 pb-32 max-w-7xl mx-auto text-center">
+                <section className="px-6 md:px-12 pt-20 pb-32 w-full mx-auto text-center">
                     <FadeReveal delay={100} distance={20}>
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] text-xs font-bold uppercase tracking-widest mb-8">
                             <Bot className="w-4 h-4" />
@@ -57,10 +51,10 @@ export default function LandingPage() {
                         </div>
                     </FadeReveal>
 
-                    <FadeReveal delay={300} distance={40}>
-                        <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.85] mb-8">
+                    <FadeReveal delay={300} distance={50}>
+                        <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.9] mb-8">
                             Your Money, <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6FBEE5] via-white to-[#4A9FCC]">Intelligently</span> Managed.
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6FBEE5] via-white to-[#4A9FCC]">Intelligently</span> <br />Managed.
                         </h1>
                     </FadeReveal>
 
@@ -90,7 +84,7 @@ export default function LandingPage() {
                 </section>
 
                 {/* FEATURES GRID */}
-                <section className="px-6 py-32 max-w-7xl mx-auto">
+                <section className="px-6 md:px-12 py-32 w-full mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <FadeReveal delay={100} direction="up" distance={60}>
                             <Card className="p-8 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full">
@@ -126,7 +120,7 @@ export default function LandingPage() {
 
                 {/* DECISION SECTION */}
                 <section className="px-6 py-32 bg-gradient-to-b from-transparent via-[#6FBEE5]/5 to-transparent">
-                    <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+                    <div className="w-full mx-auto flex flex-col lg:flex-row items-center gap-16 px-6 md:px-12">
                         <div className="flex-1">
                             <FadeReveal direction="left" distance={100}>
                                 <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter mb-8 leading-[0.9]">
@@ -176,23 +170,20 @@ export default function LandingPage() {
                 {/* CTA SECTION */}
                 <section className="px-6 py-40 text-center">
                     <FadeReveal direction="up" distance={100} scale={0.95}>
-                        <div className="max-w-4xl mx-auto p-12 sm:p-20 rounded-[3rem] bg-gradient-to-br from-[#6FBEE5] via-[#4A9FCC] to-[#3A7BD5] relative overflow-hidden shadow-2xl shadow-[#6FBEE5]/20">
-                            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-
+                        <div className="max-w-6xl mx-auto p-12 sm:p-26 rounded-[4rem] bg-gradient-to-br from-[#06b6d4] via-[#3b82f6] to-[#8b5cf6] relative overflow-hidden shadow-2xl shadow-indigo-500/30 border border-white/20">
                             <FadeReveal delay={200} distance={20} direction="none">
-                                <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter mb-8 relative z-10 leading-[0.9]">
+                                <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter mb-8 relative z-10 leading-[1.1]">
                                     Ready to Upgrade Your <br />Financial Mindset?
                                 </h2>
                             </FadeReveal>
 
-                            <FadeReveal delay={400} distance={10} direction="none">
+                            <FadeReveal delay={300} distance={10} direction="none">
                                 <p className="text-white/80 text-lg sm:text-xl mb-12 relative z-10 font-medium max-w-2xl mx-auto">
                                     Join thousands of users optimizing their Sui assets with AI intelligence. Build your wealth today.
                                 </p>
                             </FadeReveal>
 
-                            <FadeReveal delay={600} distance={15} direction="none">
+                            <FadeReveal delay={330} distance={15} direction="none">
                                 <Button
                                     onClick={() => router.push("/login")}
                                     className="bg-white text-[#001B39] hover:bg-[#F0F9FF] px-12 py-8 text-2xl font-black rounded-2xl shadow-2xl relative z-10 transition-all hover:scale-105 active:scale-95"
@@ -205,28 +196,7 @@ export default function LandingPage() {
                 </section>
             </main>
 
-            <footer className="relative z-10 px-6 py-16 border-t border-white/10 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-                <FadeReveal direction="none" delay={100}>
-                    <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                            <Wallet className="w-5 h-5 text-[#6FBEE5]" />
-                        </div>
-                        <span className="text-2xl font-bold tracking-tighter">SuiMind</span>
-                    </div>
-                </FadeReveal>
-
-                <FadeReveal direction="none" delay={300}>
-                    <p className="text-white/40 text-sm font-medium">© 2026 SuiMind. Built on Sui Network.</p>
-                </FadeReveal>
-
-                <div className="flex gap-8 text-white/40 text-sm font-medium">
-                    {["Twitter", "Discord", "Docs"].map((item, i) => (
-                        <FadeReveal key={item} delay={200 * i} direction="none">
-                            <button className="cursor-pointer hover:text-white transition-colors">{item}</button>
-                        </FadeReveal>
-                    ))}
-                </div>
-            </footer>
+            <Footer />
         </div>
     )
 }

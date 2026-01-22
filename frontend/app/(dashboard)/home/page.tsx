@@ -1,7 +1,10 @@
 "use client"
 
 import { Button, Card } from "@/components/ui"
-import { TrendingUp, ArrowUpRight, ArrowDownRight, Zap, Pencil, Eye } from "lucide-react"
+import {
+  TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
+  X, Repeat
+} from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useModal } from "@/hooks/useModal"
@@ -138,7 +141,7 @@ export default function WalletDashboard() {
             <div className="p-6">
               <Button
                 variant="ghost"
-                className="justify-start text-xl text-white font-semibold mb-6 p-0 h-auto hover:bg-transparent hover:text-2xl"
+                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.05] transition-transform"
                 onClick={() => router.push('/insights')}
               >
                 Monthly Cashflow
@@ -153,34 +156,34 @@ export default function WalletDashboard() {
                     <button
                       type="button"
                       onClick={salaryModal.open}
-                      className="cursor-pointer group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
+                      className="cursor-pointer group flex items-center gap-2 text-[#6FBEE5] hover:text-[#5DAED5] transition-all hover:scale-105 active:scale-95"
                     >
-                      <Pencil className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} />
-                      <span className="text-sm font-medium underline underline-offset-4 decoration-[#6FBEE5]/30 group-hover:decoration-[#5DAED5]">
+                      <Pencil className="w-4 h-4 flex-shrink-0" strokeWidth={2.5} />
+                      <span className="text-base font-bold underline underline-offset-4 decoration-[#6FBEE5]/40 group-hover:decoration-[#5DAED5]">
                         Edit Salary
                       </span>
                     </button>
                   </div>
 
                   {/* Active/Passive Display */}
-                  <div className="flex gap-4 mb-3">
-                    <div className="text-[10px] text-white/50 uppercase tracking-wider">
-                      Active: <span className="text-white/80">${Number(activeSalary).toLocaleString()}</span>
+                  <div className="flex gap-6 mb-4">
+                    <div className="text-xs sm:text-sm text-white/60 font-medium uppercase tracking-wider">
+                      Active: <span className="text-[#6FBEE5] font-bold text-base sm:text-lg">${Number(activeSalary).toLocaleString()}</span>
                     </div>
-                    <div className="text-[10px] text-white/50 uppercase tracking-wider">
-                      Passive: <span className="text-white/80">${Number(passiveSalary).toLocaleString()}</span>
+                    <div className="text-xs sm:text-sm text-white/60 font-medium uppercase tracking-wider">
+                      Passive: <span className="text-[#6FBEE5] font-bold text-base sm:text-lg">${Number(passiveSalary).toLocaleString()}</span>
                     </div>
                   </div>
 
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-lg">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
                     <input
                       id="salary"
                       type="number"
                       placeholder="0.00"
                       value={salary}
                       readOnly
-                      className="w-full pl-8 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none transition-all text-lg cursor-not-allowed opacity-80"
+                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -194,23 +197,23 @@ export default function WalletDashboard() {
                     <button
                       type="button"
                       onClick={expensesModal.open}
-                      className="cursor-pointer group flex items-center gap-1.5 text-[#6FBEE5] hover:text-[#5DAED5] transition-colors"
+                      className="cursor-pointer group flex items-center gap-2 text-[#6FBEE5] hover:text-[#5DAED5] transition-all hover:scale-105 active:scale-95"
                     >
-                      <Eye className="w-4 h-4" />
-                      <span className="text-sm font-medium underline underline-offset-4 decoration-[#6FBEE5]/30 group-hover:decoration-[#5DAED5]">
+                      <Eye className="w-5 h-5" />
+                      <span className="text-base font-bold underline underline-offset-4 decoration-[#6FBEE5]/40 group-hover:decoration-[#5DAED5]">
                         View More
                       </span>
                     </button>
                   </div>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-lg">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
                     <input
                       id="expenses"
                       type="number"
                       placeholder="0.00"
                       value={totalExpenses}
                       readOnly
-                      className="w-full pl-8 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none transition-all text-lg cursor-not-allowed opacity-80"
+                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -218,33 +221,33 @@ export default function WalletDashboard() {
                 <div className="pt-4 border-t border-white/10">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-gradient-to-br from-white/10 to-white/5 gap-4">
                     <div className="min-w-0">
-                      <p className="text-white/60 text-xs sm:text-sm mb-1">Available Balance</p>
+                      <p className="text-white/60 text-sm sm:text-base mb-2">Available Balance</p>
                       {balance > 0 ? (
-                        <p className="text-2xl sm:text-3xl font-bold text-sky-400 truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-sky-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : balance === 0 ? (
-                        <p className="text-2xl sm:text-3xl font-bold text-white truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-white truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : (
-                        <p className="text-2xl sm:text-3xl font-bold text-red-400 truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-red-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       )}
                     </div>
                     <div
-                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg self-start sm:self-center shrink-0 ${balance >= 0 ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}
+                      className={`px-6 py-3 sm:px-8 sm:py-4 rounded-2xl self-start sm:self-center shrink-0 shadow-lg ${balance >= 0 ? "bg-green-500/20 text-green-500 shadow-green-500/10" : "bg-red-500/20 text-red-500 shadow-red-500/10"}`}
                     >
                       {balance >= 0 ? (
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                          <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
-                          <span className="text-xs sm:text-sm font-semibold">Surplus</span>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5" />
+                          <span className="text-base sm:text-xl font-black uppercase tracking-wider">Surplus</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                          <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 rotate-180" />
-                          <span className="text-xs sm:text-sm font-semibold">Deficit</span>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5 rotate-180" />
+                          <span className="text-base sm:text-xl font-black uppercase tracking-wider">Deficit</span>
                         </div>
                       )}
                     </div>
@@ -257,41 +260,41 @@ export default function WalletDashboard() {
 
         {/* Recent Activity */}
         <div className="xl:col-span-1">
-          <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-120">
+          <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[58vh]">
             <div className="p-6 h-full flex flex-col">
               <Button
                 variant="ghost"
-                className="justify-start text-xl text-white font-semibold mb-6 p-0 h-auto hover:bg-transparent hover:text-2xl"
+                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.04] transition-transform"
                 onClick={() => router.push('/recent-activity')}
               >
                 Recent Activity
               </Button>
-              <div className="space-y-4 flex-1">
+              <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2">
                 {recentTransactions.map((tx) => (
                   <div
                     key={tx.id}
-                    className="flex items-start gap-3 pb-4 border-b border-white/10 last:border-0 last:pb-0"
+                    className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
                   >
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "receive"
-                        ? "bg-green-500/60"
+                      className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg shrink-0 ${tx.type === "receive"
+                        ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20"
                         : tx.type === "send"
-                          ? "bg-red-500/60"
-                          : "bg-blue-500/60"
+                          ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20"
+                          : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
                         }`}
                     >
                       {tx.type === "receive" ? (
-                        <ArrowDownRight className="w-5 h-5 text-green-500" />
+                        <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" />
                       ) : tx.type === "send" ? (
-                        <ArrowUpRight className="w-5 h-5 text-red-500" />
+                        <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" />
                       ) : (
-                        <Zap className="w-5 h-5 text-blue-500" />
+                        <Repeat className="w-5 h-5 text-white stroke-[3px]" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.amount}</p>
-                      <p className="text-xs text-white">{tx.time}</p>
-                      <p className="text-xs text-white mt-1">
+                      <p className="text-xs text-white/60">{tx.time}</p>
+                      <p className="text-xs text-white/60 mt-1">
                         {tx.from && `From: ${tx.from}`}
                         {tx.to && `To: ${tx.to}`}
                         {tx.protocol && `Via: ${tx.protocol}`}
@@ -391,9 +394,17 @@ export default function WalletDashboard() {
       {insightModal.isOpen && (
         <div className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 ${insightModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
           <Card className={`bg-[#111] border-white/20 p-6 rounded-2xl text-white w-full max-w-md shadow-2xl transition-all duration-300 ${insightModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-200`}>
-            <div className="flex items-center gap-2 mb-4">
-              <Zap className="w-5 h-5 text-[#6FBEE5]" />
-              <h2 className="text-xl font-bold">AI Financial Insight</h2>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-[#6FBEE5]" />
+                <h2 className="text-xl font-bold">AI Financial Insight</h2>
+              </div>
+              <button
+                onClick={insightModal.close}
+                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors text-white/30 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
             <p className="text-white/70 leading-relaxed mb-6">
               Based on your current cashflow, we suggest diversifying into Sui-native liquid staking protocols. You could potentially increase your passive income by 8-12% annually.
@@ -410,76 +421,90 @@ export default function WalletDashboard() {
 
       {/* Salary Edit Modal */}
       {salaryModal.isOpen && (
-        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 ${salaryModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <Card className={`bg-[#001B39] border-white/20 p-6 rounded-3xl text-white w-full max-w-sm shadow-2xl transition-all duration-300 ${salaryModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-300`}>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center">
-                  <Pencil className="w-5 h-5 text-[#6FBEE5]" />
-                </div>
-                <h2 className="text-xl font-bold">Edit Salary</h2>
-              </div>
-              <button
-                onClick={salaryModal.close}
-                className="cursor-pointer text-white/40 hover:text-white transition-colors"
-              >
-                <Zap className="w-5 h-5 rotate-45" />
-              </button>
-            </div>
+        <div className={`fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${salaryModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <Card className={`relative overflow-hidden bg-[#0A0A0B] border border-[#1A1A1B] p-0 rounded-[32px] text-white w-full max-w-xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${salaryModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
+            {/* Top Accent Line */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
 
-            <div className="space-y-5">
-              <div>
-                <label className="block text-xs font-medium text-white/70 mb-2">Active Salary</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6FBEE5]">$</span>
-                  <input
-                    type="number"
-                    placeholder="0.00"
-                    value={activeSalary}
-                    onChange={(e) => setActiveSalary(e.target.value)}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 transition-all text-sm"
-                  />
+            <div className="p-10 md:p-12">
+              <div className="flex items-center justify-between mb-12">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                    <Pencil className="w-8 h-8 text-[#6FBEE5]" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-black tracking-tight">Edit Salary</h2>
+                    <p className="text-white/40 text-xs uppercase tracking-[0.3em] font-black mt-1.5 text-[10px]">Income Configuration</p>
+                  </div>
                 </div>
+                <button
+                  onClick={salaryModal.close}
+                  className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
+                >
+                  <X className="w-7 h-7" />
+                </button>
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-white/70 mb-2">Passive Salary</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6FBEE5]">$</span>
-                  <input
-                    type="number"
-                    placeholder="0.00"
-                    value={passiveSalary}
-                    onChange={(e) => setPassiveSalary(e.target.value)}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 transition-all text-sm"
-                  />
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1">Active Income</label>
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
+                    <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-xl px-4 py-4 group-focus-within:border-[#6FBEE5]/50 transition-all">
+                      <span className="text-xl font-bold text-[#6FBEE5] mr-2">$</span>
+                      <input
+                        type="number"
+                        placeholder="0.00"
+                        value={activeSalary}
+                        onChange={(e) => setActiveSalary(e.target.value)}
+                        className="bg-transparent border-none text-xl font-bold text-white focus:outline-none w-full placeholder:text-white/10"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1">Passive Income</label>
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
+                    <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-xl px-4 py-4 group-focus-within:border-[#6FBEE5]/50 transition-all">
+                      <span className="text-xl font-bold text-[#6FBEE5] mr-2">$</span>
+                      <input
+                        type="number"
+                        placeholder="0.00"
+                        value={passiveSalary}
+                        onChange={(e) => setPassiveSalary(e.target.value)}
+                        className="bg-transparent border-none text-xl font-bold text-white focus:outline-none w-full placeholder:text-white/10"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/10">
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-white/60 text-sm">Total:</span>
-                  <span className="text-xl font-bold text-[#6FBEE5]">
+              <div className="mt-10 pt-8 border-t border-white/5">
+                <div className="flex items-end justify-between mb-8 px-1">
+                  <span className="text-white/30 text-xs font-bold uppercase tracking-widest pb-1">Total Monthly</span>
+                  <span className="text-3xl font-black text-white">
                     ${(Number(activeSalary) + Number(passiveSalary)).toLocaleString()}
                   </span>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   <Button
                     variant="ghost"
-                    className="flex-1 py-5 rounded-xl border border-white/10 text-white/70 hover:bg-white/5 h-auto text-xs"
+                    className="py-6 rounded-xl border border-white/5 text-white/60 hover:text-white hover:bg-white/5 h-auto text-xs font-bold uppercase tracking-widest"
                     onClick={salaryModal.close}
                   >
-                    Cancel
+                    Discard
                   </Button>
                   <Button
-                    className="flex-1 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white py-5 rounded-xl font-bold shadow-lg shadow-[#6FBEE5]/20 h-auto text-xs"
+                    className="py-6 rounded-xl bg-[#6FBEE5] hover:bg-[#5DAED5] text-black font-black h-auto text-xs uppercase tracking-widest shadow-xl shadow-[#6FBEE5]/10"
                     onClick={() => {
                       setSalary((Number(activeSalary) + Number(passiveSalary)).toString())
                       salaryModal.close()
                     }}
                   >
-                    Save
+                    Apply
                   </Button>
                 </div>
               </div>
@@ -489,49 +514,55 @@ export default function WalletDashboard() {
       )}
       {/* Expenses Breakdown Modal */}
       {expensesModal.isOpen && (
-        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <Card className={`bg-[#001B39] border-white/20 p-6 rounded-3xl text-white w-full max-w-sm shadow-2xl transition-all duration-300 ${expensesModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-300`}>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center">
-                  <Eye className="w-5 h-5 text-[#6FBEE5]" />
-                </div>
-                <h2 className="text-xl font-bold">Expenses</h2>
-              </div>
-              <button
-                onClick={expensesModal.close}
-                className="cursor-pointer text-white/40 hover:text-white transition-colors"
-              >
-                <Zap className="w-5 h-5 rotate-45" />
-              </button>
-            </div>
+        <div className={`fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <Card className={`relative overflow-hidden bg-[#0A0A0B] border border-[#1A1A1B] p-0 rounded-[32px] text-white w-full max-w-xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${expensesModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
 
-            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-6">
-              {expenseCategories.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="text-sm font-medium text-white/80">{item.name}</span>
+            <div className="p-10 md:p-12">
+              <div className="flex items-center justify-between mb-12">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                    <Eye className="w-8 h-8 text-[#6FBEE5]" />
                   </div>
-                  <span className="text-sm font-bold text-[#6FBEE5]">${Number(item.amount).toLocaleString()}</span>
+                  <div>
+                    <h2 className="text-3xl font-black tracking-tight">Expenses</h2>
+                    <p className="text-white/40 text-xs uppercase tracking-[0.3em] font-black mt-1.5 text-[10px]">Spending Insights</p>
+                  </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="pt-5 border-t border-white/10">
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-white/60 text-sm">Total:</span>
-                <span className="text-2xl font-bold text-[#6FBEE5]">
-                  ${expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0).toLocaleString()}
-                </span>
+                <button
+                  onClick={expensesModal.close}
+                  className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
+                >
+                  <X className="w-7 h-7" />
+                </button>
               </div>
 
-              <Button
-                className="w-full bg-[#3A8FBC] hover:bg-[#2E7A9F] text-white py-5 rounded-xl font-bold shadow-lg shadow-[#3A8FBC]/20 h-auto text-sm transition-all"
-                onClick={expensesModal.close}
-              >
-                Close
-              </Button>
+              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-8">
+                {expenseCategories.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between p-6 rounded-[24px] bg-[#141415] border border-white/5 hover:border-[#6FBEE5]/30 hover:bg-white/[0.02] transition-all group">
+                    <div className="flex items-center gap-6">
+                      <p className="text-lg font-bold text-white group-hover:text-[#6FBEE5] transition-colors">{item.name}</p>
+                    </div>
+                    <span className="text-2xl font-black text-white tracking-tight">$ {Number(item.amount).toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-8 border-t border-white/5">
+                <div className="flex items-end justify-between mb-8 px-1">
+                  <span className="text-white/30 text-xs font-bold uppercase tracking-widest pb-1">Total Spending</span>
+                  <span className="text-3xl font-black text-white">
+                    ${expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0).toLocaleString()}
+                  </span>
+                </div>
+
+                <Button
+                  className="w-full bg-white/5 hover:bg-white/10 text-white py-6 rounded-xl font-bold border border-white/5 shadow-xl h-auto text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
+                  onClick={expensesModal.close}
+                >
+                  Dismiss
+                </Button>
+              </div>
             </div>
           </Card>
         </div>
