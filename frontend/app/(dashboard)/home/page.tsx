@@ -1,18 +1,32 @@
 "use client"
 
 import { Button, Card } from "@/components/ui"
+import { processTx, mistToSui } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, Loader2
 } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances } from "@/hooks"
+import { useModal, useGetBalances, useGetTransactions } from "@/hooks"
+import { useCurrentAccount } from "@mysten/dapp-kit"
 
 export default function WalletDashboard() {
   const router = useRouter()
-  const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
+  const account = useCurrentAccount()
 
+  const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
+  const { data: transactionData, isLoading: isTransactionLoading } = useGetTransactions()
+
+  // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
+  const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
+
+  const recentTransactions = transactionData
+    ?.map((tx) => processTx(tx, account?.address))
+    .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [];
+
+
+  // ============   MOCK   ============
   const [salary, setSalary] = useState("0")
   const [activeSalary, setActiveSalary] = useState("0")
   const [passiveSalary, setPassiveSalary] = useState("0")
@@ -36,17 +50,8 @@ export default function WalletDashboard() {
     return salaryNum - totalExpenses
   }
 
-  // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
-  const walletBalance = balanceData?.totalBalance ? Number(balanceData.totalBalance) / 1_000_000_000 : 0
   const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
   const balance = calculateBalance()
-
-  const [recentTransactions] = useState([
-    { id: 1, type: "receive", amount: "+150 SUI", usd: "$450.00", time: "2 min ago", from: "Cetus DEX" },
-    { id: 2, type: "send", amount: "-50 USDC", usd: "$50.00", time: "1 hour ago", to: "0x1a2b...3c4d" },
-    { id: 3, type: "swap", amount: "100 SUI → 150 USDC", usd: "$150.00", time: "3 hours ago", protocol: "Cetus" },
-    { id: 4, type: "swap", amount: "100 SUI → 150 USDC", usd: "$150.00", time: "3 hours ago", protocol: "Cetus" },
-  ])
 
   const [suggestions] = useState([
     {
@@ -78,6 +83,8 @@ export default function WalletDashboard() {
       priority: "low",
     },
   ])
+
+// ======================================================
 
   return (
     <div className="w-full px-6 py-8">
@@ -298,7 +305,6 @@ export default function WalletDashboard() {
                       <p className="text-xs text-white/60 mt-1">
                         {tx.from && `From: ${tx.from}`}
                         {tx.to && `To: ${tx.to}`}
-                        {tx.protocol && `Via: ${tx.protocol}`}
                       </p>
                     </div>
                     <span className="text-sm text-white">{tx.usd}</span>
