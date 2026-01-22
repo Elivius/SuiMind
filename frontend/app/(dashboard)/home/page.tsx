@@ -12,8 +12,8 @@ import { useModal } from "@/hooks/useModal"
 export default function WalletDashboard() {
   const router = useRouter()
   const [salary, setSalary] = useState("0")
-  const [activeSalary, setActiveSalary] = useState("0")
-  const [passiveSalary, setPassiveSalary] = useState("0")
+  const [activeSalary, setActiveSalary] = useState("0.00")
+  const [passiveSalary, setPassiveSalary] = useState("0.00")
 
   // Use reusable modal hook for all modals
   const insightModal = useModal()
@@ -107,18 +107,24 @@ export default function WalletDashboard() {
             {/* Right side: Send & Receive Buttons */}
             <div className="flex flex-row lg:flex-col gap-3">
               <Button
-                className="flex-1 lg:flex-none px-4 sm:px-8 py-4 sm:py-7 text-sm sm:text-base font-semibold bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-xl shadow-lg shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all"
+                className="flex-1 lg:flex-none px-5 sm:px-10 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
-                <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
-                <span className="hidden sm:inline">Send</span>
-                <span className="sm:hidden">Send</span>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300">
+                  <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors">Send</span>
+                </div>
               </Button>
               <Button
-                className="flex-1 lg:flex-none px-4 sm:px-8 py-4 sm:py-7 text-sm sm:text-base font-semibold bg-gradient-to-r from-[#22C55E] to-[#16A34A] hover:from-[#4ADE80] hover:to-[#22C55E] text-white border-0 rounded-xl shadow-lg shadow-[#22C55E]/20 hover:shadow-[#22C55E]/40 transition-all"
+                className="flex-1 lg:flex-none px-5 sm:px-10 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
-                <ArrowDownRight className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
-                <span className="hidden sm:inline">Receive</span>
-                <span className="sm:hidden">Receive</span>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300">
+                  <ArrowDownRight className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors">Receive</span>
+                </div>
               </Button>
             </div>
           </div>
@@ -252,7 +258,7 @@ export default function WalletDashboard() {
 
         {/* Recent Activity */}
         <div className="xl:col-span-1">
-          <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[58vh]">
+          <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
             <div className="p-6 h-full flex flex-col">
               <Button
                 variant="ghost"
@@ -448,8 +454,14 @@ export default function WalletDashboard() {
                         type="number"
                         placeholder="0.00"
                         value={activeSalary}
+                        onFocus={(e) => {
+                          if (activeSalary === "0.00") setActiveSalary("");
+                        }}
+                        onBlur={(e) => {
+                          if (e.target.value === "") setActiveSalary("0.00");
+                        }}
                         onChange={(e) => setActiveSalary(e.target.value)}
-                        className="bg-transparent border-none text-xl font-bold text-white focus:outline-none w-full placeholder:text-white/10"
+                        className={`bg-transparent border-none text-xl font-bold focus:outline-none w-full placeholder:text-white/10 ${activeSalary === "0.00" ? "text-white/30" : "text-white"}`}
                       />
                     </div>
                   </div>
@@ -465,8 +477,14 @@ export default function WalletDashboard() {
                         type="number"
                         placeholder="0.00"
                         value={passiveSalary}
+                        onFocus={(e) => {
+                          if (passiveSalary === "0.00") setPassiveSalary("");
+                        }}
+                        onBlur={(e) => {
+                          if (e.target.value === "") setPassiveSalary("0.00");
+                        }}
                         onChange={(e) => setPassiveSalary(e.target.value)}
-                        className="bg-transparent border-none text-xl font-bold text-white focus:outline-none w-full placeholder:text-white/10"
+                        className={`bg-transparent border-none text-xl font-bold focus:outline-none w-full placeholder:text-white/10 ${passiveSalary === "0.00" ? "text-white/30" : "text-white"}`}
                       />
                     </div>
                   </div>
