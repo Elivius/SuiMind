@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { Card, GoogleLoginButton, WalletConnectButton } from "@/components/ui"
 import { LoadingScreen } from "@/components/layout"
-import { Wallet } from "lucide-react"
+import { Wallet, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 export default function LoginPage() {
     const currentAccount = useCurrentAccount()
@@ -26,8 +27,16 @@ export default function LoginPage() {
 
     return (
         <div className="relative min-h-screen text-white flex items-center justify-center overflow-hidden">
+            {/* Back Button */}
+            <Link
+                href="/"
+                className="absolute top-10 left-10 z-20 flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all group scale-100 hover:scale-105 active:scale-95 shadow-xl backdrop-blur-md animate-in fade-in duration-1000 ease-out"
+            >
+                <ArrowLeft className="w-5 h-5 text-white group-hover:-translate-x-1.5 transition-all" />
+                <span className="text-lg font-black tracking-tight text-white">Back to Landing Page</span>
+            </Link>
 
-            <div className="relative z-10 w-full max-w-md p-6">
+            <div className="relative z-10 w-full max-w-md p-6 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-out">
                 <div className="flex flex-col items-center mb-12">
                     <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#9945FF] to-[#14F195] flex items-center justify-center shadow-2xl shadow-[#9945FF]/30 mb-6 animate-bounce-subtle">
                         <Wallet className="w-10 h-10 text-white" />
