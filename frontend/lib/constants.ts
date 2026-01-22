@@ -9,3 +9,7 @@ export const navigation = [
 ]
 
 export const SUI_COIN_TYPE = "0x2::sui::SUI";
+export const MIST_PER_SUI = 1_000_000_000;
+
+// For graphQL
+export const GQL_SUI_COIN_TYPE = "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
