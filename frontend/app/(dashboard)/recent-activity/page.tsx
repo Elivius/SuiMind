@@ -1,38 +1,32 @@
 "use client"
 
-import { Button, Card } from "@/components/ui"
+import { Button, Card, Skeleton } from "@/components/ui"
 import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat } from "lucide-react"
 import { useState } from "react"
+import { useGetTransactions } from "@/hooks"
+import { useCurrentAccount } from "@mysten/dapp-kit"
+import { processTx } from "@/lib/utils"
 
 export default function RecentActivity() {
-    const [recentTransactions] = useState([
-        { id: 1, type: "receive", amount: "+150 SUI", usd: "$450.00", time: "2 min ago", from: "Cetus DEX", status: "Completed" },
-        { id: 2, type: "send", amount: "-50 USDC", usd: "$50.00", time: "1 hour ago", to: "0x1a2b...3c4d", status: "Pending" },
-        { id: 3, type: "swap", amount: "100 SUI → 150 USDC", usd: "$150.00", time: "3 hours ago", protocol: "Cetus", status: "Cancelled" },
-        { id: 4, type: "receive", amount: "+20 SUI", usd: "$60.00", time: "5 hours ago", from: "Staking Rewards", status: "Completed" },
-        { id: 5, type: "send", amount: "-10 SUI", usd: "$30.00", time: "1 day ago", to: "0x5f6g...7h8i", status: "Completed" },
-        { id: 6, type: "receive", amount: "+100 SUI", usd: "$300.00", time: "2 days ago", from: "Cetus DEX", status: "Completed" },
-        { id: 7, type: "send", amount: "-20 USDC", usd: "$20.00", time: "3 days ago", to: "0x9a8b...7c6d", status: "Pending" },
-        { id: 8, type: "swap", amount: "50 SUI → 75 USDC", usd: "$75.00", time: "4 days ago", protocol: "Cetus", status: "Completed" },
-        { id: 9, type: "receive", amount: "+30 SUI", usd: "$90.00", time: "5 days ago", from: "Staking Rewards", status: "Completed" },
-        { id: 10, type: "send", amount: "-5 SUI", usd: "$15.00", time: "6 days ago", to: "0x1234...5678", status: "Cancelled" },
-        { id: 11, type: "receive", amount: "+150 SUI", usd: "$450.00", time: "2 min ago", from: "Cetus DEX", status: "Completed" },
-        { id: 12, type: "send", amount: "-50 USDC", usd: "$50.00", time: "1 hour ago", to: "0x1a2b...3c4d", status: "Pending" },
-        { id: 13, type: "swap", amount: "100 SUI → 150 USDC", usd: "$150.00", time: "3 hours ago", protocol: "Cetus", status: "Completed" },
-        { id: 14, type: "receive", amount: "+20 SUI", usd: "$60.00", time: "5 hours ago", from: "Staking Rewards", status: "Completed" },
-        { id: 15, type: "send", amount: "-10 SUI", usd: "$30.00", time: "1 day ago", to: "0x5f6g...7h8i", status: "Completed" },
-        { id: 16, type: "receive", amount: "+100 SUI", usd: "$300.00", time: "2 days ago", from: "Cetus DEX", status: "Completed" },
-        { id: 17, type: "send", amount: "-20 USDC", usd: "$20.00", time: "3 days ago", to: "0x9a8b...7c6d", status: "Completed" },
-        { id: 18, type: "swap", amount: "50 SUI → 75 USDC", usd: "$75.00", time: "4 days ago", protocol: "Cetus", status: "Completed" },
-        { id: 19, type: "receive", amount: "+30 SUI", usd: "$90.00", time: "5 days ago", from: "Staking Rewards", status: "Completed" },
-        { id: 20, type: "send", amount: "-5 SUI", usd: "$15.00", time: "6 days ago", to: "gggg", status: "Completed" },
-    ])
+    const itemsPerPage = 10
+    const account = useCurrentAccount()
+
+    const [cursor, setCursor] = useState<string | null>(null)
+    const [paginationHistory, setPaginationHistory] = useState<(string | null)[]>([])
+
+    const { data: transactionData, isLoading: isTransactionLoading } = useGetTransactions(itemsPerPage, cursor || undefined)
 
     const [typeFilter, setTypeFilter] = useState("all")
     const [statusFilter, setStatusFilter] = useState("all")
     const [timeFilter, setTimeFilter] = useState("all")
-    const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 10
+
+    // Destructure nodes and pageInfo from the new hook return
+    const nodes = transactionData?.nodes || [];
+    const pageInfo = transactionData?.pageInfo;
+
+    const recentTransactions = nodes
+        .map((tx) => processTx(tx, account?.address))
+        .filter((tx): tx is NonNullable<typeof tx> => tx !== null);
 
     const filteredTransactions = recentTransactions.filter(tx => {
         const matchesType = typeFilter === "all" || tx.type === typeFilter
@@ -40,22 +34,40 @@ export default function RecentActivity() {
 
         // Time filter logic (mocked since 'time' is a relative string in the data)
         let matchesTime = true
-        if (timeFilter !== "all") {
-            if (timeFilter === "24h") matchesTime = tx.time.includes("min") || tx.time.includes("hour")
-            if (timeFilter === "7d") matchesTime = !tx.time.includes("month") // simplistic mock
+        if (timeFilter !== "all" && tx.time) {
+            const timeStr = tx.time.toString();
+            if (timeFilter === "24h") matchesTime = timeStr.includes("min") || timeStr.includes("hour") || timeStr.includes("secs")
+            if (timeFilter === "7d") matchesTime = !timeStr.includes("/")
         }
 
         return matchesType && matchesStatus && matchesTime
     })
 
-    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage)
-    const paginatedTransactions = filteredTransactions.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    )
+    // Alias for compatibility with existing render code
+    const paginatedTransactions = filteredTransactions;
+
+    const handleNextPage = () => {
+        if (pageInfo?.hasPreviousPage && pageInfo?.startCursor) {
+            setPaginationHistory((prev) => [...prev, cursor]);
+            setCursor(pageInfo.startCursor)
+        }
+    }
+
+    const handlePrevPage = () => {
+        if (paginationHistory.length > 0) {
+            const prevCursor = paginationHistory[paginationHistory.length - 1];
+            setCursor(prevCursor);
+            setPaginationHistory((prev) => prev.slice(0, -1));
+        } else {
+            // Fallback reset
+            setCursor(null);
+            setPaginationHistory([]);
+        }
+    }
 
     const handleFilterChange = () => {
-        setCurrentPage(1)
+        setCursor(null);
+        setPaginationHistory([]);
     }
 
     return (
@@ -126,115 +138,165 @@ export default function RecentActivity() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/10">
-                                    {paginatedTransactions.map((tx) => (
-                                        <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${tx.type === "receive" ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20" :
-                                                        tx.type === "send" ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20" : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
-                                                        }`}>
-                                                        {tx.type === "receive" ? <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" /> :
-                                                            tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" /> :
-                                                                <Repeat className="w-5 h-5 text-white stroke-[3px]" />}
+                                    {isTransactionLoading ? (
+                                        // Skeleton Rows
+                                        Array.from({ length: 5 }).map((_, i) => (
+                                            <tr key={i}>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <Skeleton className="h-10 w-10 rounded-full" />
+                                                        <Skeleton className="h-4 w-16" />
                                                     </div>
-                                                    <span className="capitalize font-medium text-white">{tx.type}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <p className={`font-semibold ${tx.type === "receive" ? "text-green-500" :
-                                                    tx.type === "send" ? "text-red-500" : "text-blue-500"
-                                                    }`}>{tx.amount}</p>
-                                                <p className="text-xs text-white">{tx.usd}</p>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-white">
-                                                {tx.from && `From: ${tx.from}`}
-                                                {tx.to && `To: ${tx.to}`}
-                                                {tx.protocol && `Via: ${tx.protocol}`}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-white">
-                                                {tx.time}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${tx.status === "Completed" ? "bg-green-500/10 text-green-500" :
-                                                    tx.status === "Pending" ? "bg-yellow-500/10 text-yellow-400" :
-                                                        tx.status === "Cancelled" ? "bg-red-500/10 text-red-400" :
-                                                            "bg-white/10 text-white"
-                                                    }`}>
-                                                    {tx.status}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                </td>
+                                                <td className="px-6 py-4 space-y-1">
+                                                    <Skeleton className="h-5 w-20" />
+                                                    <Skeleton className="h-3 w-10" />
+                                                </td>
+                                                <td className="px-6 py-4 space-y-1">
+                                                    <Skeleton className="h-4 w-32" />
+                                                    <Skeleton className="h-3 w-20" />
+                                                </td>
+                                                <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
+                                                <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full" /></td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        paginatedTransactions.map((tx) => (
+                                            <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${tx.type === "receive" ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20" :
+                                                            tx.type === "send" ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20" : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
+                                                            }`}>
+                                                            {tx.type === "receive" ? <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" /> :
+                                                                tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" /> :
+                                                                    <Repeat className="w-5 h-5 text-white stroke-[3px]" />}
+                                                        </div>
+                                                        <span className="capitalize font-medium text-white">{tx.type}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <p className={`font-semibold ${tx.type === "receive" ? "text-green-500" :
+                                                        tx.type === "send" ? "text-red-500" : "text-blue-500"
+                                                        }`}>{tx.amount}</p>
+                                                    <p className="text-xs text-white">{tx.usd}</p>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-white">
+                                                    <div className="flex flex-col gap-0.5">
+                                                        {tx.from && <span>From: {tx.from}</span>}
+                                                        {tx.to && <span>To: {tx.to}</span>}
+                                                    </div>
+                                                    {tx.gas_fee && <div className="text-xs text-white/50 mt-1">Gas Fee: {tx.gas_fee}</div>}
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-white">
+                                                    {tx.time}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${tx.status === "Completed" ? "bg-green-500/10 text-green-500" :
+                                                        tx.status === "Pending" ? "bg-yellow-500/10 text-yellow-400" :
+                                                            tx.status === "Cancelled" ? "bg-red-500/10 text-red-400" :
+                                                                "bg-white/10 text-white"
+                                                        }`}>
+                                                        {tx.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>
 
                         {/* Mobile List */}
                         <div className="md:hidden divide-y divide-white/10">
-                            {paginatedTransactions.map((tx) => (
-                                <div key={tx.id} className="p-4 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md ${tx.type === "receive" ? "bg-gradient-to-br from-green-400 to-green-600" :
-                                                tx.type === "send" ? "bg-gradient-to-br from-red-400 to-red-600" : "bg-gradient-to-br from-blue-400 to-blue-600"
+                            {isTransactionLoading ? (
+                                // Skeleton List Items
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <div key={i} className="p-4 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <Skeleton className="w-8 h-8 rounded-full" />
+                                                <div className="space-y-1">
+                                                    <Skeleton className="h-4 w-20" />
+                                                    <Skeleton className="h-3 w-12" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1 flex flex-col items-end">
+                                                <Skeleton className="h-4 w-16" />
+                                                <Skeleton className="h-3 w-10" />
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <Skeleton className="h-3 w-32" />
+                                            <Skeleton className="h-5 w-16 rounded-full" />
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                paginatedTransactions.map((tx) => (
+                                    <div key={tx.id} className="p-4 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md ${tx.type === "receive" ? "bg-gradient-to-br from-green-400 to-green-600" :
+                                                    tx.type === "send" ? "bg-gradient-to-br from-red-400 to-red-600" : "bg-gradient-to-br from-blue-400 to-blue-600"
+                                                    }`}>
+                                                    {tx.type === "receive" ? <ArrowDownLeft className="w-4 h-4 text-white stroke-[3px]" /> :
+                                                        tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-white stroke-[3px]" /> :
+                                                            <Repeat className="w-4 h-4 text-white stroke-[3px]" />}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
+                                                    <p className="text-[10px] text-white/50">{tx.time}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" :
+                                                    tx.type === "send" ? "text-red-500" : "text-blue-500"
+                                                    }`}>{tx.amount}</p>
+                                                <p className="text-[10px] text-white/50">{tx.usd}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="text-[11px] text-white/70 truncate flex-1 flex flex-col gap-0.5">
+                                                <div className="truncate">
+                                                    {tx.from && `From: ${tx.from}`}
+                                                    {tx.to && `To: ${tx.to}`}
+                                                </div>
+                                                {tx.gas_fee && <div className="text-white/50">Gas Fee: {tx.gas_fee}</div>}
+                                            </div>
+                                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${tx.status === "Completed" ? "bg-green-500/10 text-green-500" :
+                                                tx.status === "Pending" ? "bg-yellow-500/10 text-yellow-400" :
+                                                    tx.status === "Cancelled" ? "bg-red-500/10 text-red-400" :
+                                                        "bg-white/10 text-white"
                                                 }`}>
-                                                {tx.type === "receive" ? <ArrowDownLeft className="w-4 h-4 text-white stroke-[3px]" /> :
-                                                    tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-white stroke-[3px]" /> :
-                                                        <Repeat className="w-4 h-4 text-white stroke-[3px]" />}
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
-                                                <p className="text-[10px] text-white/50">{tx.time}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" :
-                                                tx.type === "send" ? "text-red-500" : "text-blue-500"
-                                                }`}>{tx.amount}</p>
-                                            <p className="text-[10px] text-white/50">{tx.usd}</p>
+                                                {tx.status}
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between gap-2">
-                                        <p className="text-[11px] text-white/70 truncate flex-1">
-                                            {tx.from && `From: ${tx.from}`}
-                                            {tx.to && `To: ${tx.to}`}
-                                            {tx.protocol && `Via: ${tx.protocol}`}
-                                        </p>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${tx.status === "Completed" ? "bg-green-500/10 text-green-500" :
-                                            tx.status === "Pending" ? "bg-yellow-500/10 text-yellow-400" :
-                                                tx.status === "Cancelled" ? "bg-red-500/10 text-red-400" :
-                                                    "bg-white/10 text-white"
-                                            }`}>
-                                            {tx.status}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
 
                         {/* Pagination Controls */}
                         <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between gap-4">
                             <p className="text-sm text-white/50">
-                                Showing {paginatedTransactions.length} of {filteredTransactions.length} transactions
+                                {isTransactionLoading ? "Loading..." : `Showing ${filteredTransactions.length} transaction(s)`}
                             </p>
                             <div className="flex items-center gap-2">
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    disabled={currentPage === 1}
-                                    onClick={() => setCurrentPage(prev => prev - 1)}
+                                    onClick={handlePrevPage}
+                                    disabled={paginationHistory.length === 0 || isTransactionLoading}
                                     className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30"
                                 >
                                     Previous
                                 </Button>
-                                <span className="text-sm text-white px-2">
-                                    Page {currentPage} of {totalPages || 1}
-                                </span>
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    disabled={currentPage === totalPages || totalPages === 0}
-                                    onClick={() => setCurrentPage(prev => prev + 1)}
+                                    onClick={handleNextPage}
+                                    disabled={!pageInfo?.hasPreviousPage || isTransactionLoading}
                                     className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30"
                                 >
                                     Next

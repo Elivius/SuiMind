@@ -8,7 +8,7 @@ query getTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {
   transactions(last: $limit, before: $before, filter: {affectedAddress: $address}) {
     pageInfo {
       hasPreviousPage
-      endCursor
+      startCursor
     }
     nodes {
       digest
@@ -44,7 +44,7 @@ export function useGetTransactions(limit: number = 5, before?: string) {
   return useQuery({
     queryKey: ["get-transactions", address, limit, before],
     queryFn: async () => {
-      if (!address) return { nodes: [], pageInfo: { hasPreviousPage: false, endCursor: null } };
+      if (!address) return { nodes: [], pageInfo: { hasPreviousPage: false, startCursor: null } };
 
       const result = await gqlClient.query({
         query: GET_TRANSACTIONS_QUERY,
@@ -56,7 +56,7 @@ export function useGetTransactions(limit: number = 5, before?: string) {
       });
 
       const transactions = result.data?.transactions?.nodes ?? [];
-      const pageInfo = result.data?.transactions?.pageInfo ?? { hasPreviousPage: false, endCursor: null };
+      const pageInfo = result.data?.transactions?.pageInfo ?? { hasPreviousPage: false, startCursor: null };
 
       return {
         nodes: [...transactions].reverse(),
