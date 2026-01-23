@@ -302,7 +302,7 @@ export default function RecentActivity() {
                                     variant="outline"
                                     size="sm"
                                     onClick={handleNextPage}
-                                    disabled={!pageInfo?.hasPreviousPage || isTransactionLoading}
+                                    disabled={!pageInfo?.hasPreviousPage || isTransactionLoading || paginatedTransactions.length < itemsPerPage}
                                     className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30"
                                 >
                                     Next
