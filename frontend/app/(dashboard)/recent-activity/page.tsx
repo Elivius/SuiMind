@@ -160,6 +160,12 @@ export default function RecentActivity() {
                                                 <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full" /></td>
                                             </tr>
                                         ))
+                                    ) : paginatedTransactions.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} className="px-6 py-12 text-center text-white/50">
+                                                No transactions found matching your filters.
+                                            </td>
+                                        </tr>
                                     ) : (
                                         paginatedTransactions.map((tx) => (
                                             <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
