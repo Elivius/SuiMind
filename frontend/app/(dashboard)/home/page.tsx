@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, Card } from "@/components/ui"
+import { Button, Card, Skeleton } from "@/components/ui"
 import { processTx, mistToSui } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye,
@@ -99,7 +99,7 @@ export default function WalletDashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
                   {isBalanceLoading ? (
-                    <div className="h-10 sm:h-14 lg:h-[4.5rem] w-24 sm:w-40 bg-white/10 rounded-xl animate-pulse" />
+                    <Skeleton className="h-10 sm:h-14 lg:h-[4.5rem] w-24 sm:w-40 bg-white/10 rounded-xl" />
                   ) : (
                     `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SUI`
                   )}
@@ -289,17 +289,17 @@ export default function WalletDashboard() {
                       className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
                     >
                       {/* Icon Skeleton */}
-                      <div className="w-10 h-10 rounded-full bg-white/5 animate-pulse shrink-0" />
+                      <Skeleton className="w-10 h-10 rounded-full shrink-0" />
 
                       {/* Text Skeleton */}
                       <div className="flex-1 min-w-0 space-y-2">
-                        <div className="h-4 bg-white/5 rounded w-24 animate-pulse" />
-                        <div className="h-3 bg-white/5 rounded w-16 animate-pulse" />
-                        <div className="h-3 bg-white/5 rounded w-32 animate-pulse mt-1" />
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                        <Skeleton className="h-3 w-32 mt-1" />
                       </div>
 
                       {/* Amount Skeleton */}
-                      <div className="h-4 bg-white/5 rounded w-12 animate-pulse" />
+                      <Skeleton className="h-4 w-12" />
                     </div>
                   ))
                 ) : (
