@@ -11,8 +11,25 @@ query getTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {
       endCursor
     }
     nodes {
+      digest
+      gasInput {
+        gasPrice
+        gasBudget
+        gasSponsor {
+          address
+        }
+      }
       effects {
         timestamp
+        status
+        gasEffects {
+          gasSummary {
+            computationCost
+            storageCost
+            storageRebate
+            nonRefundableStorageFee
+          }
+        }
         balanceChangesJson
       }
     }
@@ -21,27 +38,31 @@ query getTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {
 `);
 
 export function useGetTransactions(limit: number = 5, before?: string) {
-    const account = useCurrentAccount();
-    const address = account?.address;
+  const account = useCurrentAccount();
+  const address = account?.address;
 
-    return useQuery({
-        queryKey: ["get-transactions", address, limit, before],
-        queryFn: async () => {
-            if (!address) return [];
+  return useQuery({
+    queryKey: ["get-transactions", address, limit, before],
+    queryFn: async () => {
+      if (!address) return { nodes: [], pageInfo: { hasPreviousPage: false, endCursor: null } };
 
-            const result = await gqlClient.query({
-                query: GET_TRANSACTIONS_QUERY,
-                variables: {
-                    address,
-                    limit,
-                    before
-                },
-            });
-
-            const transactions = result.data?.transactions?.nodes ?? [];
-
-            return [...transactions].reverse();
+      const result = await gqlClient.query({
+        query: GET_TRANSACTIONS_QUERY,
+        variables: {
+          address,
+          limit,
+          before
         },
-        enabled: !!address,
-    });
+      });
+
+      const transactions = result.data?.transactions?.nodes ?? [];
+      const pageInfo = result.data?.transactions?.pageInfo ?? { hasPreviousPage: false, endCursor: null };
+
+      return {
+        nodes: [...transactions].reverse(),
+        pageInfo
+      };
+    },
+    enabled: !!address,
+  });
 }
