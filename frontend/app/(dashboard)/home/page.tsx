@@ -303,9 +303,9 @@ export default function WalletDashboard() {
                     </div>
                   ))
                 ) : (
-                  recentTransactions.map((tx) => (
+                  recentTransactions.map((tx, index) => (
                     <div
-                      key={tx.id}
+                      key={tx.id || `tx-${index}`}
                       className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
                     >
                       <div
