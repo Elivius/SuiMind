@@ -86,7 +86,7 @@ export default function LandingPage() {
                                     <TrendingUp className="w-7 h-7 text-[#6FBEE5]" />
                                 </div>
                                 <h3 className="text-2xl font-bold mb-4 text-white">Cashflow Master</h3>
-                                <p className="text-white/50 leading-relaxed font-medium">Automatic tracking of active and passive income with visual breakdowns of your monthly expenses.</p>
+                                <p className="text-white/50 leading-relaxed font-medium">Take full control of your financial flow by managing your active and passive income with intuitive visual insights into your monthly spending patterns.</p>
                             </Card>
                         </FadeReveal>
 
@@ -114,7 +114,7 @@ export default function LandingPage() {
 
                 {/* DECISION SECTION */}
                 <section className="px-6 py-20 md:py-32 bg-gradient-to-b from-transparent via-[#6FBEE5]/5 to-transparent">
-                    <div className="w-full mx-auto flex flex-col lg:flex-row items-center gap-10 lg:gap-16 px-6 md:px-12">
+                    <div className="max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-80 px-6 md:px-12">
                         <div className="flex-1">
                             <FadeReveal direction="left" distance={60}>
                                 <h2 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tighter mb-8 leading-[0.9]">
@@ -141,22 +141,73 @@ export default function LandingPage() {
                             </div>
                         </div>
 
-                        <div className="flex-1 w-full">
-                            <FadeReveal direction="right" distance={40} scale={0.9}>
-                                <div className="relative aspect-square max-w-sm md:max-w-md mx-auto">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] rounded-[2rem] md:rounded-[3rem] blur-3xl opacity-20 animate-pulse" />
-                                    <Card className="relative h-full w-full border-white/20 bg-white/5 backdrop-blur-2xl rounded-[2rem] md:rounded-[3rem] overflow-hidden p-6 md:p-8 flex flex-col justify-center">
-                                        <div className="space-y-6">
-                                            <div className="h-12 w-full bg-white/10 rounded-xl" />
-                                            <div className="h-12 w-3/4 bg-white/10 rounded-xl opacity-60" />
-                                            <div className="h-40 w-full bg-gradient-to-br from-[#6FBEE5]/20 to-transparent rounded-2xl border border-white/10 flex items-center justify-center">
-                                                <BarChart3 className="w-16 h-16 text-[#6FBEE5] opacity-50" />
-                                            </div>
-                                            <div className="h-12 w-full bg-white/10 rounded-xl opacity-30" />
+                        <div className="flex-1 w-full relative">
+                            <div className="relative max-w-lg mx-auto mt-12 lg:mt-0">
+                                {/* Background Glow */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] rounded-[3rem] blur-[100px] opacity-20 animate-pulse" />
+
+                                <div className="relative space-y-4">
+                                    {/* Decision Card 1 */}
+                                    <FadeReveal direction="right" distance={40} delay={200} scale={0.95}>
+                                        <div className="transform -rotate-2 hover:rotate-0 transition-all duration-500 -translate-x-8 sm:-translate-x-12">
+                                            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl p-5 md:p-6 rounded-3xl shadow-2xl flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-2xl bg-[#6FBEE5]/20 flex items-center justify-center shrink-0">
+                                                    <TrendingUp className="w-6 h-6 text-[#6FBEE5]" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-1">Yield Optimization</p>
+                                                    <p className="text-white text-sm font-bold">Move 50 SUI to Scallop for +2.4% APR</p>
+                                                </div>
+                                                <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
+                                                    <ArrowRight className="w-4 h-4 text-white/40" />
+                                                </div>
+                                            </Card>
                                         </div>
-                                    </Card>
+                                    </FadeReveal>
+
+                                    {/* Decision Card 2 - Main AI Mind */}
+                                    <FadeReveal direction="right" distance={40} delay={300} scale={0.95}>
+                                        <div className="z-10 relative">
+                                            <Card className="border-[#6FBEE5]/30 bg-gradient-to-br from-[#6FBEE5]/20 to-transparent backdrop-blur-3xl p-6 md:p-8 rounded-[2.5rem] shadow-2xl">
+                                                <div className="flex items-center gap-4 mb-6">
+                                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-[0_0_30px_rgba(111,190,229,0.5)]">
+                                                        <Bot className="w-7 h-7 sm:w-8 sm:h-8 text-[#6FBEE5]" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-lg sm:text-xl font-black text-white leading-tight">Mindy AI is Thinking...</h4>
+                                                        <div className="flex gap-1 mt-1.5">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-[#6FBEE5] animate-bounce" />
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-[#6FBEE5] animate-bounce [animation-delay:0.2s]" />
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-[#6FBEE5] animate-bounce [animation-delay:0.4s]" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <div className="h-2 w-full bg-white/10 rounded-full" />
+                                                    <div className="h-2 w-5/6 bg-white/10 rounded-full" />
+                                                    <div className="h-2 w-4/6 bg-white/10 rounded-full opacity-50" />
+                                                </div>
+                                            </Card>
+                                        </div>
+                                    </FadeReveal>
+
+                                    {/* Decision Card 3 */}
+                                    <FadeReveal direction="right" distance={40} delay={400} scale={0.95}>
+                                        <div className="transform rotate-3 hover:rotate-0 transition-all duration-500 translate-x-8 sm:translate-x-12">
+                                            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl p-5 md:p-6 rounded-3xl shadow-2xl flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center shrink-0">
+                                                    <Shield className="w-6 h-6 text-indigo-400" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-1">Security Update</p>
+                                                    <p className="text-white text-sm font-bold">Revoke 'UnknownDEX' permissions?</p>
+                                                </div>
+                                                <Button size="sm" className="bg-white/10 hover:bg-white/20 border-0 text-[10px] h-8 px-4 rounded-xl font-bold">Review</Button>
+                                            </Card>
+                                        </div>
+                                    </FadeReveal>
                                 </div>
-                            </FadeReveal>
+                            </div>
                         </div>
                     </div>
                 </section>

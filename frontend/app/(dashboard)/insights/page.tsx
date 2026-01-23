@@ -186,7 +186,7 @@ export default function DashboardPage() {
                     <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <p className="text-white/60 text-sm">Income</p>
+                                <p className="text-white/60 text-sm">Monthly Income</p>
                                 <p className="text-2xl font-bold text-white">$93.38K</p>
                                 <div className="flex items-center gap-1 text-sky-400 text-xs">
                                     <TrendingUp className="w-3 h-3" />
@@ -202,7 +202,7 @@ export default function DashboardPage() {
                     <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <p className="text-white/60 text-sm">Expenses</p>
+                                <p className="text-white/60 text-sm">Monthly Expenses</p>
                                 <p className="text-2xl font-bold text-white">$25.18K</p>
                                 <p className="text-white/40 text-xs">47 items</p>
                             </div>
