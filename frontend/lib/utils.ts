@@ -76,6 +76,19 @@ export function processTx(node: any, address?: string) {
   const counterparty = findCounterparty(balanceChanges, address, type);
   const counterpartyLabel = truncateAddress(counterparty);
 
+  const status = node.effects?.status === "SUCCESS" ? "Completed" : "Failed";
+
+  // 5. Calculate Gas Fee
+  let gasFeeDisplay = "0 SUI";
+  const gasSummary = node.effects?.gasEffects?.gasSummary;
+  if (gasSummary) {
+    const compCost = Number(gasSummary.computationCost || 0);
+    const storageCost = Number(gasSummary.storageCost || 0);
+    const storageRebate = Number(gasSummary.storageRebate || 0);
+    const netGasFee = compCost + storageCost - storageRebate;
+    gasFeeDisplay = `${mistToSui(Math.max(0, netGasFee)).toLocaleString("en-US", { maximumFractionDigits: 4 })} SUI`;
+  }
+
   return {
     id: node.digest,
     type,
@@ -85,18 +98,23 @@ export function processTx(node: any, address?: string) {
     // Only set 'from' if receiving (or explicit from), 'to' if sending
     from: type === "receive" ? counterpartyLabel : null,
     to: type === "send" ? counterpartyLabel : null,
+    status,
+    gas_fee: gasFeeDisplay,
   };
-};
+}
 
 export function formatRelativeTime(dateInput: string | number | Date): string {
   let date: Date;
+
   if (dateInput instanceof Date) {
     date = dateInput;
   } else {
+    // Try parsing as number first (for standard timestamps)
     const asNum = Number(dateInput);
     if (!isNaN(asNum)) {
       date = new Date(asNum);
     } else {
+      // Fallback to string parsing
       date = new Date(dateInput);
     }
   }
@@ -106,14 +124,20 @@ export function formatRelativeTime(dateInput: string | number | Date): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffSecs = Math.floor(diffMs / 1000);
-  const diffMins = Math.floor(diffSecs / 60);
-  const diffHrs = Math.floor(diffMins / 60);
 
-  if (diffHrs < 24) {
-    if (diffSecs < 60) return `${diffSecs} secs ago`;
-    if (diffMins < 60) return `${diffMins} mins ago`;
-    return `${diffHrs} hrs ago`;
-  }
+  // Future check (clock skew)
+  if (diffSecs < 0) return "Just now";
+
+  if (diffSecs < 60) return `${diffSecs} sec${diffSecs !== 1 ? 's' : ''} ago`;
+
+  const diffMins = Math.floor(diffSecs / 60);
+  if (diffMins < 60) return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
+
+  const diffHrs = Math.floor(diffMins / 60);
+  if (diffHrs < 24) return `${diffHrs} hr${diffHrs !== 1 ? 's' : ''} ago`;
+
+  const diffDays = Math.floor(diffHrs / 24);
+  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
 
   return date.toLocaleString();
 }

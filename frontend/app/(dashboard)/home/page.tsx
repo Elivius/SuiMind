@@ -21,7 +21,7 @@ export default function WalletDashboard() {
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
 
-  const recentTransactions = transactionData
+  const recentTransactions = transactionData?.nodes
     ?.map((tx) => processTx(tx, account?.address))
     .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [];
 
