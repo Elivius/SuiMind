@@ -81,9 +81,39 @@ export function processTx(node: any, address?: string) {
     type,
     amount: amountDisplay,
     usd: "$0.00", // Need real price feed
-    time: node.effects?.timestamp ? new Date(node.effects.timestamp).toLocaleString() : "Just now",
+    time: node.effects?.timestamp ? formatRelativeTime(node.effects.timestamp) : "Just now",
     // Only set 'from' if receiving (or explicit from), 'to' if sending
     from: type === "receive" ? counterpartyLabel : null,
     to: type === "send" ? counterpartyLabel : null,
   };
 };
+
+export function formatRelativeTime(dateInput: string | number | Date): string {
+  let date: Date;
+  if (dateInput instanceof Date) {
+    date = dateInput;
+  } else {
+    const asNum = Number(dateInput);
+    if (!isNaN(asNum)) {
+      date = new Date(asNum);
+    } else {
+      date = new Date(dateInput);
+    }
+  }
+
+  if (isNaN(date.getTime())) return "Invalid Date";
+
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHrs = Math.floor(diffMins / 60);
+
+  if (diffHrs < 24) {
+    if (diffSecs < 60) return `${diffSecs} secs ago`;
+    if (diffMins < 60) return `${diffMins} mins ago`;
+    return `${diffHrs} hrs ago`;
+  }
+
+  return date.toLocaleString();
+}
