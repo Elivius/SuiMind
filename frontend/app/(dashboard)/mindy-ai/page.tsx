@@ -42,7 +42,7 @@ export default function MindyAIPage() {
                                         className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all"
                                     />
                                 </div>
-                                <Button className="px-5 sm:px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-[#001B39] font-bold border-0 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#6FBEE5]/20">
+                                <Button className="px-5 sm:px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-bold border-0 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#6FBEE5]/20">
                                     <ArrowUpRight className="w-5 h-5 sm:mr-1" />
                                     <span className="hidden sm:inline">Send</span>
                                 </Button>
