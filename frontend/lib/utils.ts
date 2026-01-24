@@ -22,6 +22,17 @@ export function truncateAddress(address: string, startChars = 6, endChars = 4) {
   return `${address.slice(0, startChars)}...${address.slice(-endChars)}`
 }
 
+function safelyParseTimestamp(input: string | number | Date | null | undefined): number {
+  if (!input) return Date.now();
+  if (input instanceof Date) return input.getTime();
+
+  const asNum = Number(input);
+  if (!isNaN(asNum)) return asNum;
+
+  const parsed = new Date(input).getTime();
+  return isNaN(parsed) ? Date.now() : parsed;
+}
+
 // ---- Process Transaction Helpers ----
 
 export function calculateTxDisplay(rawAmountMist: number) {
@@ -89,12 +100,15 @@ export function processTx(node: any, address?: string) {
     gasFeeDisplay = `${mistToSui(Math.max(0, netGasFee)).toLocaleString("en-US", { maximumFractionDigits: 4 })} SUI`;
   }
 
+  const timestampMs = safelyParseTimestamp(node.effects?.timestamp);
+
   return {
     id: node.digest,
     type,
     amount: amountDisplay,
     usd: "$0.00", // Need real price feed
-    time: node.effects?.timestamp ? formatRelativeTime(node.effects.timestamp) : "Just now",
+    time: formatRelativeTime(timestampMs),
+    timestampMs,
     // Only set 'from' if receiving (or explicit from), 'to' if sending
     from: type === "receive" ? counterpartyLabel : null,
     to: type === "send" ? counterpartyLabel : null,
@@ -104,20 +118,8 @@ export function processTx(node: any, address?: string) {
 }
 
 export function formatRelativeTime(dateInput: string | number | Date): string {
-  let date: Date;
-
-  if (dateInput instanceof Date) {
-    date = dateInput;
-  } else {
-    // Try parsing as number first (for standard timestamps)
-    const asNum = Number(dateInput);
-    if (!isNaN(asNum)) {
-      date = new Date(asNum);
-    } else {
-      // Fallback to string parsing
-      date = new Date(dateInput);
-    }
-  }
+  const ms = safelyParseTimestamp(dateInput);
+  const date = new Date(ms);
 
   if (isNaN(date.getTime())) return "Invalid Date";
 
