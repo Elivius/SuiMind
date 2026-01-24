@@ -1,16 +1,32 @@
 "use client"
 
-import { Button, Card } from "@/components/ui"
+import { Button, Card, Skeleton } from "@/components/ui"
+import { processTx, mistToSui } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal
 } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useModal } from "@/hooks/useModal"
+import { useModal, useGetBalances, useGetTransactions } from "@/hooks"
+import { useCurrentAccount } from "@mysten/dapp-kit"
 
 export default function WalletDashboard() {
   const router = useRouter()
+  const account = useCurrentAccount()
+
+  const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
+  const { data: transactionData, isLoading: isTransactionLoading } = useGetTransactions()
+
+  // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
+  const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
+
+  const recentTransactions = transactionData?.nodes
+    ?.map((tx) => processTx(tx, account?.address))
+    .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [];
+
+
+  // ============   MOCK   ============
   const [salary, setSalary] = useState("0")
   const [activeSalary, setActiveSalary] = useState("0.00")
   const [passiveSalary, setPassiveSalary] = useState("0.00")
@@ -34,16 +50,8 @@ export default function WalletDashboard() {
     return salaryNum - totalExpenses
   }
 
-  const walletBalance = 123.0
   const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
   const balance = calculateBalance()
-
-  const [recentTransactions] = useState([
-    { id: 1, type: "receive", amount: "+150 SUI", usd: "$450.00", time: "2 min ago", from: "Cetus DEX" },
-    { id: 2, type: "send", amount: "-50 USDC", usd: "$50.00", time: "1 hour ago", to: "0x1a2b...3c4d" },
-    { id: 3, type: "swap", amount: "100 SUI → 150 USDC", usd: "$150.00", time: "3 hours ago", protocol: "Cetus" },
-    { id: 4, type: "swap", amount: "100 SUI → 150 USDC", usd: "$150.00", time: "3 hours ago", protocol: "Cetus" },
-  ])
 
   const [suggestions] = useState([
     {
@@ -76,6 +84,8 @@ export default function WalletDashboard() {
     },
   ])
 
+  // ======================================================
+
   return (
     <div className="w-full px-6 py-8">
       {/* Main Balance Card */}
@@ -88,7 +98,11 @@ export default function WalletDashboard() {
               <p className="text-white/70 text-base sm:text-xl font-bold mb-2">Total Balance</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
-                  ${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {isBalanceLoading ? (
+                    <Skeleton className="h-10 sm:h-14 lg:h-[4.5rem] w-24 sm:w-40 bg-white/10 rounded-xl" />
+                  ) : (
+                    `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SUI`
+                  )}
                 </h2>
                 {/* AI Insight beside the number */}
                 <div
@@ -268,39 +282,60 @@ export default function WalletDashboard() {
                 Recent Activity
               </Button>
               <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2">
-                {recentTransactions.map((tx) => (
-                  <div
-                    key={tx.id}
-                    className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
-                  >
+                {isTransactionLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg shrink-0 ${tx.type === "receive"
-                        ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20"
-                        : tx.type === "send"
-                          ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20"
-                          : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
-                        }`}
+                      key={`skeleton-${i}`}
+                      className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
                     >
-                      {tx.type === "receive" ? (
-                        <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" />
-                      ) : tx.type === "send" ? (
-                        <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" />
-                      ) : (
-                        <Repeat className="w-5 h-5 text-white stroke-[3px]" />
-                      )}
+                      {/* Icon Skeleton */}
+                      <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+
+                      {/* Text Skeleton */}
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                        <Skeleton className="h-3 w-32 mt-1" />
+                      </div>
+
+                      {/* Amount Skeleton */}
+                      <Skeleton className="h-4 w-12" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.amount}</p>
-                      <p className="text-xs text-white/60">{tx.time}</p>
-                      <p className="text-xs text-white/60 mt-1">
-                        {tx.from && `From: ${tx.from}`}
-                        {tx.to && `To: ${tx.to}`}
-                        {tx.protocol && `Via: ${tx.protocol}`}
-                      </p>
+                  ))
+                ) : (
+                  recentTransactions.map((tx, index) => (
+                    <div
+                      key={tx.id || `tx-${index}`}
+                      className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
+                    >
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg shrink-0 ${tx.type === "receive"
+                          ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20"
+                          : tx.type === "send"
+                            ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20"
+                            : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
+                          }`}
+                      >
+                        {tx.type === "receive" ? (
+                          <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" />
+                        ) : tx.type === "send" ? (
+                          <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" />
+                        ) : (
+                          <Repeat className="w-5 h-5 text-white stroke-[3px]" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.amount}</p>
+                        <p className="text-xs text-white/60">{tx.time}</p>
+                        <p className="text-xs text-white/60 mt-1">
+                          {tx.from && `From: ${tx.from}`}
+                          {tx.to && `To: ${tx.to}`}
+                        </p>
+                      </div>
+                      <span className="text-sm text-white">{tx.usd}</span>
                     </div>
-                    <span className="text-sm text-white">{tx.usd}</span>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </Card>
