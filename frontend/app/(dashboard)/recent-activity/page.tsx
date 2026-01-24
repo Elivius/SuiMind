@@ -32,12 +32,24 @@ export default function RecentActivity() {
         const matchesType = typeFilter === "all" || tx.type === typeFilter
         const matchesStatus = statusFilter === "all" || tx.status === statusFilter
 
-        // Time filter logic (mocked since 'time' is a relative string in the data)
+        // Time filter logic using raw timestamp
         let matchesTime = true
-        if (timeFilter !== "all" && tx.time) {
-            const timeStr = tx.time.toString();
-            if (timeFilter === "24h") matchesTime = timeStr.includes("min") || timeStr.includes("hour") || timeStr.includes("secs")
-            if (timeFilter === "7d") matchesTime = !timeStr.includes("/")
+        if (timeFilter !== "all") {
+            const txTime = tx.timestampMs || 0;
+            const now = Date.now();
+
+            if (timeFilter === "24h") {
+                const oneDayInMs = 24 * 60 * 60 * 1000;
+                matchesTime = (now - txTime) <= oneDayInMs;
+            }
+            if (timeFilter === "7d") {
+                const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+                matchesTime = (now - txTime) <= sevenDaysInMs;
+            }
+            if (timeFilter === "30d") {
+                const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+                matchesTime = (now - txTime) <= thirtyDaysInMs;
+            }
         }
 
         return matchesType && matchesStatus && matchesTime
@@ -284,7 +296,8 @@ export default function RecentActivity() {
                         </div>
 
                         {/* Pagination Controls */}
-                        <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between gap-4">
+
+                        <div className="px-6 py-4 border-t border-white/10 flex items-center justify-center sm:justify-between gap-4 flex-wrap">
                             <p className="text-sm text-white/50">
                                 {isTransactionLoading ? "Loading..." : `Showing ${filteredTransactions.length} transaction(s)`}
                             </p>
