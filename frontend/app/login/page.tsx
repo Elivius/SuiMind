@@ -30,10 +30,10 @@ export default function LoginPage() {
             {/* Back Button */}
             <Link
                 href="/"
-                className="absolute top-10 left-10 z-20 flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all group scale-100 hover:scale-105 active:scale-95 shadow-xl backdrop-blur-md animate-in fade-in duration-1000 ease-out"
+                className="absolute top-6 left-6 sm:top-10 sm:left-10 z-20 flex items-center gap-2 sm:gap-3 px-4 py-2 sm:px-6 sm:py-3 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all group scale-100 hover:scale-105 active:scale-95 shadow-xl backdrop-blur-md animate-in fade-in duration-1000 ease-out"
             >
-                <ArrowLeft className="w-5 h-5 text-white group-hover:-translate-x-1.5 transition-all" />
-                <span className="text-lg font-black tracking-tight text-white">Back to Landing Page</span>
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white group-hover:-translate-x-1.5 transition-all" />
+                <span className="text-base sm:text-lg font-black tracking-tight text-white">Back</span>
             </Link>
 
             <div className="relative z-10 w-full max-w-md p-6 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-out">
