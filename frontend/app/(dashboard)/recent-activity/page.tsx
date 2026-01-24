@@ -307,7 +307,7 @@ export default function RecentActivity() {
                                     size="sm"
                                     onClick={handlePrevPage}
                                     disabled={paginationHistory.length === 0 || isTransactionLoading}
-                                    className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30"
+                                    className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-auto"
                                 >
                                     Previous
                                 </Button>
@@ -316,7 +316,7 @@ export default function RecentActivity() {
                                     size="sm"
                                     onClick={handleNextPage}
                                     disabled={!pageInfo?.hasPreviousPage || isTransactionLoading || paginatedTransactions.length < itemsPerPage}
-                                    className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30"
+                                    className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-auto"
                                 >
                                     Next
                                 </Button>
