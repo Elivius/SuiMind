@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+
+# Next.js build output
+.next/
+out/
+dist/
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files (contains secrets)
+.env
+.env.local
+.env.*.local
+
+# Sui/Move build artifacts
+build/
+bcs/
+*.mv
+*.bcs
+
+# VS Code settings
+.vscode/
+
