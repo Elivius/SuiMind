@@ -22,6 +22,17 @@ export function truncateAddress(address: string, startChars = 6, endChars = 4) {
   return `${address.slice(0, startChars)}...${address.slice(-endChars)}`
 }
 
+function safelyParseTimestamp(input: string | number | Date | null | undefined): number {
+  if (!input) return Date.now();
+  if (input instanceof Date) return input.getTime();
+
+  const asNum = Number(input);
+  if (!isNaN(asNum)) return asNum;
+
+  const parsed = new Date(input).getTime();
+  return isNaN(parsed) ? Date.now() : parsed;
+}
+
 // ---- Process Transaction Helpers ----
 
 export function calculateTxDisplay(rawAmountMist: number) {
@@ -76,14 +87,59 @@ export function processTx(node: any, address?: string) {
   const counterparty = findCounterparty(balanceChanges, address, type);
   const counterpartyLabel = truncateAddress(counterparty);
 
+  const status = node.effects?.status === "SUCCESS" ? "Completed" : "Failed";
+
+  // 5. Calculate Gas Fee
+  let gasFeeDisplay = "0 SUI";
+  const gasSummary = node.effects?.gasEffects?.gasSummary;
+  if (gasSummary) {
+    const compCost = Number(gasSummary.computationCost || 0);
+    const storageCost = Number(gasSummary.storageCost || 0);
+    const storageRebate = Number(gasSummary.storageRebate || 0);
+    const netGasFee = compCost + storageCost - storageRebate;
+    gasFeeDisplay = `${mistToSui(Math.max(0, netGasFee)).toLocaleString("en-US", { maximumFractionDigits: 4 })} SUI`;
+  }
+
+  const timestampMs = safelyParseTimestamp(node.effects?.timestamp);
+
   return {
     id: node.digest,
     type,
     amount: amountDisplay,
     usd: "$0.00", // Need real price feed
-    time: node.effects?.timestamp ? new Date(node.effects.timestamp).toLocaleString() : "Just now",
+    time: formatRelativeTime(timestampMs),
+    timestampMs,
     // Only set 'from' if receiving (or explicit from), 'to' if sending
     from: type === "receive" ? counterpartyLabel : null,
     to: type === "send" ? counterpartyLabel : null,
+    status,
+    gas_fee: gasFeeDisplay,
   };
-};
+}
+
+export function formatRelativeTime(dateInput: string | number | Date): string {
+  const ms = safelyParseTimestamp(dateInput);
+  const date = new Date(ms);
+
+  if (isNaN(date.getTime())) return "Invalid Date";
+
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+
+  // Future check (clock skew)
+  if (diffSecs < 0) return "Just now";
+
+  if (diffSecs < 60) return `${diffSecs} sec${diffSecs !== 1 ? 's' : ''} ago`;
+
+  const diffMins = Math.floor(diffSecs / 60);
+  if (diffMins < 60) return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
+
+  const diffHrs = Math.floor(diffMins / 60);
+  if (diffHrs < 24) return `${diffHrs} hr${diffHrs !== 1 ? 's' : ''} ago`;
+
+  const diffDays = Math.floor(diffHrs / 24);
+  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+
+  return date.toLocaleString();
+}
