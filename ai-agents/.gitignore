@@ -1,0 +1,24 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+*.log
+
+# Distribution / Packaging
+dist/
+build/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Others
+command.txt
+.adk/
