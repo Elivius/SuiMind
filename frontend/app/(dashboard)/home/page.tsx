@@ -1,10 +1,10 @@
 "use client"
 
-import { Button, Card } from "@/components/ui"
+import { Button, Card, Skeleton } from "@/components/ui"
 import { processTx, mistToSui } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
-  X, Repeat, Loader2
+  X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal
 } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -21,7 +21,7 @@ export default function WalletDashboard() {
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
 
-  const recentTransactions = transactionData
+  const recentTransactions = transactionData?.nodes
     ?.map((tx) => processTx(tx, account?.address))
     .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [];
 
@@ -84,7 +84,7 @@ export default function WalletDashboard() {
     },
   ])
 
-// ======================================================
+  // ======================================================
 
   return (
     <div className="w-full px-6 py-8">
@@ -99,9 +99,7 @@ export default function WalletDashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
                   {isBalanceLoading ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-white/30" />
-                    </div>
+                    <Skeleton className="h-10 sm:h-14 lg:h-[4.5rem] w-24 sm:w-40 bg-white/10 rounded-xl" />
                   ) : (
                     `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SUI`
                   )}
@@ -120,26 +118,26 @@ export default function WalletDashboard() {
               </div>
             </div>
 
-            {/* Right side: Send & Receive Buttons */}
+            {/* Right side: Send & Request Buttons */}
             <div className="flex flex-row lg:flex-col gap-3">
               <Button
-                className="flex-1 lg:flex-none px-5 sm:px-10 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                className="flex-1 lg:flex-none lg:min-w-[180px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-start gap-5 overflow-hidden"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300">
-                  <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0">
+                  <SendHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors ml-0.5" />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors">Send</span>
                 </div>
               </Button>
               <Button
-                className="flex-1 lg:flex-none px-5 sm:px-10 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                className="flex-1 lg:flex-none lg:min-w-[180px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-start gap-5 overflow-hidden"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300">
-                  <ArrowDownRight className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
+                  <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors">Receive</span>
+                  <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors">Request</span>
                 </div>
               </Button>
             </div>
@@ -284,38 +282,60 @@ export default function WalletDashboard() {
                 Recent Activity
               </Button>
               <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2">
-                {recentTransactions.map((tx) => (
-                  <div
-                    key={tx.id}
-                    className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
-                  >
+                {isTransactionLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg shrink-0 ${tx.type === "receive"
-                        ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20"
-                        : tx.type === "send"
-                          ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20"
-                          : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
-                        }`}
+                      key={`skeleton-${i}`}
+                      className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
                     >
-                      {tx.type === "receive" ? (
-                        <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" />
-                      ) : tx.type === "send" ? (
-                        <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" />
-                      ) : (
-                        <Repeat className="w-5 h-5 text-white stroke-[3px]" />
-                      )}
+                      {/* Icon Skeleton */}
+                      <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+
+                      {/* Text Skeleton */}
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                        <Skeleton className="h-3 w-32 mt-1" />
+                      </div>
+
+                      {/* Amount Skeleton */}
+                      <Skeleton className="h-4 w-12" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.amount}</p>
-                      <p className="text-xs text-white/60">{tx.time}</p>
-                      <p className="text-xs text-white/60 mt-1">
-                        {tx.from && `From: ${tx.from}`}
-                        {tx.to && `To: ${tx.to}`}
-                      </p>
+                  ))
+                ) : (
+                  recentTransactions.map((tx, index) => (
+                    <div
+                      key={tx.id || `tx-${index}`}
+                      className="flex items-start gap-3 pb-6 border-b border-white/10 last:border-0 last:pb-0"
+                    >
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg shrink-0 ${tx.type === "receive"
+                          ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20"
+                          : tx.type === "send"
+                            ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20"
+                            : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
+                          }`}
+                      >
+                        {tx.type === "receive" ? (
+                          <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" />
+                        ) : tx.type === "send" ? (
+                          <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" />
+                        ) : (
+                          <Repeat className="w-5 h-5 text-white stroke-[3px]" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.amount}</p>
+                        <p className="text-xs text-white/60">{tx.time}</p>
+                        <p className="text-xs text-white/60 mt-1">
+                          {tx.from && `From: ${tx.from}`}
+                          {tx.to && `To: ${tx.to}`}
+                        </p>
+                      </div>
+                      <span className="text-sm text-white">{tx.usd}</span>
                     </div>
-                    <span className="text-sm text-white">{tx.usd}</span>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </Card>
