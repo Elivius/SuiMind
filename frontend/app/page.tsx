@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Button, Card } from "@/components/ui"
+import { Button, Card, ScrollToTop } from "@/components/ui"
 import { FadeReveal } from "@/components/ui/fade-reveal"
 import {
     Wallet,
@@ -20,6 +20,7 @@ export default function LandingPage() {
 
     return (
         <div className="relative min-h-screen text-white overflow-x-hidden selection:bg-[#6FBEE5]/30 scroll-smooth">
+            <ScrollToTop />
             {/* Navbar */}
             <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-6 md:py-10 w-full mx-auto">
                 <FadeReveal direction="none" duration={800}>
