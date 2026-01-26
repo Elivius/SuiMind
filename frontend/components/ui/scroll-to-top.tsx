@@ -31,18 +31,16 @@ export function ScrollToTop() {
     return (
         <div
             className={cn(
-                "fixed left-1/2 -translate-x-1/2 z-30 transition-all duration-300 pointer-events-none opacity-0 translate-y-[-20px]",
+                "fixed left-1/2 -translate-x-1/2 bottom-24 min-[1025px]:bottom-10 z-50 transition-all duration-300 pointer-events-none opacity-0 translate-y-4",
                 isVisible && "opacity-100 translate-y-0 pointer-events-auto",
-                "top-[100px]" // Positioned below the navbar
             )}
         >
             <Button
                 onClick={scrollToTop}
-                size="sm"
-                className="bg-[#6FBEE5]/20 hover:bg-[#6FBEE5]/40 text-[#6FBEE5] border border-[#6FBEE5]/30 backdrop-blur-md rounded-full px-4 py-2 flex items-center gap-2 group transition-all"
+                size="icon"
+                className="size-12 rounded-full bg-[#6FBEE5]/20 hover:bg-[#6FBEE5]/40 text-[#6FBEE5] border border-[#6FBEE5]/30 backdrop-blur-md shadow-lg shadow-[#6FBEE5]/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95 group"
             >
-                <ChevronUp className="w-4 h-4 group-hover:block transition-all" />
-                <span className="text-xs font-bold uppercase tracking-wider">Back to top</span>
+                <ChevronUp className="size-6 group-hover:-translate-y-1 transition-transform" />
             </Button>
         </div>
     )

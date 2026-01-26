@@ -87,7 +87,7 @@ export default function RecentActivity() {
         <div className="w-full px-6 py-8">
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
                 <div className="xl:col-span-3">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-6">
                         <h2 className="text-2xl sm:text-3xl font-bold">Recent Activity</h2>
                         <div className="flex flex-wrap items-center gap-3">
                             {/* Type Filter */}

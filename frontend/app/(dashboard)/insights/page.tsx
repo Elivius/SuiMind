@@ -136,9 +136,9 @@ function MonthlyCashflowRecords() {
 
 export default function DashboardPage() {
     return (
-        <div className="w-full mx-auto px-4 md:px-8 lg:px-12 py-8 space-y-5">
+        <div className="w-full px-6 py-8 space-y-6">
             {/* Expenses Breakdowns */}
-            <div className="space-y-4">
+            <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
                         <div className="flex items-baseline gap-2">
@@ -169,7 +169,7 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
@@ -232,7 +232,7 @@ export default function DashboardPage() {
             </Card>
 
             {/* Assets Section */}
-            <div className="space-y-4">
+            <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-white">Category Distribution</h2>
                 <div>
                     <ExpensesAllocation />
