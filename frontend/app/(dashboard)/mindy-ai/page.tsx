@@ -25,13 +25,13 @@ const QUICK_ACTIONS = [
         icon: <Scan className="w-4 h-4 text-blue-400" />,
         title: "Pay via screenshot",
         prompt: "I want to upload a screenshot to make a payment.",
-        className: "sm:w-[320px] sm:rotate-[1.5deg] sm:translate-y-4"
+        className: "sm:w-[360px] sm:rotate-[1.5deg] sm:translate-y-4"
     },
     {
         icon: <AtSign className="w-4 h-4 text-[#6FBEE5]" />,
         title: "Pay @someone",
         prompt: "I want to send some SUI to a contact.",
-        className: "sm:w-[280px] sm:rotate-[-1.2deg] sm:-translate-y-6 sm:translate-x-8"
+        className: "sm:w-[340px] sm:rotate-[-1.2deg] sm:-translate-y-6 sm:translate-x-8"
     },
     {
         icon: <FileText className="w-4 h-4 text-purple-400" />,
@@ -73,7 +73,7 @@ export default function MindyAIPage() {
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                     <div className="w-full mb-12 relative">
                         <h1 className="text-5xl md:text-7xl lg:text-7xl font-serif text-white italic tracking-tight leading-tight relative z-10">
-                            How can I help you?
+                            How can I <span className="text-transparent font-bold bg-clip-text bg-gradient-to-r from-[#6FBEE5] to-[#A890FE]">help</span> you?
                         </h1>
 
                         {/* HIGHLY ORGANIC / MESSY ARRANGE - PROJECT STYLE */}
@@ -82,7 +82,7 @@ export default function MindyAIPage() {
                                 <button
                                     key={idx}
                                     onClick={() => handleActionClick(action.prompt)}
-                                    className={`flex items-center gap-4 px-8 py-5 rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-white/[0.08] hover:border-[#6FBEE5]/40 transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white/90 text-sm font-medium text-left shadow-2xl backdrop-blur-3xl group ${action.className}`}
+                                    className={`flex items-center gap-4 px-8 py-5 rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-white/[0.08] hover:border-[#6FBEE5]/40 transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white font-semibold text-left shadow-2xl backdrop-blur-3xl group ${action.className}`}
                                 >
                                     <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#6FBEE5]/10 group-hover:border-[#6FBEE5]/30 transition-all">
                                         <div className="group-hover:scale-110 transition-transform">
@@ -90,7 +90,7 @@ export default function MindyAIPage() {
                                         </div>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-white font-bold text-base tracking-tight group-hover:text-[#6FBEE5] transition-colors truncate">{action.title}</h4>
+                                        <h4 className="text-white font-extrabold text-lg tracking-tight group-hover:text-[#6FBEE5] transition-colors">{action.title}</h4>
                                         <p className="text-white/20 text-[10px] uppercase font-black tracking-widest mt-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-1 group-hover:translate-y-0">Execute Prompt</p>
                                     </div>
                                     <ArrowUpRight className="w-5 h-5 text-white/5 group-hover:text-[#6FBEE5] transition-all" />
@@ -113,7 +113,7 @@ export default function MindyAIPage() {
                                         handleSendMessage()
                                     }
                                 }}
-                                placeholder="Ask SuiMind AI anything..."
+                                placeholder="Ask Mindy AI anything..."
                                 rows={1}
                                 className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-lg py-1 px-4 font-light leading-relaxed scrollbar-none"
                             />

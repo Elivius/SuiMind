@@ -19,6 +19,7 @@ export default function RecentActivity() {
     const [typeFilter, setTypeFilter] = useState("all")
     const [statusFilter, setStatusFilter] = useState("all")
     const [timeFilter, setTimeFilter] = useState("all")
+    const [mindyInput, setMindyInput] = useState("")
 
     // Destructure nodes and pageInfo from the new hook return
     const nodes = transactionData?.nodes || [];
@@ -327,7 +328,7 @@ export default function RecentActivity() {
 
                 {/* Mindy AI */}
                 <div className="xl:col-span-1 xl:sticky xl:top-[100px] xl:self-start transition-all duration-500 ease-in-out">
-                    <Card className="border-white/20 backdrop-blur-xl bg-white/5 flex flex-col h-[500px] shadow-2xl shadow-blue-500/5 hover:shadow-[#6FBEE5]/10 transition-shadow duration-500">
+                    <Card className="border-white/20 backdrop-blur-xl bg-white/5 flex flex-col h-[650px] shadow-2xl shadow-blue-500/5 hover:shadow-[#6FBEE5]/10 transition-shadow duration-500">
                         <div className="p-6 h-full flex flex-col">
                             <div className="flex items-center gap-2 mb-6">
                                 <Zap className="w-6 h-6 text-[#6FBEE5]" />
@@ -346,19 +347,65 @@ export default function RecentActivity() {
                                         </p>
                                     </div>
                                 </div>
+
+                                {/* Quick Prompts - Subtly Organic Arrangement */}
+                                <div className="flex flex-wrap gap-3 pt-5 pl-10 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                                    <button
+                                        onClick={() => setMindyInput("Analyze my history")}
+                                        className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-md"
+                                    >
+                                        Analyze history
+                                    </button>
+                                    <button
+                                        onClick={() => setMindyInput("Show recurring")}
+                                        className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-md"
+                                    >
+                                        Show recurring
+                                    </button>
+                                    <button
+                                        onClick={() => setMindyInput("Check risks")}
+                                        className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-md"
+                                    >
+                                        Check risks
+                                    </button>
+                                </div>
                             </div>
 
-                            {/* Chat Input */}
-                            <div className="mt-auto">
-                                <div className="flex gap-2 items-stretch">
-                                    <input
-                                        type="text"
-                                        placeholder="Ask me about your activity..."
-                                        className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all text-sm"
-                                    />
-                                    <Button className="px-4 py-3 bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-xl shadow-lg shadow-[#6FBEE5]/20">
-                                        <ArrowUpRight className="w-4 h-4" />
-                                    </Button>
+                            {/* Premium Chat Input - Matching Mindy Page Style */}
+                            <div className="mt-auto px-1 pb-1">
+                                <div className="bg-[#111827]/90 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-4 shadow-2xl relative group transition-all focus-within:ring-2 focus-within:ring-[#6FBEE5]/20">
+                                    <div className="flex flex-col gap-3">
+                                        <textarea
+                                            value={mindyInput}
+                                            onChange={(e) => setMindyInput(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                    e.preventDefault()
+                                                    console.log("Sending to Mindy:", mindyInput)
+                                                    setMindyInput("")
+                                                }
+                                            }}
+                                            placeholder="Ask Mindy AI anything..."
+                                            rows={1}
+                                            className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-light leading-relaxed scrollbar-none"
+                                        />
+
+                                        <div className="flex items-center justify-end">
+                                            <button
+                                                onClick={() => {
+                                                    console.log("Sending to Mindy:", mindyInput)
+                                                    setMindyInput("")
+                                                }}
+                                                disabled={!mindyInput.trim()}
+                                                className={`w-11 h-11 rounded-full bg-[#6FBEE5] flex items-center justify-center text-white transition-all duration-300 ${mindyInput.trim()
+                                                    ? "opacity-100 scale-100 shadow-[0_0_20px_rgba(111,190,229,0.4)]"
+                                                    : "opacity-0 scale-50 pointer-events-none"
+                                                    }`}
+                                            >
+                                                <ArrowUpRight className="w-6 h-6" />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
