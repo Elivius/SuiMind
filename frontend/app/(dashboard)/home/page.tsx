@@ -155,7 +155,7 @@ export default function WalletDashboard() {
             <div className="p-6">
               <Button
                 variant="ghost"
-                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.05] transition-transform"
+                className="justify-start text-2xl sm:text-3xl text-white font-bold mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.05] transition-transform"
                 onClick={() => router.push('/insights')}
               >
                 Monthly Cashflow
@@ -190,14 +190,14 @@ export default function WalletDashboard() {
                   </div>
 
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-bold">$</span>
                     <input
                       id="salary"
                       type="number"
                       placeholder="0.00"
                       value={salary}
                       readOnly
-                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
+                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-bold cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -220,14 +220,14 @@ export default function WalletDashboard() {
                     </button>
                   </div>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-bold">$</span>
                     <input
                       id="expenses"
                       type="number"
                       placeholder="0.00"
                       value={totalExpenses}
                       readOnly
-                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
+                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-bold cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -237,15 +237,15 @@ export default function WalletDashboard() {
                     <div className="min-w-0">
                       <p className="text-white/60 text-sm sm:text-base mb-2">Available Balance</p>
                       {balance > 0 ? (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-sky-400 truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-sky-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : balance === 0 ? (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-white truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-red-400 truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-red-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       )}
@@ -261,7 +261,7 @@ export default function WalletDashboard() {
                       ) : (
                         <div className="flex items-center gap-2 sm:gap-3">
                           <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5 rotate-180" />
-                          <span className="text-base sm:text-xl font-black uppercase tracking-wider">Deficit</span>
+                          <span className="text-base sm:text-xl font-bold uppercase tracking-wider">Deficit</span>
                         </div>
                       )}
                     </div>
@@ -278,7 +278,7 @@ export default function WalletDashboard() {
             <div className="p-6 h-full flex flex-col">
               <Button
                 variant="ghost"
-                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.04] transition-transform"
+                className="justify-start text-2xl sm:text-3xl text-white font-bold mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.04] transition-transform"
                 onClick={() => router.push('/recent-activity')}
               >
                 Recent Activity
@@ -405,7 +405,7 @@ export default function WalletDashboard() {
                       }}
                       placeholder="Ask Mindy AI anything..."
                       rows={1}
-                      className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-light leading-relaxed scrollbar-none"
+                      className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-normal leading-relaxed scrollbar-none"
                     />
 
                     <div className="flex items-center justify-end">

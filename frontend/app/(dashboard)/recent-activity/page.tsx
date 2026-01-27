@@ -119,7 +119,7 @@ export default function RecentActivity() {
                                     className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl pl-4 pr-10 h-11 hover:border-white/20 hover:bg-white/10 transition-all w-[180px]"
                                 >
                                     <Filter className="w-3.5 h-3.5 text-[#6FBEE5] mr-3" />
-                                    <span className="text-white text-[11px] font-black uppercase tracking-widest truncate">
+                                    <span className="text-white text-[11px] font-bold uppercase tracking-widest truncate">
                                         {typeFilter === 'all' ? 'All Types' : typeFilter}
                                     </span>
                                     <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 transition-transform duration-300 ${isTypeOpen ? 'rotate-180 text-[#6FBEE5]' : ''}`} />
@@ -136,7 +136,7 @@ export default function RecentActivity() {
                                             <button
                                                 key={opt.value}
                                                 onClick={() => { setTypeFilter(opt.value); setIsTypeOpen(false); handleFilterChange(); }}
-                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${typeFilter === opt.value ? 'bg-[#6FBEE5]/20 text-[#6FBEE5]' : 'text-white hover:bg-white/5'}`}
+                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${typeFilter === opt.value ? 'bg-[#6FBEE5]/20 text-[#6FBEE5]' : 'text-white hover:bg-white/5'}`}
                                             >
                                                 {opt.label}
                                                 {typeFilter === opt.value && <Check className="w-3 h-3" />}
@@ -153,7 +153,7 @@ export default function RecentActivity() {
                                     className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl pl-4 pr-10 h-11 hover:border-white/20 hover:bg-white/10 transition-all w-[180px]"
                                 >
                                     <Activity className="w-3.5 h-3.5 text-purple-400 mr-3" />
-                                    <span className="text-white text-[11px] font-black uppercase tracking-widest truncate">
+                                    <span className="text-white text-[11px] font-bold uppercase tracking-widest truncate">
                                         {statusFilter === 'all' ? 'All Status' : statusFilter}
                                     </span>
                                     <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 transition-transform duration-300 ${isStatusOpen ? 'rotate-180 text-purple-400' : ''}`} />
@@ -170,7 +170,7 @@ export default function RecentActivity() {
                                             <button
                                                 key={opt.value}
                                                 onClick={() => { setStatusFilter(opt.value); setIsStatusOpen(false); handleFilterChange(); }}
-                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === opt.value ? 'bg-purple-500/20 text-purple-400' : 'text-white hover:bg-white/5'}`}
+                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${statusFilter === opt.value ? 'bg-purple-500/20 text-purple-400' : 'text-white hover:bg-white/5'}`}
                                             >
                                                 {opt.label}
                                                 {statusFilter === opt.value && <Check className="w-3 h-3" />}
@@ -187,7 +187,7 @@ export default function RecentActivity() {
                                     className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl pl-4 pr-10 h-11 hover:border-white/20 hover:bg-white/10 transition-all w-[180px]"
                                 >
                                     <Clock className="w-3.5 h-3.5 text-emerald-400 mr-3" />
-                                    <span className="text-white text-[11px] font-black uppercase tracking-widest truncate">
+                                    <span className="text-white text-[11px] font-bold uppercase tracking-widest truncate">
                                         {timeFilter === 'all' ? 'All Time' :
                                             timeFilter === '24h' ? 'Last 24h' :
                                                 timeFilter === '7d' ? 'Last 7d' : 'Last 30d'}
@@ -206,7 +206,7 @@ export default function RecentActivity() {
                                             <button
                                                 key={opt.value}
                                                 onClick={() => { setTimeFilter(opt.value); setIsTimeOpen(false); handleFilterChange(); }}
-                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${timeFilter === opt.value ? 'bg-emerald-500/20 text-emerald-400' : 'text-white hover:bg-white/5'}`}
+                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${timeFilter === opt.value ? 'bg-emerald-500/20 text-emerald-400' : 'text-white hover:bg-white/5'}`}
                                             >
                                                 {opt.label}
                                                 {timeFilter === opt.value && <Check className="w-3 h-3" />}
@@ -471,7 +471,7 @@ export default function RecentActivity() {
                                             }}
                                             placeholder="Ask Mindy AI anything..."
                                             rows={1}
-                                            className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-light leading-relaxed scrollbar-none"
+                                            className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-normal leading-relaxed scrollbar-none"
                                         />
 
                                         <div className="flex items-center justify-end">

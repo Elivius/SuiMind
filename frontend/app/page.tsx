@@ -28,7 +28,7 @@ export default function LandingPage() {
                         <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20">
                             <Wallet className="w-6 h-6 md:w-7 md:h-7 text-white" />
                         </div>
-                        <span className="text-3xl md:text-4xl font-black tracking-tighter">SuiMind</span>
+                        <span className="text-3xl md:text-4xl font-bold tracking-tighter">SuiMind</span>
                     </div>
                 </FadeReveal>
 
@@ -118,7 +118,7 @@ export default function LandingPage() {
                     <div className="max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-80 px-6 md:px-12">
                         <div className="flex-1">
                             <FadeReveal direction="left" distance={60}>
-                                <h2 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tighter mb-8 leading-[0.9]">
+                                <h2 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter mb-8 leading-[0.9]">
                                     Turn Data into <br /><span className="text-[#6FBEE5]">Decisions.</span>
                                 </h2>
                             </FadeReveal>
@@ -218,7 +218,7 @@ export default function LandingPage() {
                     <FadeReveal direction="up" distance={100} scale={0.95}>
                         <div className="max-w-6xl mx-auto p-8 sm:p-16 lg:p-24 rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] bg-gradient-to-br from-[#06b6d4]/30 via-[#3b82f6]/30 to-[#8b5cf6]/30 relative overflow-hidden shadow-2xl shadow-indigo-500/30 border border-white/20">
                             <FadeReveal delay={200} distance={20} direction="none">
-                                <h2 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tighter mb-8 relative z-10 leading-[1.1]">
+                                <h2 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter mb-8 relative z-10 leading-[1.1]">
                                     Ready to Upgrade Your <br />Financial Mindset?
                                 </h2>
                             </FadeReveal>
@@ -232,7 +232,7 @@ export default function LandingPage() {
                             <FadeReveal delay={330} distance={15} direction="none">
                                 <Button
                                     onClick={() => router.push("/login")}
-                                    className="bg-white text-[#001B39] hover:bg-[#F0F9FF] px-8 py-6 text-xl md:px-12 md:py-8 md:text-2xl font-black rounded-2xl shadow-2xl relative z-10 transition-all hover:scale-105 active:scale-95"
+                                    className="bg-white text-[#001B39] hover:bg-[#F0F9FF] px-8 py-6 text-xl md:px-12 md:py-8 md:text-2xl font-bold rounded-2xl shadow-2xl relative z-10 transition-all hover:scale-105 active:scale-95"
                                 >
                                     Get Started Now
                                 </Button>

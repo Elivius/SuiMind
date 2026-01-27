@@ -90,8 +90,8 @@ export default function MindyAIPage() {
                                         </div>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-white font-extrabold text-lg tracking-tight group-hover:text-[#6FBEE5] transition-colors">{action.title}</h4>
-                                        <p className="text-white/20 text-[10px] uppercase font-black tracking-widest mt-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-1 group-hover:translate-y-0">Execute Prompt</p>
+                                        <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-[#6FBEE5] transition-colors">{action.title}</h4>
+                                        <p className="text-white/20 text-[10px] uppercase font-bold tracking-widest mt-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-1 group-hover:translate-y-0">Execute Prompt</p>
                                     </div>
                                     <ArrowUpRight className="w-5 h-5 text-white/5 group-hover:text-[#6FBEE5] transition-all" />
                                 </button>
@@ -115,7 +115,7 @@ export default function MindyAIPage() {
                                 }}
                                 placeholder="Ask Mindy AI anything..."
                                 rows={1}
-                                className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-lg py-1 px-4 font-light leading-relaxed scrollbar-none"
+                                className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-lg py-1 px-4 font-normal leading-relaxed scrollbar-none"
                             />
 
                             <div className="flex items-center justify-between px-3">

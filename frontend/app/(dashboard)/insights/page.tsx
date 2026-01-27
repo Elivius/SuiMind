@@ -343,14 +343,14 @@ export default function DashboardPage() {
 
                         <div className="space-y-4 flex-1">
                             <div className="space-y-1">
-                                <h3 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent italic tracking-tight">
+                                <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent tracking-tight">
                                     Mindy AI Suggestion !
                                 </h3>
                             </div>
 
                             <p className="text-white/70 text-lg leading-relaxed max-w-3xl font-medium">
-                                Your <span className="text-white font-black underline decoration-[#00FAFF]/40 decoration-2 underline-offset-4">2,500 SUI</span> in the wallet could earn <span className="text-[#00FAFF] font-black">6.8% APY</span> on Scallop (<span className="text-emerald-400 font-bold">2.6% higher</span> than current average).
-                                Moving these funds could generate an additional <span className="bg-gradient-to-r from-[#00FAFF] to-[#6FBEE5] bg-clip-text text-transparent font-black">$1,700 annually</span>.
+                                Your <span className="text-white font-bold underline decoration-[#00FAFF]/40 decoration-2 underline-offset-4">2,500 SUI</span> in the wallet could earn <span className="text-[#00FAFF] font-bold">6.8% APY</span> on Scallop (<span className="text-emerald-400 font-bold">2.6% higher</span> than current average).
+                                Moving these funds could generate an additional <span className="bg-gradient-to-r from-[#00FAFF] to-[#6FBEE5] bg-clip-text text-transparent font-bold">$1,700 annually</span>.
                             </p>
 
                             <div className="flex flex-wrap items-center gap-4 pt-2">
