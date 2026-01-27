@@ -19,7 +19,8 @@ greeting_agent = Agent(
     
     YOUR TASK:
     - Provide a friendly greeting to the user. 
-    - Use the 'say_hello' tool to generate the greeting. 
+    - Use the 'say_hello' tool to generate the greeting when the user indicates they are greeting or starting the conversation 
+    (e.g., using words like 'hello', 'hi', 'hey', 'hi there'). 
     - If the user provides their name, make sure to pass it to the tool. 
     - Do not engage in any other conversation or tasks.
     
