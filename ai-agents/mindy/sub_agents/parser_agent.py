@@ -2,7 +2,7 @@ from google.adk.agents import Agent
 
 from ..tools import get_current_time
 from ..config import AGENT_MODEL
-from ..instructions import GLOBAL_KNOWLEDGE
+from ..instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 
 # The Semantic Parser
 parser_agent = None
@@ -24,6 +24,7 @@ parser_agent = Agent(
     - Prioritize the most important information.
     
     {GLOBAL_KNOWLEDGE}
+    {SUI_KNOWLEDGE}
     """,
     tools=[get_current_time],
 )
