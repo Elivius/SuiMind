@@ -29,3 +29,11 @@ def say_goodbye(name: Optional[str] = None) -> str:
         greeting = "Goodbye there!"
         print(f"--- Tool: say_goodbye called without a specific name (name_arg_value: {name}) ---")
     return greeting
+
+def get_current_time() -> str:
+    """
+    Returns the current UTC time in ISO 8601 format.
+    Useful for filtering transactions by date or understanding the current context.
+    """
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat()
