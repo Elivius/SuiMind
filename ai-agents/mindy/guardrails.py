@@ -22,7 +22,12 @@ def secure_input_guardrail(
         for content in reversed(llm_request.contents):
             if content.role == 'user' and content.parts:
                 if content.parts[0].text:
-                    last_user_message_text = content.parts[0].text
+                    text = content.parts[0].text
+                    # Check if this is the "For context" message and skip it if so
+                    if text.strip().startswith("For context:"):
+                         continue
+                    
+                    last_user_message_text = text
                     break
 
     print(f"--- Callback: Inspecting last user message: '{last_user_message_text[:100]}...' ---")
