@@ -11,7 +11,7 @@ parser_agent = Agent(
     model=AGENT_MODEL,
     description="Translates raw Sui transaction JSON into human-friendly language.",
     instruction=f"""
-    You are the SuiMind Semantic Parser.
+    You are the SuiMind Parser Agent.
     
     YOUR KNOWLEDGE:
     - You know how to translate raw 'SuiTransactionBlockResponse' data into plain English.
