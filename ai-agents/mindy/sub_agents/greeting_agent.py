@@ -1,12 +1,13 @@
 from google.adk.agents import Agent
-from google.adk.models.lite_llm import LiteLlm # For multi-model support
+
 from ..tools import say_hello
+from ..config import AGENT_MODEL
 
 # Greeting Agent
 greeting_agent = None
 greeting_agent = Agent(
     name="greeting_agent",
-    model=LiteLlm(model="groq/qwen/qwen3-32b"),
+    model=AGENT_MODEL,
     description="Handles simple greetings and hellos using the 'say_hello' tool.", # Crucial for delegation
     instruction="You are the Greeting Agent. Your ONLY task is to provide a friendly greeting to the user. "
                 "Use the 'say_hello' tool to generate the greeting. "

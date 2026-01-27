@@ -5,6 +5,27 @@ from google.adk.models.llm_request import LlmRequest
 from google.adk.models.llm_response import LlmResponse
 from google.genai import types # For creating message Content/Parts
 from typing import Optional, Dict, Any # For type hints
+import re
+
+def _capture_sui_address(callback_context: CallbackContext, text: str) -> None:
+    """
+    Captures and saves a Sui address from the text if present.
+    """
+    print(f"--- Callback: _capture_sui_address running for text: '{text[:100]}...' ---")
+    # Check if address is already known
+    if "sui_address" not in callback_context.state:
+        # Regex for Sui address (starts with 0x and has 64 hex chars) - allowing loosely for 60+ chars
+        match = re.search(r'0x[a-fA-F0-9]{64}', text)
+        if match:
+            address = match.group(0)
+            callback_context.state["sui_address"] = address
+            print(f"--- Callback: Detected and saved Sui Address: {address} ---")
+        else:
+            # Default for agents to assume if unknown
+            callback_context.state["sui_address"] = "UNKNOWN_ADDRESS"
+            print(f"--- Callback: No Sui Address found in message. Defaulting to 'UNKNOWN_ADDRESS'. ---")
+    else:
+        print(f"--- Callback: Using existing Sui Address from State: {callback_context.state} ---")
 
 # Guardrail before model callback
 def secure_input_guardrail(
@@ -15,7 +36,7 @@ def secure_input_guardrail(
     credential leakage, prompt injection, and safety bypass attempts.
     """
     agent_name = callback_context.agent_name
-    print(f"--- Callback: block_keyword_guardrail running for agent: {agent_name} ---")
+    print(f"--- Callback: secure_input_guardrail running for agent: {agent_name} ---")
 
     last_user_message_text = ""
     if llm_request.contents:
@@ -27,6 +48,9 @@ def secure_input_guardrail(
 
     print(f"--- Callback: Inspecting last user message: '{last_user_message_text[:100]}...' ---")
 
+    # --- Address Capture Logic ---
+    _capture_sui_address(callback_context, last_user_message_text)
+    
     # --- Guardrail Logic ---
     # Critical security keywords
     danger_keywords = [

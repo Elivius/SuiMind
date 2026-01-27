@@ -1,11 +1,12 @@
 from google.adk.agents import Agent
-from google.adk.models.lite_llm import LiteLlm # For multi-model support
+
+from ..config import AGENT_MODEL
 
 # The Yield Optimizer
 yield_agent = None
 yield_agent = Agent(
-    name="yield_optimizer",
-    model=LiteLlm(model="groq/qwen/qwen3-32b"),
+    name="yield_agent",
+    model=AGENT_MODEL,
     description="Scans Sui protocols (Navi, Scallop) for the best yield opportunities.",
     instruction="""
     You are the SuiMind Yield Optimizer. Your role is to:
