@@ -67,12 +67,12 @@ export default function MindyAIPage() {
     }
 
     return (
-        <div className="w-full mx-auto px-4 sm:px-6 py-6 min-h-[calc(100vh-120px)] flex flex-col relative overflow-hidden font-sans">
+        <div className="w-full mx-auto px-4 sm:px-6 py-6 min-h-[calc(100vh-120px)] flex flex-col relative overflow-hidden">
             <div className="flex-1 flex flex-col relative z-10 max-w-6xl mx-auto w-full">
                 {/* Main Interaction Area */}
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                     <div className="w-full mb-12 relative">
-                        <h1 className="text-5xl md:text-7xl lg:text-7xl font-serif text-white italic tracking-tight leading-tight relative z-10">
+                        <h1 className="text-5xl font-bold md:text-7xl lg:text-7xl text-white tracking-tight leading-tight relative z-10">
                             How can I <span className="text-transparent font-bold bg-clip-text bg-gradient-to-r from-[#6FBEE5] to-[#A890FE]">help</span> you?
                         </h1>
 
@@ -142,22 +142,6 @@ export default function MindyAIPage() {
                 </div>
             </div>
 
-            <style jsx global>{`
-                @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:italic&family=Inter:wght@300;400;600;900&display=swap');
-                .font-serif {
-                    font-family: 'Instrument Serif', serif;
-                }
-                body {
-                    font-family: 'Inter', sans-serif;
-                }
-                .scrollbar-none::-webkit-scrollbar {
-                    display: none;
-                }
-                .scrollbar-none {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-            `}</style>
         </div>
     )
 }

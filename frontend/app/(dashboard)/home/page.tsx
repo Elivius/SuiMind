@@ -363,24 +363,27 @@ export default function WalletDashboard() {
                   </div>
                 </div>
 
-                {/* Quick Prompts - Subtly Organic Arrangement */}
-                <div className="flex flex-wrap gap-3 pt-5 pl-10 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                {/* Quick Prompts - Colorful & Interactive */}
+                <div className="flex flex-wrap gap-2.5 pt-5 pl-1 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
                   <button
                     onClick={() => setMindyInput("Analyze my wallet")}
-                    className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-md"
+                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20"
                   >
+                    <Sparkles className="w-4 h-4" />
                     Analyze wallet
                   </button>
                   <button
                     onClick={() => setMindyInput("Find yield ops")}
-                    className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-md"
+                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all font-bold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20"
                   >
+                    <TrendingUp className="w-4 h-4" />
                     Find yield
                   </button>
                   <button
                     onClick={() => setMindyInput("Check risks")}
-                    className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-md"
+                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-bold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-lg shadow-red-500/10 hover:shadow-red-500/20"
                   >
+                    <CheckCircle2 className="w-4 h-4" />
                     Check risks
                   </button>
                 </div>

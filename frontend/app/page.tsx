@@ -52,20 +52,20 @@ export default function LandingPage() {
                         </div>
                     </FadeReveal>
 
-                    <FadeReveal delay={300} distance={50}>
+                    <FadeReveal delay={300} distance={50} triggerOnce blur={false} scale={1}>
                         <h1 className="text-4xl sm:text-6xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-[0.9] mb-8">
                             Your Money, <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6FBEE5] via-white to-[#4A9FCC]">Intelligently</span> <br />Managed.
                         </h1>
                     </FadeReveal>
 
-                    <FadeReveal delay={500} distance={30}>
+                    <FadeReveal delay={500} distance={30} triggerOnce blur={false} scale={1}>
                         <p className="text-white/60 text-lg sm:text-xl max-w-xl lg:max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
                             The next generation of financial intelligence on Sui. Track activity, analyze cashflow, and get AI insights to grow your wealth.
                         </p>
                     </FadeReveal>
 
-                    <FadeReveal delay={700} distance={20}>
+                    <FadeReveal delay={500} distance={30} triggerOnce blur={false} scale={1}>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
                             <Button
                                 onClick={() => router.push("/login")}

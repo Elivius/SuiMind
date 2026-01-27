@@ -1,8 +1,9 @@
 "use client"
 
-import { ArrowUpRight, TrendingUp, Wallet, Sparkles } from "lucide-react"
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
+import { ArrowDownLeft, ArrowUpRight, TrendingUp, Wallet, Sparkles } from "lucide-react"
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Legend, ReferenceLine } from "recharts"
 import { Button, Card } from "@/components/ui"
+import { useRouter } from "next/navigation"
 
 // Data for testing only
 const expensesData = [
@@ -22,13 +23,13 @@ const FLAT_COLORS = [
 ]
 
 const cashflowData = [
-    { month: "Aug", cashflow: 1200 },
-    { month: "Sep", cashflow: 950 },
-    { month: "Oct", cashflow: 1400 },
-    { month: "Nov", cashflow: 1100 },
-    { month: "Dec", cashflow: 1600 },
-    { month: "Jan", cashflow: 1300 },
-]
+    { month: "Aug", income: 4200, expenses: 10000 },
+    { month: "Sep", income: 3800, expenses: 2850 },
+    { month: "Oct", income: 3500, expenses: 3400 },
+    { month: "Nov", income: 4100, expenses: 3000 },
+    { month: "Dec", income: 5200, expenses: 10000 },
+    { month: "Jan", income: 4600, expenses: 3300 },
+].map(item => ({ ...item, net: item.income - item.expenses }))
 
 function ExpensesAllocation() {
     const total = expensesData.reduce((acc, curr) => acc + curr.value, 0)
@@ -95,39 +96,146 @@ function ExpensesAllocation() {
 }
 
 function MonthlyCashflowRecords() {
+    const dataMax = Math.max(...cashflowData.map((i) => i.net));
+    const dataMin = Math.min(...cashflowData.map((i) => i.net));
+    const off = dataMax <= 0 ? 0 : dataMax >= 0 && dataMin >= 0 ? 1 : dataMax / (dataMax - dataMin);
+
     return (
         <div className="w-full h-full mt-4">
-            <div className="h-[380px] w-full mt-4">
+            <div className="h-[520px] w-full mt-4 relative group">
+                {/* Advanced Visual Enhancers */}
+                <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-[#6FBEE5]/5 to-transparent rounded-[40px] pointer-events-none opacity-50" />
+
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={cashflowData} margin={{ top: 40, right: 0, left: -20, bottom: 40 }} barGap={0}>
+                    <ComposedChart data={cashflowData} margin={{ top: 20, right: 0, left: -20, bottom: 20 }} barGap={12}>
                         <defs>
-                            <linearGradient id="barGrad1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#6FBEE5" /><stop offset="100%" stopColor="#4A9FCC" stopOpacity={0.5} /></linearGradient>
-                            <linearGradient id="barGrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#00FFD1" /><stop offset="100%" stopColor="#4BC0C0" stopOpacity={0.5} /></linearGradient>
-                            <linearGradient id="barGrad3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#818CF8" /><stop offset="100%" stopColor="#6366F1" stopOpacity={0.5} /></linearGradient>
-                            <linearGradient id="barGrad4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#F472B6" /><stop offset="100%" stopColor="#DB2777" stopOpacity={0.5} /></linearGradient>
-                            <linearGradient id="barGrad5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FB923C" /><stop offset="100%" stopColor="#EA580C" stopOpacity={0.5} /></linearGradient>
-                            <linearGradient id="barGrad6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#4ADE80" /><stop offset="100%" stopColor="#16A34A" stopOpacity={0.5} /></linearGradient>
-                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur stdDeviation="3" result="blur" />
+                            <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#00FAFF" />
+                                <stop offset="100%" stopColor="#00FAFF" stopOpacity={0.3} />
+                            </linearGradient>
+                            <linearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#FF3DBC" />
+                                <stop offset="100%" stopColor="#FF3DBC" stopOpacity={0.3} />
+                            </linearGradient>
+                            <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset={0} stopColor="#4ADE80" stopOpacity={1} />
+                                <stop offset={off} stopColor="#4ADE80" stopOpacity={1} />
+                                <stop offset={off} stopColor="#F87171" stopOpacity={1} />
+                                <stop offset={1} stopColor="#F87171" stopOpacity={1} />
+                            </linearGradient>
+                            <filter id="line-glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="5" result="blur" />
                                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
                             </filter>
                         </defs>
-                        <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="rgba(255,255,255,0.08)" />
-                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#FFFFFF', fontSize: 14, fontWeight: 700, opacity: 0.9 }} dy={15} height={10} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: 600 }} tickFormatter={(value) => `$${value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value}`} />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: "rgba(10, 20, 35, 0.95)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "20px", boxShadow: "0 20px 40px rgba(0,0,0,0.6)", padding: "14px 18px" }}
-                            labelStyle={{ color: "#FFFFFF", fontWeight: "bold", marginBottom: "4px" }}
-                            itemStyle={{ color: "#FFFFFF", fontSize: "15px", fontWeight: 700 }}
-                            cursor={{ fill: "rgba(255,255,255,0.02)", radius: 15 }}
+
+                        <CartesianGrid vertical={false} strokeDasharray="0" stroke="rgba(255,255,255,0.03)" />
+
+                        <XAxis
+                            dataKey="month"
+                            axisLine={{ stroke: '#FFFFFF', strokeWidth: 1 }}
+                            tickLine={false}
+                            tick={{ fill: '#FFFFFF', fontSize: 13, fontWeight: 900, letterSpacing: '2px' }}
+                            dy={15}
                         />
-                        <Bar dataKey="cashflow" radius={[12, 12, 0, 0]} barSize={32} animationDuration={2000} animationEasing="ease-in-out" filter="url(#glow)">
-                            {cashflowData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={`url(#barGrad${(index % 6) + 1})`} />
-                            ))}
-                            <LabelList dataKey="cashflow" position="top" offset={15} formatter={(value) => `$${value}`} style={{ fill: '#FFFFFF', fontSize: '13px', fontWeight: 'bold' }} />
-                        </Bar>
-                    </BarChart>
+
+                        <YAxis
+                            axisLine={{ stroke: '#FFFFFF', strokeWidth: 1 }}
+                            tickLine={false}
+                            tick={{ fill: '#FFFFFF', fontSize: 11, fontWeight: 700 }}
+                            tickFormatter={(value) => {
+                                const absValue = Math.abs(value);
+                                const formatted = absValue >= 1000 ? (absValue / 1000).toFixed(0) + 'k' : absValue;
+                                return value < 0 ? `-$${formatted}` : `$${formatted}`;
+                            }}
+                        />
+
+                        <ReferenceLine y={0} stroke="#FFFFFF" strokeWidth={2} />
+
+                        <Tooltip
+                            cursor={{ fill: "rgba(255,255,255,0.03)", radius: 15 }}
+                            content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                    const net = payload[0].payload.net;
+                                    const isNegative = net < 0;
+                                    return (
+                                        <div className="bg-[#050B15]/95 backdrop-blur-3xl border border-white/10 rounded-[24px] p-5 shadow-2xl min-w-[200px]">
+                                            <p className="text-white/30 text-[9px] font-black uppercase tracking-[3px] mb-4 text-center border-b border-white/5 pb-2">
+                                                {payload[0].payload.month} Transaction Delta
+                                            </p>
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[10px] font-black uppercase" style={{ color: '#00FAFF' }}>Income</span>
+                                                    <span className="text-white font-black">${payload[0].payload.income.toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[10px] font-black uppercase" style={{ color: '#FF3DBC' }}>Expenses</span>
+                                                    <span className="text-white font-black">${payload[0].payload.expenses.toLocaleString()}</span>
+                                                </div>
+                                                <div className="h-[1px] bg-white/5 my-2" />
+                                                <div className="flex items-center justify-between">
+                                                    <span className={`${isNegative ? 'text-red-400' : 'text-[#6FBEE5]'} text-[10px] font-black uppercase`}>
+                                                        Net Flow
+                                                    </span>
+                                                    <span className={`${isNegative ? 'text-red-400' : 'text-white'} text-lg font-black`}>
+                                                        {isNegative ? '-' : ''}${Math.abs(net).toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            }}
+                        />
+
+                        <Legend
+                            verticalAlign="top"
+                            align="right"
+                            iconType="circle"
+                            content={({ payload }) => (
+                                <div className="flex gap-6 justify-end mb-10 mr-4">
+                                    {payload?.filter(entry => entry.value !== 'Net Flow').map((entry, index) => {
+                                        const color = entry.value === 'Income' ? '#00FAFF' : '#FF3DBC';
+                                        return (
+                                            <div key={index} className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                                                <span className="text-[11px] font-black uppercase tracking-widest text-white">{entry.value}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        />
+
+                        <Bar
+                            dataKey="income"
+                            name="Income"
+                            fill="url(#incomeGrad)"
+                            radius={[6, 6, 0, 0]}
+                            barSize={24}
+                        />
+
+                        <Bar
+                            dataKey="expenses"
+                            name="Expenses"
+                            fill="url(#expenseGrad)"
+                            radius={[6, 6, 0, 0]}
+                            barSize={24}
+                        />
+
+                        <Line
+                            type="monotone"
+                            dataKey="net"
+                            name="Net Flow"
+                            stroke="url(#lineGrad)"
+                            strokeWidth={4}
+                            dot={{ r: 0 }}
+                            activeDot={{ r: 6, fill: '#FFF', strokeWidth: 3 }}
+                            filter="url(#line-glow)"
+                            animationDuration={3000}
+                        />
+                    </ComposedChart>
                 </ResponsiveContainer>
             </div>
         </div>
@@ -135,6 +243,7 @@ function MonthlyCashflowRecords() {
 }
 
 export default function DashboardPage() {
+    const router = useRouter()
     return (
         <div className="w-full px-6 py-8 space-y-6">
             {/* Expenses Breakdowns */}
@@ -149,7 +258,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Balance Card */}
-                <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-5 sm:p-10 min-h-auto lg:min-h-[550px]">
+                <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6 sm:p-12 min-h-auto lg:min-h-[650px]">
                     <div className="space-y-6">
                         <div className="flex items-start justify-between">
                             <div className="space-y-2">
@@ -170,7 +279,7 @@ export default function DashboardPage() {
 
                 {/* Quick Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
+                    <Card className="backdrop-blur-xl bg-gradient-to-r from-white/5 via-white/5 to-[#6FBEE5]/30 border-white/10 p-6 overflow-hidden">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
                                 <p className="text-white/60 text-sm">Available Balance</p>
@@ -183,31 +292,31 @@ export default function DashboardPage() {
                         </div>
                     </Card>
 
-                    <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
+                    <Card className="backdrop-blur-xl bg-gradient-to-r from-white/5 via-white/5 to-emerald-500/30 border-white/10 p-6 overflow-hidden">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
                                 <p className="text-white/60 text-sm">Monthly Income</p>
                                 <p className="text-2xl font-bold text-white">$93.38K</p>
-                                <div className="flex items-center gap-1 text-sky-400 text-xs">
+                                <div className="flex items-center gap-1 text-[xs] uppercase font-bold tracking-wider" style={{ color: '#00FAFF' }}>
                                     <TrendingUp className="w-3 h-3" />
                                     <span>5.2% APY</span>
                                 </div>
                             </div>
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5]/20 to-[#4A9FD8]/20 flex items-center justify-center">
-                                <TrendingUp className="w-6 h-6 text-[#6FBEE5]" />
+                            <div className="w-12 h-12 rounded-xl bg-[#00FAFF]/10 border border-[#00FAFF]/20 flex items-center justify-center shadow-lg shadow-[#00FAFF]/10">
+                                <ArrowDownLeft className="w-6 h-6" style={{ color: '#00FAFF' }} />
                             </div>
                         </div>
                     </Card>
 
-                    <Card className="backdrop-blur-xl bg-white/5 border-white/10 p-6">
+                    <Card className="backdrop-blur-xl bg-gradient-to-r from-white/5 via-white/5 to-rose-500/30 border-white/10 p-6 overflow-hidden">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
                                 <p className="text-white/60 text-sm">Monthly Expenses</p>
                                 <p className="text-2xl font-bold text-white">$25.18K</p>
-                                <p className="text-white/40 text-xs">47 items</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest mt-1" style={{ color: '#FF3DBC', opacity: 0.6 }}>47 Transactions</p>
                             </div>
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5]/20 to-[#4A9FD8]/20 flex items-center justify-center">
-                                <Sparkles className="w-6 h-6 text-[#6FBEE5]" />
+                            <div className="w-12 h-12 rounded-xl bg-[#FF3DBC]/10 border border-[#FF3DBC]/20 flex items-center justify-center shadow-lg shadow-[#FF3DBC]/10">
+                                <ArrowUpRight className="w-6 h-6" style={{ color: '#FF3DBC' }} />
                             </div>
                         </div>
                     </Card>
@@ -215,21 +324,48 @@ export default function DashboardPage() {
             </div>
 
             {/* AI Recommendations */}
-            <Card className="backdrop-blur-xl bg-gradient-to-br from-[#6FBEE5]/10 to-[#4A9FD8]/10 border-white/20 p-5 sm:p-8">
-                <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FD8] flex items-center justify-center shrink-0">
-                        <Sparkles className="w-6 h-6 text-white" />
+            <div className="relative">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[32px] blur opacity-25 transition duration-1000" />
+
+                <Card className="relative overflow-hidden backdrop-blur-3xl bg-gradient-to-br from-[#6FBEE5]/10 via-[#050B15]/40 to-[#A890FE]/10 border-white/10 p-6 sm:p-10 rounded-[30px]">
+                    {/* Background Auras */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#6FBEE5]/10 rounded-full blur-[100px] animate-pulse" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#A890FE]/10 rounded-full blur-[100px] animate-pulse delay-1000" />
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8">
+                        {/* Interactive Icon Orb */}
+                        <div className="relative shrink-0 animate-bounce-subtle">
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#6FBEE5] to-[#A890FE] blur-xl opacity-40 animate-pulse" />
+                            <div className="relative w-16 h-16 rounded-[22px] bg-gradient-to-br from-[#6FBEE5] via-[#4A9FD8] to-[#A890FE] flex items-center justify-center border border-white/20 shadow-2xl">
+                                <Sparkles className="w-8 h-8 text-white" />
+                            </div>
+                        </div>
+
+                        <div className="space-y-4 flex-1">
+                            <div className="space-y-1">
+                                <h3 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent italic tracking-tight">
+                                    Mindy AI Suggestion !
+                                </h3>
+                            </div>
+
+                            <p className="text-white/70 text-lg leading-relaxed max-w-3xl font-medium">
+                                Your <span className="text-white font-black underline decoration-[#00FAFF]/40 decoration-2 underline-offset-4">2,500 SUI</span> in the wallet could earn <span className="text-[#00FAFF] font-black">6.8% APY</span> on Scallop (<span className="text-emerald-400 font-bold">2.6% higher</span> than current average).
+                                Moving these funds could generate an additional <span className="bg-gradient-to-r from-[#00FAFF] to-[#6FBEE5] bg-clip-text text-transparent font-black">$1,700 annually</span>.
+                            </p>
+
+                            <div className="flex flex-wrap items-center gap-4 pt-2">
+                                <Button
+                                    onClick={() => router.push('/mindy-ai')}
+                                    className="h-16 px-12 text-lg bg-gradient-to-r from-[#6FBEE5] to-[#A890FE] hover:from-[#A890FE] hover:to-[#6FBEE5] text-white font-black rounded-[20px] shadow-xl shadow-[#6FBEE5]/20 border border-white/20 transition-all hover:scale-105 active:scale-95 group/btn"
+                                >
+                                    View Opportunity
+                                    <ArrowUpRight className="ml-3 w-6 h-6 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                </Button>
+                            </div>
+                        </div>
                     </div>
-                    <div className="space-y-3 flex-1">
-                        <h3 className="text-xl font-semibold text-white">AI Recommendation</h3>
-                        <p className="text-white/80 leading-relaxed">
-                            Your 2,500 SUI in the wallet could earn 6.8% APY on Scallop (2.6% higher than current average). Moving
-                            these funds could generate an additional $1,700 annually.
-                        </p>
-                        <Button className="bg-white text-[#001B39] hover:bg-white/90">View Opportunity</Button>
-                    </div>
-                </div>
-            </Card>
+                </Card>
+            </div>
 
             {/* Assets Section */}
             <div className="space-y-6">

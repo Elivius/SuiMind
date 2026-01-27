@@ -1,8 +1,8 @@
 "use client"
 
 import { Button, Card, Skeleton } from "@/components/ui"
-import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat } from "lucide-react"
-import { useState } from "react"
+import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, TrendingUp, CheckCircle2, Filter, Activity, Clock, Check } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 import { useGetTransactions } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { processTx } from "@/lib/utils"
@@ -20,6 +20,25 @@ export default function RecentActivity() {
     const [statusFilter, setStatusFilter] = useState("all")
     const [timeFilter, setTimeFilter] = useState("all")
     const [mindyInput, setMindyInput] = useState("")
+
+    // Dropdown States
+    const [isTypeOpen, setIsTypeOpen] = useState(false)
+    const [isStatusOpen, setIsStatusOpen] = useState(false)
+    const [isTimeOpen, setIsTimeOpen] = useState(false)
+
+    const typeRef = useRef<HTMLDivElement>(null)
+    const statusRef = useRef<HTMLDivElement>(null)
+    const timeRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (typeRef.current && !typeRef.current.contains(event.target as Node)) setIsTypeOpen(false)
+            if (statusRef.current && !statusRef.current.contains(event.target as Node)) setIsStatusOpen(false)
+            if (timeRef.current && !timeRef.current.contains(event.target as Node)) setIsTimeOpen(false)
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
 
     // Destructure nodes and pageInfo from the new hook return
     const nodes = transactionData?.nodes || [];
@@ -88,51 +107,113 @@ export default function RecentActivity() {
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
                 <div className="xl:col-span-3">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-6">
-                        <h2 className="text-2xl sm:text-3xl font-bold">Recent Activity</h2>
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-baseline gap-2">
+                            <h1 className="text-4xl font-bold text-white">Dashboard</h1>
+                            <span className="text-2xl font-medium text-white/60">/ Recent Activity</span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4 md:justify-end flex-1">
                             {/* Type Filter */}
-                            <div className="relative group">
-                                <select
-                                    className="appearance-none bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 hover:bg-white/10 transition-all cursor-pointer"
-                                    value={typeFilter}
-                                    onChange={(e) => { setTypeFilter(e.target.value); handleFilterChange(); }}
+                            <div className="relative" ref={typeRef}>
+                                <button
+                                    onClick={() => setIsTypeOpen(!isTypeOpen)}
+                                    className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl pl-4 pr-10 h-11 hover:border-white/20 hover:bg-white/10 transition-all w-[180px]"
                                 >
-                                    <option value="all" className="bg-[#001B39]">All Types</option>
-                                    <option value="send" className="bg-[#001B39]">Send</option>
-                                    <option value="receive" className="bg-[#001B39]">Receive</option>
-                                    <option value="swap" className="bg-[#001B39]">Swap</option>
-                                </select>
-                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
+                                    <Filter className="w-3.5 h-3.5 text-[#6FBEE5] mr-3" />
+                                    <span className="text-white text-[11px] font-black uppercase tracking-widest truncate">
+                                        {typeFilter === 'all' ? 'All Types' : typeFilter}
+                                    </span>
+                                    <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 transition-transform duration-300 ${isTypeOpen ? 'rotate-180 text-[#6FBEE5]' : ''}`} />
+                                </button>
+
+                                {isTypeOpen && (
+                                    <div className="absolute top-[calc(100%+8px)] right-0 w-full bg-[#050B15]/95 backdrop-blur-3xl border border-white/10 rounded-2xl p-2 z-50 shadow-2xl animate-in fade-in zoom-in duration-200 origin-top">
+                                        {[
+                                            { label: 'All Types', value: 'all' },
+                                            { label: 'Send', value: 'send' },
+                                            { label: 'Receive', value: 'receive' },
+                                            { label: 'Swap', value: 'swap' }
+                                        ].map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                onClick={() => { setTypeFilter(opt.value); setIsTypeOpen(false); handleFilterChange(); }}
+                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${typeFilter === opt.value ? 'bg-[#6FBEE5]/20 text-[#6FBEE5]' : 'text-white hover:bg-white/5'}`}
+                                            >
+                                                {opt.label}
+                                                {typeFilter === opt.value && <Check className="w-3 h-3" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Status Filter */}
-                            <div className="relative group">
-                                <select
-                                    className="appearance-none bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 hover:bg-white/10 transition-all cursor-pointer"
-                                    value={statusFilter}
-                                    onChange={(e) => { setStatusFilter(e.target.value); handleFilterChange(); }}
+                            <div className="relative" ref={statusRef}>
+                                <button
+                                    onClick={() => setIsStatusOpen(!isStatusOpen)}
+                                    className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl pl-4 pr-10 h-11 hover:border-white/20 hover:bg-white/10 transition-all w-[180px]"
                                 >
-                                    <option value="all" className="bg-[#001B39]">All Status</option>
-                                    <option value="Completed" className="bg-[#001B39]">Completed</option>
-                                    <option value="Pending" className="bg-[#001B39]">Pending</option>
-                                    <option value="Cancelled" className="bg-[#001B39]">Cancelled</option>
-                                </select>
-                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
+                                    <Activity className="w-3.5 h-3.5 text-purple-400 mr-3" />
+                                    <span className="text-white text-[11px] font-black uppercase tracking-widest truncate">
+                                        {statusFilter === 'all' ? 'All Status' : statusFilter}
+                                    </span>
+                                    <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 transition-transform duration-300 ${isStatusOpen ? 'rotate-180 text-purple-400' : ''}`} />
+                                </button>
+
+                                {isStatusOpen && (
+                                    <div className="absolute top-[calc(100%+8px)] right-0 w-full bg-[#050B15]/95 backdrop-blur-3xl border border-white/10 rounded-2xl p-2 z-50 shadow-2xl animate-in fade-in zoom-in duration-200 origin-top">
+                                        {[
+                                            { label: 'All Status', value: 'all' },
+                                            { label: 'Completed', value: 'Completed' },
+                                            { label: 'Pending', value: 'Pending' },
+                                            { label: 'Cancelled', value: 'Cancelled' }
+                                        ].map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                onClick={() => { setStatusFilter(opt.value); setIsStatusOpen(false); handleFilterChange(); }}
+                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === opt.value ? 'bg-purple-500/20 text-purple-400' : 'text-white hover:bg-white/5'}`}
+                                            >
+                                                {opt.label}
+                                                {statusFilter === opt.value && <Check className="w-3 h-3" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Time Filter */}
-                            <div className="relative group">
-                                <select
-                                    className="appearance-none bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 hover:bg-white/10 transition-all cursor-pointer"
-                                    value={timeFilter}
-                                    onChange={(e) => { setTimeFilter(e.target.value); handleFilterChange(); }}
+                            <div className="relative" ref={timeRef}>
+                                <button
+                                    onClick={() => setIsTimeOpen(!isTimeOpen)}
+                                    className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl pl-4 pr-10 h-11 hover:border-white/20 hover:bg-white/10 transition-all w-[180px]"
                                 >
-                                    <option value="all" className="bg-[#001B39]">All Time</option>
-                                    <option value="24h" className="bg-[#001B39]">Last 24 Hours</option>
-                                    <option value="7d" className="bg-[#001B39]">Last 7 Days</option>
-                                    <option value="30d" className="bg-[#001B39]">Last 30 Days</option>
-                                </select>
-                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
+                                    <Clock className="w-3.5 h-3.5 text-emerald-400 mr-3" />
+                                    <span className="text-white text-[11px] font-black uppercase tracking-widest truncate">
+                                        {timeFilter === 'all' ? 'All Time' :
+                                            timeFilter === '24h' ? 'Last 24h' :
+                                                timeFilter === '7d' ? 'Last 7d' : 'Last 30d'}
+                                    </span>
+                                    <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 transition-transform duration-300 ${isTimeOpen ? 'rotate-180 text-emerald-400' : ''}`} />
+                                </button>
+
+                                {isTimeOpen && (
+                                    <div className="absolute top-[calc(100%+8px)] right-0 w-full bg-[#050B15]/95 backdrop-blur-3xl border border-white/10 rounded-2xl p-2 z-50 shadow-2xl animate-in fade-in zoom-in duration-200 origin-top">
+                                        {[
+                                            { label: 'All Time', value: 'all' },
+                                            { label: 'Last 24 Hours', value: '24h' },
+                                            { label: 'Last 7 Days', value: '7d' },
+                                            { label: 'Last 30 Days', value: '30d' }
+                                        ].map((opt) => (
+                                            <button
+                                                key={opt.value}
+                                                onClick={() => { setTimeFilter(opt.value); setIsTimeOpen(false); handleFilterChange(); }}
+                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${timeFilter === opt.value ? 'bg-emerald-500/20 text-emerald-400' : 'text-white hover:bg-white/5'}`}
+                                            >
+                                                {opt.label}
+                                                {timeFilter === opt.value && <Check className="w-3 h-3" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -348,24 +429,27 @@ export default function RecentActivity() {
                                     </div>
                                 </div>
 
-                                {/* Quick Prompts - Subtly Organic Arrangement */}
-                                <div className="flex flex-wrap gap-3 pt-5 pl-10 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                                {/* Quick Prompts - Colorful & Interactive */}
+                                <div className="flex flex-wrap gap-2.5 pt-5 pl-1 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
                                     <button
                                         onClick={() => setMindyInput("Analyze my history")}
-                                        className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-md"
+                                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20"
                                     >
+                                        <Sparkles className="w-4 h-4" />
                                         Analyze history
                                     </button>
                                     <button
                                         onClick={() => setMindyInput("Show recurring")}
-                                        className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-md"
+                                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all font-bold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20"
                                     >
+                                        <TrendingUp className="w-4 h-4" />
                                         Show recurring
                                     </button>
                                     <button
                                         onClick={() => setMindyInput("Check risks")}
-                                        className="text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-white/80 hover:text-white hover:bg-[#6FBEE5]/20 hover:border-[#6FBEE5]/40 transition-all font-semibold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-md"
+                                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-bold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-lg shadow-red-500/10 hover:shadow-red-500/20"
                                     >
+                                        <CheckCircle2 className="w-4 h-4" />
                                         Check risks
                                     </button>
                                 </div>
