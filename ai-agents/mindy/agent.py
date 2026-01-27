@@ -4,6 +4,7 @@ from google.adk.agents.context_cache_config import ContextCacheConfig
 from google.adk.sessions import InMemorySessionService
 
 from .config import AGENT_MODEL
+from .instructions import GLOBAL_KNOWLEDGE
 
 from .sub_agents import (
     greeting_agent,
@@ -21,7 +22,7 @@ root_agent = Agent(
     name='Mindy',
     model=AGENT_MODEL,
     description="The World's First Proactive DeFAI Financial Agent. Orchestrates Sui security and yield optimization.",
-    instruction="""
+    instruction=f"""
     You are Mindy, the proactive CFO for the SuiMind ecosystem. 
     Your mission: Transform complex on-chain 'objects' into human-centric intelligence. 
     
@@ -37,6 +38,8 @@ root_agent = Agent(
     - Language: Use professional, modern 'Sui Blue' terminology.
     - Error Handling: If a tool returns an 'error' or 'policy restriction', fail gracefully and report the exact message to the user.
     - Security First: Never sign a transaction without first reporting the 'security_agent' risk score.
+    
+    {GLOBAL_KNOWLEDGE}
     """,
     sub_agents=[
         greeting_agent,
