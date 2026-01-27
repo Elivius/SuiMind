@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { ArrowDownLeft, ArrowUpRight, TrendingUp, Wallet, Sparkles } from "lucide-react"
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Legend, ReferenceLine } from "recharts"
 import { Button, Card } from "@/components/ui"
@@ -100,9 +101,18 @@ function MonthlyCashflowRecords() {
     const dataMin = Math.min(...cashflowData.map((i) => i.net));
     const off = dataMax <= 0 ? 0 : dataMax >= 0 && dataMin >= 0 ? 1 : dataMax / (dataMax - dataMin);
 
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+        const checkSize = () => setIsDesktop(window.innerWidth >= 1024);
+        checkSize();
+        window.addEventListener('resize', checkSize);
+        return () => window.removeEventListener('resize', checkSize);
+    }, []);
+
     return (
         <div className="w-full h-full mt-4">
-            <div className="h-[520px] w-full mt-4 relative group">
+            <div className="h-[350px] sm:h-[520px] w-full mt-4 relative group">
                 {/* Advanced Visual Enhancers */}
                 <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-[#6FBEE5]/5 to-transparent rounded-[40px] pointer-events-none opacity-50" />
 
@@ -135,19 +145,26 @@ function MonthlyCashflowRecords() {
                             dataKey="month"
                             axisLine={{ stroke: '#FFFFFF', strokeWidth: 1 }}
                             tickLine={false}
-                            tick={{ fill: '#FFFFFF', fontSize: 13, fontWeight: 900, letterSpacing: '2px' }}
-                            dy={15}
+                            tick={{
+                                fill: '#FFFFFF',
+                                fontSize: isDesktop ? 13 : 10,
+                                fontWeight: isDesktop ? 900 : 700,
+                                letterSpacing: isDesktop ? '2px' : '1px'
+                            }}
+                            dy={isDesktop ? 15 : 10}
+                            interval={0}
                         />
 
                         <YAxis
                             axisLine={{ stroke: '#FFFFFF', strokeWidth: 1 }}
                             tickLine={false}
-                            tick={{ fill: '#FFFFFF', fontSize: 11, fontWeight: 700 }}
+                            tick={{ fill: '#FFFFFF', fontSize: isDesktop ? 11 : 10, fontWeight: 700 }}
                             tickFormatter={(value) => {
                                 const absValue = Math.abs(value);
                                 const formatted = absValue >= 1000 ? (absValue / 1000).toFixed(0) + 'k' : absValue;
                                 return value < 0 ? `-$${formatted}` : `$${formatted}`;
                             }}
+                            width={35}
                         />
 
                         <ReferenceLine y={0} stroke="#FFFFFF" strokeWidth={2} />
@@ -194,13 +211,15 @@ function MonthlyCashflowRecords() {
                             align="right"
                             iconType="circle"
                             content={({ payload }) => (
-                                <div className="flex gap-6 justify-end mb-10 mr-4">
+                                <div className={`flex ${isDesktop ? 'gap-6 mb-10 mr-4' : 'gap-4 mb-6 mr-1'} justify-end`}>
                                     {payload?.filter(entry => entry.value !== 'Net Flow').map((entry, index) => {
                                         const color = entry.value === 'Income' ? '#00FAFF' : '#FF3DBC';
                                         return (
-                                            <div key={index} className="flex items-center gap-2">
+                                            <div key={index} className={`flex items-center ${isDesktop ? 'gap-2' : 'gap-1.5'}`}>
                                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                                                <span className="text-[11px] font-black uppercase tracking-widest text-white">{entry.value}</span>
+                                                <span className={`${isDesktop ? 'text-[11px] font-black tracking-widest' : 'text-[9px] font-bold tracking-wider'} uppercase text-white`}>
+                                                    {entry.value}
+                                                </span>
                                             </div>
                                         );
                                     })}
@@ -212,16 +231,16 @@ function MonthlyCashflowRecords() {
                             dataKey="income"
                             name="Income"
                             fill="url(#incomeGrad)"
-                            radius={[6, 6, 0, 0]}
-                            barSize={24}
+                            radius={[isDesktop ? 6 : 4, isDesktop ? 6 : 4, 0, 0]}
+                            barSize={isDesktop ? 24 : 12}
                         />
 
                         <Bar
                             dataKey="expenses"
                             name="Expenses"
                             fill="url(#expenseGrad)"
-                            radius={[6, 6, 0, 0]}
-                            barSize={24}
+                            radius={[isDesktop ? 6 : 4, isDesktop ? 6 : 4, 0, 0]}
+                            barSize={isDesktop ? 24 : 12}
                         />
 
                         <Line
