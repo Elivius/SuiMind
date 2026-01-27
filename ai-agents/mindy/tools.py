@@ -20,7 +20,12 @@ def say_hello(name: Optional[str] = None) -> str:
         print(f"--- Tool: say_hello called without a specific name (name_arg_value: {name}) ---")
     return greeting
 
-def say_goodbye() -> str:
+def say_goodbye(name: Optional[str] = None) -> str:
     """Provides a simple farewell message to conclude the conversation."""
-    print(f"--- Tool: say_goodbye called ---")
-    return "Ciao! Have a great day."
+    if name:
+        greeting = f"Goodbye, {name}!"
+        print(f"--- Tool: say_goodbye called for {name} ---")
+    else:
+        greeting = "Goodbye there!"
+        print(f"--- Tool: say_goodbye called without a specific name (name_arg_value: {name}) ---")
+    return greeting
