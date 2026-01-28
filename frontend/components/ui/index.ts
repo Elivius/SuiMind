@@ -10,3 +10,4 @@ export { default as ScrollReveal } from "./scroll-reveal";
 export { default as Silk } from "./silk";
 export * from "./wallet-connect-button";
 export * from "./skeleton";
+export * from "./scroll-to-top";

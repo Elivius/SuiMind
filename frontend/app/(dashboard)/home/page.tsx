@@ -4,9 +4,10 @@ import { Button, Card, Skeleton } from "@/components/ui"
 import { processTx, mistToSui } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
-  X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal
+  X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
+  Plus, AtSign, Sparkles
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useModal, useGetBalances, useGetTransactions } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
@@ -35,6 +36,7 @@ export default function WalletDashboard() {
   const insightModal = useModal()
   const salaryModal = useModal()
   const expensesModal = useModal()
+  const [mindyInput, setMindyInput] = useState("")
 
   const [expenseCategories] = useState([
     { id: 1, name: "Rent & Utilities", amount: "1200", icon: "🏠" },
@@ -121,22 +123,22 @@ export default function WalletDashboard() {
             {/* Right side: Send & Request Buttons */}
             <div className="flex flex-row lg:flex-col gap-3">
               <Button
-                className="flex-1 lg:flex-none lg:min-w-[180px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-start gap-5 overflow-hidden"
+                className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0">
                   <SendHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors ml-0.5" />
                 </div>
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-center w-16 sm:w-20">
                   <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors">Send</span>
                 </div>
               </Button>
               <Button
-                className="flex-1 lg:flex-none lg:min-w-[180px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-start gap-5 overflow-hidden"
+                className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
                   <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
                 </div>
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-center w-16 sm:w-20">
                   <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors">Request</span>
                 </div>
               </Button>
@@ -153,7 +155,7 @@ export default function WalletDashboard() {
             <div className="p-6">
               <Button
                 variant="ghost"
-                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.05] transition-transform"
+                className="justify-start text-2xl sm:text-3xl text-white font-bold mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.05] transition-transform"
                 onClick={() => router.push('/insights')}
               >
                 Monthly Cashflow
@@ -188,14 +190,14 @@ export default function WalletDashboard() {
                   </div>
 
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-bold">$</span>
                     <input
                       id="salary"
                       type="number"
                       placeholder="0.00"
                       value={salary}
                       readOnly
-                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
+                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-bold cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -218,14 +220,14 @@ export default function WalletDashboard() {
                     </button>
                   </div>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-bold">$</span>
                     <input
                       id="expenses"
                       type="number"
                       placeholder="0.00"
                       value={totalExpenses}
                       readOnly
-                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
+                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-bold cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -235,15 +237,15 @@ export default function WalletDashboard() {
                     <div className="min-w-0">
                       <p className="text-white/60 text-sm sm:text-base mb-2">Available Balance</p>
                       {balance > 0 ? (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-sky-400 truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-sky-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : balance === 0 ? (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-white truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-red-400 truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-red-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       )}
@@ -259,7 +261,7 @@ export default function WalletDashboard() {
                       ) : (
                         <div className="flex items-center gap-2 sm:gap-3">
                           <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5 rotate-180" />
-                          <span className="text-base sm:text-xl font-black uppercase tracking-wider">Deficit</span>
+                          <span className="text-base sm:text-xl font-bold uppercase tracking-wider">Deficit</span>
                         </div>
                       )}
                     </div>
@@ -276,7 +278,7 @@ export default function WalletDashboard() {
             <div className="p-6 h-full flex flex-col">
               <Button
                 variant="ghost"
-                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.04] transition-transform"
+                className="justify-start text-2xl sm:text-3xl text-white font-bold mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.04] transition-transform"
                 onClick={() => router.push('/recent-activity')}
               >
                 Recent Activity
@@ -360,18 +362,69 @@ export default function WalletDashboard() {
                     <p className="text-sm text-white/90">Hello! I&apos;m your AI financial assistant. How can I help you today?</p>
                   </div>
                 </div>
+
+                {/* Quick Prompts - Colorful & Interactive */}
+                <div className="flex flex-wrap gap-2.5 pt-5 pl-1 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                  <button
+                    onClick={() => setMindyInput("Analyze my wallet")}
+                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Analyze wallet
+                  </button>
+                  <button
+                    onClick={() => setMindyInput("Find yield ops")}
+                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all font-bold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20"
+                  >
+                    <TrendingUp className="w-4 h-4" />
+                    Find yield
+                  </button>
+                  <button
+                    onClick={() => setMindyInput("Check risks")}
+                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-bold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-lg shadow-red-500/10 hover:shadow-red-500/20"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Check risks
+                  </button>
+                </div>
               </div>
 
-              {/* Chat Input */}
-              <div className="flex gap-2 items-stretch">
-                <input
-                  type="text"
-                  placeholder="Ask me anything..."
-                  className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all text-sm"
-                />
-                <Button className="px-4 py-3 bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-xl">
-                  <ArrowUpRight className="w-4 h-4" />
-                </Button>
+              {/* Premium Chat Input - Matching Mindy Page */}
+              <div className="mt-auto px-1 pb-1">
+                <div className="bg-[#111827]/90 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-4 shadow-2xl relative group transition-all focus-within:ring-2 focus-within:ring-[#6FBEE5]/20">
+                  <div className="flex flex-col gap-3">
+                    <textarea
+                      value={mindyInput}
+                      onChange={(e) => setMindyInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          console.log("Sending to Mindy:", mindyInput)
+                          setMindyInput("")
+                        }
+                      }}
+                      placeholder="Ask Mindy AI anything..."
+                      rows={1}
+                      className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-normal leading-relaxed scrollbar-none"
+                    />
+
+                    <div className="flex items-center justify-end">
+                      <button
+                        onClick={() => {
+                          console.log("Sending to Mindy:", mindyInput)
+                          setMindyInput("")
+                        }}
+                        disabled={!mindyInput.trim()}
+                        className={`w-11 h-11 rounded-full bg-[#6FBEE5] flex items-center justify-center text-white transition-all duration-300 ${mindyInput.trim()
+                          ? "opacity-100 scale-100 shadow-[0_0_20px_rgba(111,190,229,0.4)]"
+                          : "opacity-0 scale-50 pointer-events-none"
+                          }`}
+                      >
+                        <ArrowUpRight className="w-6 h-6" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>

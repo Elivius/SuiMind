@@ -19,7 +19,16 @@ export function Header() {
             <div className="w-full px-4 sm:px-6 py-4">
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
-                    <Link href="/home" className="flex items-center gap-2 sm:gap-3 flex-shrink-0 hover:opacity-80 transition-opacity">
+                    <Link
+                        href="/home"
+                        onClick={(e) => {
+                            if (pathname === "/home") {
+                                e.preventDefault();
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                        }}
+                        className="flex items-center gap-2 sm:gap-3 flex-shrink-0 hover:opacity-80 transition-opacity"
+                    >
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
                             <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
