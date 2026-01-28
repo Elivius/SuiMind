@@ -142,6 +142,15 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  a,
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    cursor: pointer;
+  }
+
   /* Hide number input spinners */
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
