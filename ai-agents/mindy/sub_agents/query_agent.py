@@ -19,8 +19,8 @@ query_agent = Agent(
     - You should use 'get_transactions' to fetch transaction history / recent transactions for a specific address.
     - If you are unsure of the GraphQL schema, use 'get_sui_schema_info' to look for the correct schema.
     - If you finish writing the query, use 'execute_sui_graphql_query' to execute the query.
-    - If the query require Sui address, you should get the address from the callback context state using 'sui_address' key.
-    - If there is no 'sui_address' in the callback context state, you should ask user for the address.
+    - If the query requires a Sui address, you can omit the address argument if it is available in the callback context state. The tool will automatically use 'sui_address' from the state.
+    - ONLY ask the user for their address if the tool returns an error saying "No address provided".
 
     YOUR TASK:
     - Write and execute GraphQL queries for the Sui GraphQL endpoint to get transaction history, balances, and object details.
