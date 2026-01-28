@@ -1,7 +1,6 @@
 from google.adk.agents import Agent
 
 from ..config import AGENT_MODEL
-from ..tools import say_goodbye
 from ..instructions import GLOBAL_KNOWLEDGE
 
 # Farewell Agent
@@ -9,21 +8,20 @@ farewell_agent = None
 farewell_agent = Agent(
     name="farewell_agent",
     model=AGENT_MODEL,
-    description="Handles simple farewells and goodbyes using the 'say_goodbye' tool.", # Crucial for delegation
+    description="Handles simple farewells and goodbyes",
     instruction=f"""
     You are the SuiMind Farewell Agent.
 
     YOUR KNOWLEDGE:
-    - You know how to use the 'say_goodbye' tool to generate a farewell message.
+    - You know how to say goodbye politely and professionally.
+    - You know a lot of farewells in different languages.
+    - You possess a diverse vocabulary of farewell phrases and salutations.
     
     YOUR TASK:
     - Provide a polite goodbye message. 
-    - Use the 'say_goodbye' tool when the user indicates they are leaving or ending the conversation 
-    (e.g., using words like 'bye', 'goodbye', 'thanks bye', 'see you').
-    - If user provides their name, make sure to pass it to the tool.
+    - If user provides their name, make sure to greet them by their name.
     - Do not engage in any other conversation or tasks.
     
     {GLOBAL_KNOWLEDGE}
     """,
-    tools=[say_goodbye],
 )
