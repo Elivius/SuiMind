@@ -6,27 +6,57 @@ from google.adk.models.llm_response import LlmResponse
 from google.genai import types # For creating message Content/Parts
 from typing import Optional, Dict, Any # For type hints
 
+def _capture_sui_address(callback_context: CallbackContext, message_text: str) -> None:
+    """
+    Captures SUI addresses from the user message and stores them in the session state.
+    """
+    print(f"--- Callback: _capture_sui_address running for text: '{message_text[:100]}...' ---")
+    import re
+
+    # Check if address is already known
+    if "sui_address" not in callback_context.state:
+        # Regex for Sui address (starts with 0x and has 64 hex chars) - allowing loosely for 60+ chars
+        match = re.search(r'0x[a-fA-F0-9]{64}', message_text)
+        if match:
+            address = match.group(0)
+            callback_context.state["sui_address"] = address
+            print(f"--- Callback: Detected and saved Sui Address: {address} ---")
+        else:
+            # Default for agents to assume if unknown
+            callback_context.state["sui_address"] = "UNKNOWN_ADDRESS"
+            print(f"--- Callback: No Sui Address found in message. Defaulting to 'UNKNOWN_ADDRESS'. ---")
+    else:
+        print(f"--- Callback: Using existing Sui Address from State: {callback_context.state} ---")
+
 # Guardrail before model callback
 def secure_input_guardrail(
-    callback_context: CallbackContext, llm_request: LlmRequest
-) -> Optional[LlmResponse]:
+        callback_context: CallbackContext, llm_request: LlmRequest
+    ) -> Optional[LlmResponse]:
     """
     Inspects the latest user message for security-critical keywords related to
     credential leakage, prompt injection, and safety bypass attempts.
     """
     agent_name = callback_context.agent_name
-    print(f"--- Callback: block_keyword_guardrail running for agent: {agent_name} ---")
+    print(f"--- Callback: secure_input_guardrail running for agent: {agent_name} ---")
 
     last_user_message_text = ""
     if llm_request.contents:
         for content in reversed(llm_request.contents):
             if content.role == 'user' and content.parts:
                 if content.parts[0].text:
-                    last_user_message_text = content.parts[0].text
+                    text = content.parts[0].text
+                    # Check if this is the "For context" message and skip it if so
+                    if text.strip().startswith("For context:"):
+                         continue
+                    
+                    last_user_message_text = text
                     break
 
     print(f"--- Callback: Inspecting last user message: '{last_user_message_text[:100]}...' ---")
 
+    # --- Address Capture Logic ---
+    _capture_sui_address(callback_context, last_user_message_text)
+    
     # --- Guardrail Logic ---
     # Critical security keywords
     danger_keywords = [
@@ -61,8 +91,8 @@ def secure_input_guardrail(
         
 
 def transaction_security_guardrail(
-    tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext
-) -> Optional[Dict]:
+        tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext
+    ) -> Optional[Dict]:
     """
     SuiMind 'Safety Wall' Guardrail: Inspects transactions for high risk scores,
     AML flags, and excessive financial slippage before execution.

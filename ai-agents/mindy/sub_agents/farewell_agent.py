@@ -1,17 +1,27 @@
 from google.adk.agents import Agent
-from google.adk.models.lite_llm import LiteLlm # For multi-model support
 
-from ..tools import say_goodbye
+from ..config import AGENT_MODEL
+from ..instructions import GLOBAL_KNOWLEDGE
 
 # Farewell Agent
 farewell_agent = None
 farewell_agent = Agent(
     name="farewell_agent",
-    model=LiteLlm(model="groq/qwen/qwen3-32b"),
-    description="Handles simple farewells and goodbyes using the 'say_goodbye' tool.", # Crucial for delegation
-    instruction="You are the Farewell Agent. Your ONLY task is to provide a polite goodbye message. "
-                "Use the 'say_goodbye' tool when the user indicates they are leaving or ending the conversation "
-                "(e.g., using words like 'bye', 'goodbye', 'thanks bye', 'see you'). "
-                "Do not perform any other actions.",
-    tools=[say_goodbye],
+    model=AGENT_MODEL,
+    description="Handles simple farewells and goodbyes",
+    instruction=f"""
+    You are the SuiMind Farewell Agent.
+
+    YOUR KNOWLEDGE:
+    - You know how to say goodbye politely and professionally.
+    - You know a lot of farewells in different languages.
+    - You possess a diverse vocabulary of farewell phrases and salutations.
+    
+    YOUR TASK:
+    - Provide a polite goodbye message. 
+    - If user provides their name, make sure to greet them by their name.
+    - Do not engage in any other conversation or tasks.
+    
+    {GLOBAL_KNOWLEDGE}
+    """,
 )

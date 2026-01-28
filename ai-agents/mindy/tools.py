@@ -3,43 +3,141 @@ from google.adk.tools.tool_context import ToolContext
 from google.adk.tools import FunctionTool
 from typing import Dict, Any 
 
-def say_hello(name: Optional[str] = None) -> str:
-    """Provides a simple greeting. If a name is provided, it will be used.
+def get_current_time() -> str:
+    """
+    Returns the current UTC time in ISO 8601 format.
+    Useful for filtering transactions by date or understanding the current context.
+    """
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat()
 
+def execute_sui_graphql_query(query: str, variables: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """
+    Executes a GraphQL query against the Sui Testnet GraphQL endpoint.
+    
     Args:
-        name (str, optional): The name of the person to greet. Defaults to a generic greeting if not provided.
-
+        query (str): The GraphQL query string.
+        variables (dict, optional): A dictionary of variables for the query.
+        
     Returns:
-        str: A friendly greeting message.
+        dict: The JSON response from the GraphQL endpoint.
     """
-    if name:
-        greeting = f"Hello, {name}!"
-        print(f"--- Tool: say_hello called for {name} ---")
-    else:
-        greeting = "Hello there!"
-        print(f"--- Tool: say_hello called without a specific name (name_arg_value: {name}) ---")
-    return greeting
-
-def say_goodbye() -> str:
-    """Provides a simple farewell message to conclude the conversation."""
-    print(f"--- Tool: say_goodbye called ---")
-    return "Ciao! Have a great day."
-
-def prepare_sui_transfer(recipient: str, amount_sui: float) -> Dict[str, Any]:
-    """
-    Constructs a Programmable Transaction Block (PTB) for a SUI transfer.
-    Args:
-        recipient: The 0x address of the receiver.
-        amount_sui: The amount of SUI to send.
-    """
-    # This data is passed back to frontend to trigger the wallet sign-in
-    return {
-        "status": "pending_simulation",
-        "action": "TRANSFER",
-        "payload": {
-            "target": recipient,
-            "amount": amount_sui,
-            "currency": "SUI"
-        },
-        "message": f"Prepared transfer of {amount_sui} SUI to {recipient}. Awaiting security scan."
+    import requests
+    import json
+    
+    url = "https://graphql.testnet.sui.io/graphql"
+    headers = {
+        "Content-Type": "application/json",
     }
+    
+    payload = {
+        "query": query,
+        "variables": variables or {}
+    }
+    
+    print(f"--- Tool: execute_sui_graphql_query Query: {query} ---")
+    print(f"--- Tool: execute_sui_graphql_query Variables: {variables} ---")
+    
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=10)
+        print(f"--- Tool: execute_sui_graphql_query HTTP {response.status_code} ---")
+        try:
+            data = response.json()
+        except json.JSONDecodeError:
+            print(f"--- Tool: execute_sui_graphql_query Failed to decode JSON. Response text: {response.text[:200]}... ---")
+            return {"error": f"HTTP {response.status_code}: {response.text}"}
+
+        print(f"--- Tool: execute_sui_graphql_query completed. Response keys: {list(data.keys())} ---")
+        if 'errors' in data:
+            print(f"--- Tool: execute_sui_graphql_query GraphQL Errors: {data['errors']} ---")
+        return data
+    except Exception as e:
+        print(f"Error executing GraphQL query: {e}")
+        return {"error": str(e)}
+
+def get_transactions(address: str, limit: int = 5, before: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Fetches transaction history for a specific address.
+    
+    Args:
+        address (str): The Sui address to fetch transactions for.
+        limit (int, optional): The number of transactions to fetch. Defaults to 5.
+        before (str, optional): The cursor for pagination (to get previous page).
+        
+    Returns:
+        dict: The transaction history data.
+    """
+    query = """
+    query getTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {
+      transactions(last: $limit, before: $before, filter: {affectedAddress: $address}) {
+        pageInfo {
+          hasPreviousPage
+          startCursor
+        }
+        nodes {
+          digest
+          gasInput {
+            gasPrice
+            gasBudget
+            gasSponsor {
+              address
+            }
+          }
+          effects {
+            timestamp
+            status
+            gasEffects {
+              gasSummary {
+                computationCost
+                storageCost
+                storageRebate
+                nonRefundableStorageFee
+              }
+            }
+            balanceChangesJson
+          }
+        }
+      }
+    }
+    """
+    variables = {
+        "address": address,
+        "limit": limit,
+        "before": before
+    }
+    return execute_sui_graphql_query(query, variables)
+
+def get_sui_schema_info(type_name: str) -> str:
+    """
+    Retrieves the GraphQL schema fields and types for a specific Sui object type.
+    Use this if you are unsure of the available fields for types like 'Transaction', 'Address', or 'GasEffects'.
+    
+    Args:
+        type_name: The name of the GraphQL type to inspect (e.g., 'Transaction', 'Address').
+    """
+    import requests
+    url = "https://graphql.testnet.sui.io/graphql"
+    query = """
+    query IntrospectType($name: String!) {
+      __type(name: $name) {
+        name
+        fields {
+          name
+          description
+          type {
+            name
+            kind
+            ofType {
+              name
+              kind
+            }
+          }
+        }
+      }
+    }
+    """
+    try:
+        response = requests.post(url, json={'query': query, 'variables': {'name': type_name}}, timeout=10)
+        return str(response.json())
+    except Exception as e:
+        return f"Error fetching schema: {str(e)}"

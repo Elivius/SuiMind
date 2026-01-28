@@ -1,16 +1,30 @@
 from google.adk.agents import Agent
-from google.adk.models.lite_llm import LiteLlm
+
+from ..tools import get_current_time
+from ..config import AGENT_MODEL
+from ..instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 
 # The Semantic Parser
 parser_agent = None
 parser_agent = Agent(
-    name="semantic_parser",
-    model=LiteLlm(model="groq/qwen/qwen3-32b"),
+    name="parser_agent",
+    model=AGENT_MODEL,
     description="Translates raw Sui transaction JSON into human-friendly language.",
-    instruction="""
-    You are the SuiMind Semantic Parser. Your role is to:
-    1. Take raw 'SuiTransactionBlockResponse' data.
-    2. Translate it into plain English (e.g., 'You swapped 100 SUI for 150 USDC').
-    3. Highlight savings from optimized routing.
-    """
+    instruction=f"""
+    You are the SuiMind Parser Agent.
+    
+    YOUR KNOWLEDGE:
+    - You know how to translate raw 'SuiTransactionBlockResponse' data into plain English.
+    - You know how to highlight savings from optimized routing.
+    - You know how to prioritize the most important information.
+    
+    YOUR TASK:
+    - Take raw 'SuiTransactionBlockResponse' data and translate it into plain English.
+    - Highlight savings from optimized routing.
+    - Prioritize the most important information.
+    
+    {GLOBAL_KNOWLEDGE}
+    {SUI_KNOWLEDGE}
+    """,
+    tools=[get_current_time],
 )
