@@ -117,7 +117,10 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, index: number) => {
     const href = e.currentTarget.getAttribute('href');
     if (activeIndex === index) {
-      if (e.button === 0) e.preventDefault();
+      if (e.button === 0) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
       return;
     }
 
