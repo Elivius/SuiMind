@@ -344,18 +344,8 @@ export default function WalletDashboard() {
         </div>
 
         {/* Mindy AI */}
-        <div className="xl:col-span-1 relative group h-full">
-          {/* Atmospheric Background Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] opacity-20 pointer-events-none">
-            <div className="absolute top-0 left-0 w-full h-full bg-[#6FBEE5]/20 rounded-full blur-[100px] animate-pulse" />
-            <div className="absolute bottom-0 right-0 w-3/4 h-3/4 bg-[#A890FE]/20 rounded-full blur-[80px]" />
-          </div>
-
-          {/* Liquid Multicolor Card Border */}
-          <div className="absolute -inset-[1.5px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-white/50 via-[#6FBEE5] via-[#A890FE] to-[#6FBEE5] rounded-[24px] opacity-20 blur-xl group-hover:opacity-40 transition-all duration-700 animate-border-flow" />
-          <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-white via-[#6FBEE5] via-[#A890FE] to-[#6FBEE5] rounded-[24px] opacity-30 animate-border-flow" />
-
-          <Card className="relative border-none backdrop-blur-xl bg-[#050B15]/90 h-full overflow-hidden">
+        <div className="xl:col-span-1">
+          <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden">
             <div className="p-6 h-full flex flex-col">
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-5 h-5 text-[#6FBEE5]" />
@@ -402,11 +392,11 @@ export default function WalletDashboard() {
               {/* Premium Chat Input - Matching Mindy Page */}
               <div className="mt-auto px-1 pb-1">
                 <div className="max-w-4xl mx-auto w-full relative group">
-                  {/* The Liquid Glowing Animated Border Wrap */}
-                  <div className="absolute -inset-[1.5px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-white/50 via-[#6FBEE5] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] opacity-70 blur-md group-focus-within:opacity-100 group-focus-within:blur-xl transition-all duration-700 animate-border-flow" />
-                  <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-white via-[#6FBEE5] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] opacity-100 animate-border-flow" />
+                  {/* The Liquid Glowing Animated Border Wrap - Smoother Version */}
+                  <div className="absolute -inset-[2px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.2rem] sm:rounded-[3.7rem] opacity-40 blur-xl group-focus-within:opacity-70 transition-all duration-1000 animate-border-flow" />
+                  <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
 
-                  <div className="relative bg-[#050B15] backdrop-blur-3xl rounded-[2rem] p-4 shadow-2xl transition-all">
+                  <div className="relative bg-[#050B15] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3.5rem] py-3 px-4 sm:p-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all">
                     <div className="flex flex-col gap-3">
                       <textarea
                         value={mindyInput}
@@ -430,8 +420,8 @@ export default function WalletDashboard() {
                             setMindyInput("")
                           }}
                           disabled={!mindyInput.trim()}
-                          className={`cursor-pointer w-11 h-11 rounded-full bg-[#6FBEE5] flex items-center justify-center text-white transition-all duration-300 ${mindyInput.trim()
-                            ? "opacity-100 scale-100 shadow-[0_0_20px_rgba(111,190,229,0.4)]"
+                          className={`cursor-pointer w-11 h-11 rounded-full bg-[#A890FE] flex items-center justify-center text-white transition-all duration-300 ${mindyInput.trim()
+                            ? "opacity-100 scale-100 shadow-[0_0_20px_rgba(168,144,254,0.4)]"
                             : "opacity-0 scale-50 pointer-events-none"
                             }`}
                         >

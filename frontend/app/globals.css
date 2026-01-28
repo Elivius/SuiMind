@@ -213,5 +213,5 @@
 
 .animate-border-flow {
   background-size: 300% 300%;
-  animation: border-rotate 3s linear infinite;
+  animation: border-rotate 6s linear infinite;
 }

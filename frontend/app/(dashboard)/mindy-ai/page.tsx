@@ -115,9 +115,9 @@ export default function MindyAIPage() {
                 {/* Bottom Input Section */}
                 <div className="w-full px-4 pb-4 sm:pb-12 mt-auto">
                     <div className="max-w-4xl mx-auto w-full relative group">
-                        {/* The Glowing Animated Border Wrap */}
-                        <div className="absolute -inset-[1.5px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#6FBEE5] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-70 blur-md group-focus-within:opacity-100 group-focus-within:blur-xl transition-all duration-700 animate-border-flow" />
-                        <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#6FBEE5] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
+                        {/* The Liquid Glowing Animated Border Wrap - Smoother Version */}
+                        <div className="absolute -inset-[2px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.2rem] sm:rounded-[3.7rem] opacity-40 blur-xl group-focus-within:opacity-70 transition-all duration-1000 animate-border-flow" />
+                        <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
 
                         <div className="relative bg-[#050B15] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3.5rem] py-3 px-4 sm:p-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all">
                             <div className="flex flex-col gap-2 sm:gap-6">
@@ -147,7 +147,7 @@ export default function MindyAIPage() {
                                         onClick={handleSendMessage}
                                         disabled={!inputValue.trim()}
                                         className={`cursor-pointer w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-500 ${inputValue.trim()
-                                            ? "bg-[#6FBEE5] text-white scale-100 opacity-100 shadow-[0_0_30px_rgba(111,190,229,0.5)] rotate-0"
+                                            ? "bg-[#A890FE] text-white scale-100 opacity-100 shadow-[0_0_30px_rgba(168,144,254,0.5)] rotate-0"
                                             : "bg-white/5 text-white/10 scale-90 opacity-0 rotate-[-45deg] pointer-events-none"
                                             }`}
                                     >
