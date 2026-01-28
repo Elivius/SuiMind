@@ -114,40 +114,46 @@ export default function MindyAIPage() {
 
                 {/* Bottom Input Section */}
                 <div className="w-full px-4 pb-4 sm:pb-12 mt-auto">
-                    <div className="bg-[#111827]/60 backdrop-blur-3xl border border-white/10 rounded-[2rem] sm:rounded-[3.5rem] py-3 px-4 sm:p-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] relative group transition-all hover:bg-[#111827]/80 focus-within:ring-2 focus-within:ring-[#6FBEE5]/30">
-                        <div className="flex flex-col gap-2 sm:gap-6">
-                            <textarea
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault()
-                                        handleSendMessage()
-                                    }
-                                }}
-                                placeholder="Ask Mindy AI anything..."
-                                rows={1}
-                                className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base sm:text-lg py-1 px-2 sm:px-4 font-normal leading-relaxed scrollbar-none"
-                            />
+                    <div className="max-w-4xl mx-auto w-full relative group">
+                        {/* The Glowing Animated Border Wrap */}
+                        <div className="absolute -inset-[1.5px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#6FBEE5] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-70 blur-md group-focus-within:opacity-100 group-focus-within:blur-xl transition-all duration-700 animate-border-flow" />
+                        <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#6FBEE5] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
 
-                            <div className="flex items-center justify-between px-1 sm:px-3">
-                                <div className="flex items-center gap-4 sm:gap-8 text-white/20">
-                                    <button className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><Plus className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                    <button className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                    <button className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><AtSign className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                    <button className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><Sparkles className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                        <div className="relative bg-[#050B15] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3.5rem] py-3 px-4 sm:p-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all">
+                            <div className="flex flex-col gap-2 sm:gap-6">
+                                <textarea
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault()
+                                            handleSendMessage()
+                                        }
+                                    }}
+                                    placeholder="Ask Mindy AI anything..."
+                                    rows={1}
+                                    className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base sm:text-lg py-1 px-2 sm:px-4 font-normal leading-relaxed scrollbar-none"
+                                />
+
+                                <div className="flex items-center justify-between px-1 sm:px-3">
+                                    <div className="flex items-center gap-4 sm:gap-8 text-white/20">
+                                        <button className="cursor-pointer hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><Plus className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                                        <button className="cursor-pointer hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                                        <button className="cursor-pointer hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><AtSign className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                                        <button className="cursor-pointer hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><Sparkles className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                                    </div>
+
+                                    <button
+                                        onClick={handleSendMessage}
+                                        disabled={!inputValue.trim()}
+                                        className={`cursor-pointer w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-500 ${inputValue.trim()
+                                            ? "bg-[#6FBEE5] text-white scale-100 opacity-100 shadow-[0_0_30px_rgba(111,190,229,0.5)] rotate-0"
+                                            : "bg-white/5 text-white/10 scale-90 opacity-0 rotate-[-45deg] pointer-events-none"
+                                            }`}
+                                    >
+                                        <ArrowUpRight className="w-6 h-6 sm:w-7 sm:h-7" />
+                                    </button>
                                 </div>
-
-                                <button
-                                    onClick={handleSendMessage}
-                                    disabled={!inputValue.trim()}
-                                    className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-500 ${inputValue.trim()
-                                        ? "bg-[#6FBEE5] text-white scale-100 opacity-100 shadow-[0_0_30px_rgba(111,190,229,0.5)] rotate-0"
-                                        : "bg-white/5 text-white/10 scale-90 opacity-0 rotate-[-45deg] pointer-events-none"
-                                        }`}
-                                >
-                                    <ArrowUpRight className="w-6 h-6 sm:w-7 sm:h-7" />
-                                </button>
                             </div>
                         </div>
                     </div>

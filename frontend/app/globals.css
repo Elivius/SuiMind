@@ -199,3 +199,19 @@
 .animate-bounce-subtle {
   animation: bounce-subtle 3s ease-in-out infinite;
 }
+
+/* Animated Gradient Border for AI Input */
+@keyframes border-rotate {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.animate-border-flow {
+  background-size: 300% 300%;
+  animation: border-rotate 3s linear infinite;
+}
