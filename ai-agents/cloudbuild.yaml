@@ -1,0 +1,29 @@
+steps:
+  # 1. Build the container image using Google Buildpacks
+  - name: 'gcr.io/k8s-skaffold/pack'
+    args:
+      - 'build'
+      - 'gcr.io/$PROJECT_ID/mindy'    # The image name
+      - '--builder=gcr.io/buildpacks/builder:v1'
+      - '--path=ai-agents/mindy'
+      - '--env=GOOGLE_ENTRYPOINT=python agent.py'
+
+  # 2. Push the image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/mindy']
+
+  # 3. Deploy the image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'mindy'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/mindy'
+      - '--region'
+      - 'asia-southeast3'
+      - '--allow-unauthenticated'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
