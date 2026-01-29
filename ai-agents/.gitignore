@@ -22,3 +22,4 @@ htmlcov/
 # Others
 command.txt
 .adk/
+cloud-run-deploy.sh
