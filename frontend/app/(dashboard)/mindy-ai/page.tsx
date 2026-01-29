@@ -1,18 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import {
     ArrowUpRight,
     Sparkles,
-    ArrowRight,
     AtSign,
     Image as ImageIcon,
     Plus,
     Scan,
     FileText,
     Camera,
-    Banknote
+    Banknote,
+    Zap,
+    Trash2,
+    Square
 } from "lucide-react"
+import { Card } from "@/components/ui"
+import { useMindyAgent } from "@/hooks/useMindyAgent"
 
 const QUICK_ACTIONS = [
     {
@@ -67,55 +71,107 @@ const QUICK_ACTIONS = [
 
 export default function MindyAIPage() {
     const [inputValue, setInputValue] = useState("")
+    const { messages, isLoading, sendMessage, startSession, hasSession } = useMindyAgent()
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const hasMessages = messages.length > 0;
 
-    const handleActionClick = (prompt: string) => {
-        setInputValue(prompt)
+    // Scroll to lastest message when new message is added
+    const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+        messagesEndRef.current?.scrollIntoView({ behavior, block: 'nearest' });
+    }
+
+    useEffect(() => {
+        if (hasMessages) {
+            scrollToBottom('smooth')
+        }
+    }, [messages, hasMessages])
+
+    // Quick Action Buttons
+    const handleShortHandPromptClick = (prompt: string) => {
+        sendMessage(prompt);
     }
 
     const handleSendMessage = () => {
         if (!inputValue.trim()) return
-        console.log("Sending to SuiMind:", inputValue)
+        sendMessage(inputValue)
         setInputValue("")
     }
 
     return (
-        <div className="w-full mx-auto px-4 sm:px-6 py-6 min-h-[calc(100vh-120px)] flex flex-col relative overflow-hidden">
-            <div className="flex-1 flex flex-col relative z-10 max-w-6xl mx-auto w-full">
-                {/* Main Interaction Area */}
-                <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-                    <div className="w-full mb-4 sm:mb-12 relative">
-                        <h1 className="text-4xl font-bold md:text-6xl lg:text-7xl text-white tracking-tight leading-tight relative z-10 px-4">
-                            How can I <span className="text-transparent font-bold bg-clip-text bg-gradient-to-r from-[#6FBEE5] to-[#A890FE]">help</span> you?
-                        </h1>
+        <div className="w-full mx-auto px-4 sm:px-6 py-4 h-[calc(100vh-100px)] flex flex-col relative overflow-hidden">
+            <div className="flex-1 flex flex-col relative z-10 max-w-6xl mx-auto w-full min-h-0">
 
-                        {/* HIGHLY ORGANIC / MESSY ARRANGE - PROJECT STYLE */}
-                        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 xl:gap-x-20 xl:gap-y-12 w-full max-w-6xl mx-auto px-4 py-8 sm:py-10 relative">
-                            {QUICK_ACTIONS.map((action, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => handleActionClick(action.prompt)}
-                                    className={`flex items-center gap-3 sm:gap-4 px-6 sm:px-8 py-4 sm:py-5 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-white/[0.08] hover:border-[#6FBEE5]/40 transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white font-semibold text-left shadow-2xl backdrop-blur-3xl group ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
-                                >
-                                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#6FBEE5]/10 group-hover:border-[#6FBEE5]/30 transition-all">
-                                        <div className="group-hover:scale-110 transition-transform">
-                                            {action.icon}
+                {!hasMessages ? (
+                    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+                        <div className="w-full mb-4 sm:mb-12 relative">
+                            <h1 className="text-4xl font-bold md:text-6xl lg:text-7xl text-white tracking-tight leading-tight relative z-10 px-4">
+                                How can I <span className="text-transparent font-bold bg-clip-text bg-gradient-to-r from-[#6FBEE5] to-[#A890FE]">help</span> you?
+                            </h1>
+
+                            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 xl:gap-x-20 xl:gap-y-12 w-full max-w-6xl mx-auto px-4 py-8 sm:py-10 relative">
+                                {QUICK_ACTIONS.map((action, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => handleShortHandPromptClick(action.prompt)}
+                                        className={`flex items-center gap-3 sm:gap-4 px-6 sm:px-8 py-4 sm:py-5 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-white/[0.08] hover:border-[#6FBEE5]/40 transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white font-semibold text-left shadow-2xl backdrop-blur-3xl group ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
+                                    >
+                                        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#6FBEE5]/10 group-hover:border-[#6FBEE5]/30 transition-all">
+                                            <div className="group-hover:scale-110 transition-transform">
+                                                {action.icon}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-[#6FBEE5] transition-colors">{action.title}</h4>
-                                        <p className="text-white/20 text-[10px] uppercase font-bold tracking-widest mt-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-1 group-hover:translate-y-0">Execute Prompt</p>
-                                    </div>
-                                    <ArrowUpRight className="w-5 h-5 text-white/5 group-hover:text-[#6FBEE5] transition-all" />
-                                </button>
-                            ))}
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-[#6FBEE5] transition-colors">{action.title}</h4>
+                                            <p className="text-white/20 text-[10px] uppercase font-bold tracking-widest mt-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-1 group-hover:translate-y-0">Execute Prompt</p>
+                                        </div>
+                                        <ArrowUpRight className="w-5 h-5 text-white/5 group-hover:text-[#6FBEE5] transition-all" />
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="flex-1 flex flex-col mb-4 min-h-0 overflow-hidden">
+                        <Card className="flex-1 border-white/20 backdrop-blur-xl bg-white/5 flex flex-col mb-2 overflow-hidden min-h-0">
+                            <div className="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
+                                {messages.map((msg, idx) => (
+                                    <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
+                                            {msg.role === 'mindy' ? <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" /> : <span className="text-purple-300 font-bold text-xs sm:text-base">U</span>}
+                                        </div>
+                                        <div className={`px-4 sm:px-5 py-3 sm:py-4 max-w-[85%] sm:max-w-[80%] border shadow-xl ${msg.role === 'mindy'
+                                            ? 'bg-white/10 rounded-2xl rounded-tl-none border-white/5 text-white/90'
+                                            : 'bg-purple-500/20 rounded-2xl rounded-tr-none border-purple-500/10 text-white'
+                                            }`}>
+                                            <p className="leading-relaxed whitespace-pre-wrap text-sm sm:text-base">{msg.content}</p>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {isLoading && (
+                                    <div className="flex gap-4">
+                                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0 border border-[#6FBEE5]/30">
+                                            <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" />
+                                        </div>
+                                        <div className="bg-white/10 rounded-2xl rounded-tl-none px-5 py-4 border border-white/5 shadow-xl">
+                                            <div className="flex space-x-2">
+                                                <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                                <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                                <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div ref={messagesEndRef} />
+                            </div>
+                        </Card>
+                    </div>
+                )}
 
                 {/* Bottom Input Section */}
-                <div className="w-full px-4 pb-4 sm:pb-12 mt-auto">
-                    <div className="bg-[#111827]/60 backdrop-blur-3xl border border-white/10 rounded-[2rem] sm:rounded-[3.5rem] py-3 px-4 sm:p-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] relative group transition-all hover:bg-[#111827]/80 focus-within:ring-2 focus-within:ring-[#6FBEE5]/30">
-                        <div className="flex flex-col gap-2 sm:gap-6">
+                <div className="w-full pb-2 md:pb-6 mt-auto flex-shrink-0 z-20">
+                    <div className="bg-[#111827]/60 backdrop-blur-3xl border border-white/10 rounded-[2rem] sm:rounded-[3.5rem] py-2 sm:py-3 px-3 sm:px-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] relative group transition-all hover:bg-[#111827]/80 focus-within:ring-2 focus-within:ring-[#6FBEE5]/30">
+                        <div className="flex flex-col gap-2 sm:gap-4">
                             <textarea
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
@@ -125,28 +181,43 @@ export default function MindyAIPage() {
                                         handleSendMessage()
                                     }
                                 }}
+                                disabled={isLoading}
                                 placeholder="Ask Mindy AI anything..."
                                 rows={1}
-                                className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base sm:text-lg py-1 px-2 sm:px-4 font-normal leading-relaxed scrollbar-none"
+                                className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base sm:text-lg py-2 sm:py-1 px-2 sm:px-4 font-normal leading-relaxed scrollbar-none disabled:opacity-50"
                             />
 
                             <div className="flex items-center justify-between px-1 sm:px-3">
-                                <div className="flex items-center gap-4 sm:gap-8 text-white/20">
-                                    <button className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><Plus className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                    <button className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                    <button className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><AtSign className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                    <button className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300"><Sparkles className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                                <div className="flex items-center gap-3 sm:gap-8 text-white/20">
+                                    <button
+                                        onClick={() => startSession({ forceNew: true })}
+                                        disabled={isLoading}
+                                        className="hover:text-red-400 hover:scale-110 transition-all duration-300 disabled:opacity-50"
+                                        title="New Chat"
+                                    >
+                                        <Trash2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    </button>
+                                    <button disabled={isLoading} className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300 disabled:opacity-50"><Plus className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                                    <button disabled={isLoading} className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300 disabled:opacity-50 hidden sm:block"><ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                                    <button disabled={isLoading} className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300 disabled:opacity-50 hidden sm:block"><AtSign className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+                                    <button disabled={isLoading} className="hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300 disabled:opacity-50"><Sparkles className="w-5 h-5 sm:w-6 sm:h-6" /></button>
                                 </div>
 
                                 <button
                                     onClick={handleSendMessage}
-                                    disabled={!inputValue.trim()}
-                                    className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-500 ${inputValue.trim()
-                                        ? "bg-[#6FBEE5] text-white scale-100 opacity-100 shadow-[0_0_30px_rgba(111,190,229,0.5)] rotate-0"
-                                        : "bg-white/5 text-white/10 scale-90 opacity-0 rotate-[-45deg] pointer-events-none"
+                                    disabled={isLoading || !inputValue.trim()}
+                                    className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-500 ${isLoading
+                                            ? "bg-white/10 text-white scale-100 opacity-100 rotate-0 cursor-wait"
+                                            : inputValue.trim()
+                                                ? "bg-[#6FBEE5] text-white scale-100 opacity-100 shadow-[0_0_30px_rgba(111,190,229,0.5)] rotate-0"
+                                                : "bg-white/5 text-white/10 scale-90 opacity-0 rotate-[-45deg] pointer-events-none"
                                         }`}
                                 >
-                                    <ArrowUpRight className="w-6 h-6 sm:w-7 sm:h-7" />
+                                    {isLoading ? (
+                                        <Square className="w-4 h-4 sm:w-5 sm:h-5 fill-current animate-pulse" />
+                                    ) : (
+                                        <ArrowUpRight className="w-6 h-6 sm:w-7 sm:h-7" />
+                                    )}
                                 </button>
                             </div>
                         </div>
