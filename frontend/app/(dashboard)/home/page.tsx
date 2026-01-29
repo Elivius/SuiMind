@@ -57,13 +57,11 @@ const handleSend = async () => {
   if (parseFloat(amount) <= 0) { alert("Please enter an amount greater than 0."); return; }
 
   setIsSending(true);
-  let execution: any = null; // Declare it once here
+  let execution: any = null;
 
   try {     
     const tx = new Transaction();
     const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
-    //const amount = 100_000_000; // 1 SUI
-    //const recipient = "0x5d61f9cae82c06ad6c642b5e30474e170c04483a4732ed1df9d0cf543e4823cf";
 
     const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
     tx.transferObjects([coin], recipient);
@@ -79,7 +77,6 @@ const handleSend = async () => {
       },
     });
 
-    // CRITICAL: No 'const' here! Use the variable from above.
     execution = result.data?.executeTransaction;
 
     if (execution?.errors && execution.errors.length > 0) {
@@ -92,11 +89,10 @@ const handleSend = async () => {
 
     if (status === 'SUCCESS' || status?.status === 'success') {
       alert(`Success! Digest: ${digest}`);
-      setShowSendUI(false); // Close modal on success
-      setAmount('0.00');     // Reset form
+      setShowSendUI(false); 
+      setAmount('0.00');    
       setRecipient('');
     } else {
-      // This will now correctly show the specific reason (e.g., Insufficient Gas)
       const detail = status?.error || "Check console for effects object";
       alert(`On-chain Failure: ${detail}`);
       console.log("Effects Details:", execution?.effects);
@@ -244,7 +240,6 @@ const handleSend = async () => {
       {/* After clicking send button*/}
       {showNewSendUI && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
-                {/* Dark overlay */}
                 <div 
                   className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                   onClick={() => setShowSendUI(false)}
