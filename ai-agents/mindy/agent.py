@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     # B. Create the App
     # We pass 'agents_dir' so it automatically loads 'root_agent' from this folder
-    app = get_fast_api_app(agents_dir=current_dir)
+    app = get_fast_api_app(agents_dir=current_dir, web=True)
 
     # C. Run
     port = int(os.environ.get("PORT", 8080))
