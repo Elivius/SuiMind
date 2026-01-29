@@ -26,8 +26,10 @@ export default function WalletDashboard() {
   const { mutateAsync: signTransaction } = useSignTransaction();
   const [isSending, setIsSending] = useState(false);
   const [showNewSendUI, setShowSendUI] = useState(false);
+  const [showNewRequestUI,setShowRequestUI] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('0.00');
+  const [requestAmount, setRequestAmount] = useState('0.00');
 
   // setup GraphQLClient
   const gqlClient = new SuiGraphQLClient({
@@ -223,7 +225,7 @@ const handleSend = async () => {
                 </div>
               </Button>
               <Button
-                className="flex-1 lg:flex-none lg:min-w-[180px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-start gap-5 overflow-hidden"
+                onClick={() => setShowRequestUI(true)} className="flex-1 lg:flex-none lg:min-w-[180px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-start gap-5 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
                   <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
@@ -339,6 +341,94 @@ const handleSend = async () => {
                 </div>
               </div>
             )}
+
+      {showNewRequestUI && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Dark overlay */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowRequestUI(false)}
+          />
+          
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl p-6">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900">Request SUI</h2>
+            </div>
+            
+            {/* Requested Address */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Request From Address
+              </label>
+              <input
+                type="text"
+                placeholder="0x..."
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+              />
+            </div>
+            
+            {/* Amount */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Amount to Request
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  type="number"
+                  value={requestAmount}
+                  onChange={(e) => setRequestAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full px-4 py-3 pr-24 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                />
+                <div className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col">
+                  <button 
+                    onClick={() => setRequestAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={() => setRequestAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                  SUI
+                </span>
+              </div>
+            </div>
+            
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowRequestUI(false)}
+                className="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {/* handle request */}}
+                className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors"
+              >
+                Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="md:col-span-2 xl:col-span-2">
