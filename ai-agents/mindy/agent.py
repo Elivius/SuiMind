@@ -61,27 +61,3 @@ root_agent = Agent(
     before_model_callback=secure_input_guardrail,
     before_tool_callback=transaction_security_guardrail,
 )
-
-if __name__ == "__main__":
-    import os
-    import uvicorn
-    # We use the function we imported at the top
-    from google.adk.cli.fast_api import get_fast_api_app
-
-    print("🚀 Starting Mindy Agent...")
-
-    # A. Get the current directory (where agent.py is)
-    # This tells the ADK: "Look in this folder to find the agent."
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # B. Point to the PARENT directory (e.g., .../ai-agents)
-    # This allows the ADK to look "down" and find the 'mindy' folder structure it expects
-    agents_parent_dir = os.path.dirname(current_dir)
-
-    # C. Create the App
-    # We pass 'agents_dir' so it automatically loads 'root_agent' from this folder
-    app = get_fast_api_app(agents_dir=agents_parent_dir, web=True)
-
-    # D. Run
-    port = int(os.environ.get("PORT", 8080))
-    uvicorn.run(app, host="0.0.0.0", port=port)

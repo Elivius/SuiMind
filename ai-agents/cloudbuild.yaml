@@ -6,7 +6,7 @@ steps:
       - 'gcr.io/$PROJECT_ID/mindy'
       - '--builder=gcr.io/buildpacks/builder:v1'
       - '--path=ai-agents'
-      - '--env=GOOGLE_ENTRYPOINT=python mindy/agent.py'
+      - '--env=GOOGLE_ENTRYPOINT=python run.py'
 
   # 2. Push the image to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
