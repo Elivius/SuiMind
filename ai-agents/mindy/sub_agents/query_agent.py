@@ -1,8 +1,8 @@
 from google.adk.agents import Agent
 
-from ..tools import get_current_time, get_transactions, get_sui_schema_info, execute_sui_graphql_query
-from ..config import AGENT_MODEL
-from ..instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
+from tools import get_current_time, get_transactions, get_sui_schema_info, execute_sui_graphql_query
+from config import AGENT_MODEL
+from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 
 # Query Agent
 query_agent = None

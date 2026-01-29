@@ -1,20 +1,26 @@
+import sys
+import os
+
+# This allows "from config import..." to work locally AND on Cloud Run
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from google.adk.agents import Agent
 from google.adk.apps.app import App
 from google.adk.agents.context_cache_config import ContextCacheConfig
 from google.adk.sessions import InMemorySessionService
 
-from .config import AGENT_MODEL
-from .instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
-from .tools import get_current_time
+from config import AGENT_MODEL
+from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
+from tools import get_current_time
 
-from .sub_agents import (
+from sub_agents import (
     greeting_agent,
     farewell_agent,
     parser_agent,
     query_agent,
 )
 
-from .guardrails import (
+from guardrails import (
     secure_input_guardrail,
     transaction_security_guardrail
 )
@@ -54,3 +60,20 @@ root_agent = Agent(
     before_model_callback=secure_input_guardrail,
     before_tool_callback=transaction_security_guardrail,
 )
+
+app = App(
+    name="Mindy",
+    root_agent=root_agent
+)
+
+if __name__ == "__main__":
+    import os
+    import uvicorn
+
+    print("🚀 Starting Mindy Agent on Cloud Run...")
+
+    # Get the PORT from Google Cloud (It usually assigns 8080)
+    port = int(os.environ.get("PORT", 8080))
+
+    # Host MUST be "0.0.0.0" to accept connections from the outside world
+    uvicorn.run(app, host="0.0.0.0", port=port)

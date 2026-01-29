@@ -1,7 +1,7 @@
 from google.adk.agents import Agent
 
-from ..config import AGENT_MODEL
-from ..instructions import GLOBAL_KNOWLEDGE
+from config import AGENT_MODEL
+from instructions import GLOBAL_KNOWLEDGE
 
 # Greeting Agent
 greeting_agent = None
