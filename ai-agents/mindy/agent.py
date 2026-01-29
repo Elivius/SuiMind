@@ -8,6 +8,7 @@ from google.adk.agents import Agent
 from google.adk.apps.app import App
 from google.adk.agents.context_cache_config import ContextCacheConfig
 from google.adk.sessions import InMemorySessionService
+from google.adk.cli.fast_api import get_fast_api_app
 
 from config import GEMINI_2_5_FLASH
 from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
@@ -61,19 +62,22 @@ root_agent = Agent(
     before_tool_callback=transaction_security_guardrail,
 )
 
-app = App(
-    name="Mindy",
-    root_agent=root_agent
-)
-
 if __name__ == "__main__":
     import os
     import uvicorn
+    # We use the function we imported at the top
+    from google.adk.cli.fast_api import get_fast_api_app
 
-    print("🚀 Starting Mindy Agent on Cloud Run...")
+    print("🚀 Starting Mindy Agent...")
 
-    # Get the PORT from Google Cloud (It usually assigns 8080)
+    # A. Get the current directory (where agent.py is)
+    # This tells the ADK: "Look in this folder to find the agent."
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # B. Create the App
+    # We pass 'agents_dir' so it automatically loads 'root_agent' from this folder
+    app = get_fast_api_app(agents_dir=current_dir)
+
+    # C. Run
     port = int(os.environ.get("PORT", 8080))
-
-    # Host MUST be "0.0.0.0" to accept connections from the outside world
     uvicorn.run(app, host="0.0.0.0", port=port)
