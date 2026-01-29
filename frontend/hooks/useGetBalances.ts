@@ -2,7 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { SUI_COIN_TYPE } from "@/lib/constants";
 import { useQuery } from "@tanstack/react-query";
 import { graphql } from '@mysten/sui/graphql/schemas/latest';
-import { gqlClient } from "@/lib/suiClient";
+import { gqlClient } from "@/lib/sui-client";
 
 const GET_BALANCES_QUERY = graphql(`
   query getBalances($address: SuiAddress!, $coinType: String!) {

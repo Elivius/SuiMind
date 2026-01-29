@@ -55,18 +55,25 @@ def execute_sui_graphql_query(query: str, variables: Optional[Dict[str, Any]] = 
         print(f"Error executing GraphQL query: {e}")
         return {"error": str(e)}
 
-def get_transactions(address: str, limit: int = 5, before: Optional[str] = None) -> Dict[str, Any]:
+def get_transactions(address: Optional[str] = None, limit: int = 5, before: Optional[str] = None, tool_context: ToolContext = None) -> Dict[str, Any]:
     """
     Fetches transaction history for a specific address.
     
     Args:
-        address (str): The Sui address to fetch transactions for.
+        address (str, optional): The Sui address to fetch transactions for. If None, tries to use 'sui_address' from context state.
         limit (int, optional): The number of transactions to fetch. Defaults to 5.
         before (str, optional): The cursor for pagination (to get previous page).
+        tool_context (ToolContext, optional): The tool context to access session state.
         
     Returns:
         dict: The transaction history data.
     """
+    if not address and tool_context and tool_context.state:
+        address = tool_context.state.get("sui_address")
+        print(f"--- Tool: get_transactions used context address: {address} ---")
+
+    if not address or address == "UNKNOWN_ADDRESS":
+        return {"error": "No address provided and no address found in session context. Please ask the user for their Sui address."}
     query = """
     query getTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {
       transactions(last: $limit, before: $before, filter: {affectedAddress: $address}) {
