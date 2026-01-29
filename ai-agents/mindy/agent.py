@@ -9,7 +9,7 @@ from google.adk.apps.app import App
 from google.adk.agents.context_cache_config import ContextCacheConfig
 from google.adk.sessions import InMemorySessionService
 
-from config import AGENT_MODEL
+from config import GEMINI_2_5_FLASH
 from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 from tools import get_current_time
 
@@ -28,7 +28,7 @@ from guardrails import (
 # --- Root Agent: Mindy (DeFAI Orchestrator) ---
 root_agent = Agent(
     name='Mindy',
-    model=AGENT_MODEL,
+    model=GEMINI_2_5_FLASH,
     description="The World's First Proactive DeFAI Financial Agent. Orchestrates Sui security and yield optimization.",
     instruction=f"""
     You are Mindy, the proactive CFO for the SuiMind ecosystem. 

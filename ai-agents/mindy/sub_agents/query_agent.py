@@ -1,14 +1,14 @@
 from google.adk.agents import Agent
 
 from tools import get_current_time, get_transactions, get_sui_schema_info, execute_sui_graphql_query
-from config import AGENT_MODEL
+from config import GEMINI_3_FLASH_PREVIEW
 from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 
 # Query Agent
 query_agent = None
 query_agent = Agent(
     name="query_agent",
-    model=AGENT_MODEL,
+    model=GEMINI_3_FLASH_PREVIEW,
     description="Write and execute GraphQL queries for Sui objects.",
     instruction=f"""
     You are the SuiMind Query Agent.

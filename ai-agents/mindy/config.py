@@ -7,11 +7,15 @@ env_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(env_path)
 
 # Default LLM Model string
-LLM_MODEL_STRING = os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash")
+DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash")
 
-# Google ADK natively supports 'gemini' models as strings.
-# Other providers (Groq, OpenAI via LiteLLM) typically need the LiteLlm wrapper in ADK.
-if LLM_MODEL_STRING.startswith("gemini"):
-    AGENT_MODEL = LLM_MODEL_STRING
+# Specific Model Configurations
+GEMINI_2_5_FLASH_LITE = os.getenv("GEMINI_2_5_FLASH_LITE", "gemini-2.5-flash-lite")
+GEMINI_2_5_FLASH = os.getenv("GEMINI_2_5_FLASH", "gemini-2.5-flash")
+GEMINI_3_FLASH_PREVIEW = os.getenv("GEMINI_3_FLASH_PREVIEW", "gemini-2.0-flash-thinking-exp-01-21")
+
+# Backward compatibility (optional, or just for generic agent use)
+if DEFAULT_LLM_MODEL.startswith("gemini"):
+    AGENT_MODEL = DEFAULT_LLM_MODEL
 else:
-    AGENT_MODEL = LiteLlm(model=LLM_MODEL_STRING)
+    AGENT_MODEL = LiteLlm(model=DEFAULT_LLM_MODEL)

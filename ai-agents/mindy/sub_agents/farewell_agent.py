@@ -1,13 +1,13 @@
 from google.adk.agents import Agent
 
-from config import AGENT_MODEL
+from config import GEMINI_2_5_FLASH_LITE
 from instructions import GLOBAL_KNOWLEDGE
 
 # Farewell Agent
 farewell_agent = None
 farewell_agent = Agent(
     name="farewell_agent",
-    model=AGENT_MODEL,
+    model=GEMINI_2_5_FLASH_LITE,
     description="Handles simple farewells and goodbyes",
     instruction=f"""
     You are the SuiMind Farewell Agent.
