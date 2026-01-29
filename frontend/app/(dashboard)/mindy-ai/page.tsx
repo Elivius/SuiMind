@@ -13,7 +13,9 @@ import {
     Banknote,
     Zap,
     Trash2,
-    Square
+    Square,
+    Users,
+    Bot
 } from "lucide-react"
 import { Card } from "@/components/ui"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
@@ -137,7 +139,7 @@ export default function MindyAIPage() {
                                 {messages.map((msg, idx) => (
                                     <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                                         <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
-                                            {msg.role === 'mindy' ? <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" /> : <span className="text-purple-300 font-bold text-xs sm:text-base">U</span>}
+                                            {msg.role === 'mindy' ? <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" /> : <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />}
                                         </div>
                                         <div className={`px-4 sm:px-5 py-3 sm:py-4 max-w-[85%] sm:max-w-[80%] border shadow-xl ${msg.role === 'mindy'
                                             ? 'bg-white/10 rounded-2xl rounded-tl-none border-white/5 text-white/90'
@@ -151,7 +153,7 @@ export default function MindyAIPage() {
                                 {isLoading && (
                                     <div className="flex gap-4">
                                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0 border border-[#6FBEE5]/30">
-                                            <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" />
+                                            <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" />
                                         </div>
                                         <div className="bg-white/10 rounded-2xl rounded-tl-none px-5 py-4 border border-white/5 shadow-xl">
                                             <div className="flex space-x-2">
@@ -207,10 +209,10 @@ export default function MindyAIPage() {
                                     onClick={handleSendMessage}
                                     disabled={isLoading || !inputValue.trim()}
                                     className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-500 ${isLoading
-                                            ? "bg-white/10 text-white scale-100 opacity-100 rotate-0 cursor-wait"
-                                            : inputValue.trim()
-                                                ? "bg-[#6FBEE5] text-white scale-100 opacity-100 shadow-[0_0_30px_rgba(111,190,229,0.5)] rotate-0"
-                                                : "bg-white/5 text-white/10 scale-90 opacity-0 rotate-[-45deg] pointer-events-none"
+                                        ? "bg-white/10 text-white scale-100 opacity-100 rotate-0 cursor-wait"
+                                        : inputValue.trim()
+                                            ? "bg-[#6FBEE5] text-white scale-100 opacity-100 shadow-[0_0_30px_rgba(111,190,229,0.5)] rotate-0"
+                                            : "bg-white/5 text-white/10 scale-90 opacity-0 rotate-[-45deg] pointer-events-none"
                                         }`}
                                 >
                                     {isLoading ? (
