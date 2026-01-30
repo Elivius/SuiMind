@@ -5,12 +5,13 @@ import { processTx, mistToSui } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
-  Plus, AtSign, Sparkles
+  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2
 } from "lucide-react"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useModal, useGetBalances, useGetTransactions } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
+import { useMindyAgent } from "@/hooks/useMindyAgent"
 
 export default function WalletDashboard() {
   const router = useRouter()
@@ -26,6 +27,21 @@ export default function WalletDashboard() {
     ?.map((tx) => processTx(tx, account?.address))
     .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [];
 
+  // AI Chatbot
+  const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
+  const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (mindyMessages.length > 0) {
+      mindyMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [mindyMessages])
+
+  const handleMindySend = () => {
+    if (!mindyInput.trim()) return
+    sendMindyMessage(mindyInput)
+    setMindyInput("")
+  }
 
   // ============   MOCK   ============
   const [salary, setSalary] = useState("0")
@@ -345,48 +361,99 @@ export default function WalletDashboard() {
 
         {/* Mindy AI */}
         <div className="xl:col-span-1">
-          <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden">
+          <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden lg:h-[70vh]">
             <div className="p-6 h-full flex flex-col">
-              <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-5 h-5 text-[#6FBEE5]" />
-                <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-[#6FBEE5]" />
+                  <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
+                </div>
+                {mindyMessages.length > 0 && (
+                  <button
+                    onClick={() => startMindySession({ forceNew: true })}
+                    disabled={isMindyLoading}
+                    className="p-2 rounded-full hover:bg-white/10 text-white/30 hover:text-red-400 transition-all disabled:opacity-50"
+                    title="New Chat"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
               {/* Chat Messages Area */}
-              <div className="flex-1 space-y-3 overflow-y-auto mb-4 min-h-[200px]">
-                <div className="flex gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-4 h-4 text-[#6FBEE5]" />
-                  </div>
-                  <div className="bg-white/10 rounded-xl rounded-tl-none px-4 py-3 max-w-[85%]">
-                    <p className="text-sm text-white/90">Hello! I&apos;m your AI financial assistant. How can I help you today?</p>
-                  </div>
-                </div>
+              <div className="flex-1 space-y-3 overflow-y-auto mb-4 min-h-[200px] scrollbar-thin scrollbar-thumb-white/10">
+                {mindyMessages.length === 0 ? (
+                  <>
+                    <div className="flex gap-2">
+                      <div className="w-8 h-8 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0">
+                        <Bot className="w-4 h-4 text-[#6FBEE5]" />
+                      </div>
+                      <div className="bg-white/10 rounded-xl rounded-tl-none px-4 py-3 max-w-[85%]">
+                        <p className="text-sm text-white/90">Hello! I&apos;m your AI financial assistant. How can I help you today?</p>
+                      </div>
+                    </div>
 
-                {/* Quick Prompts - Colorful & Interactive */}
-                <div className="flex flex-wrap gap-2.5 pt-5 pl-1 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
-                  <button
-                    onClick={() => setMindyInput("Analyze my wallet")}
-                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    Analyze wallet
-                  </button>
-                  <button
-                    onClick={() => setMindyInput("Find yield ops")}
-                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all font-bold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20"
-                  >
-                    <TrendingUp className="w-4 h-4" />
-                    Find yield
-                  </button>
-                  <button
-                    onClick={() => setMindyInput("Check risks")}
-                    className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-bold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-lg shadow-red-500/10 hover:shadow-red-500/20"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    Check risks
-                  </button>
-                </div>
+                    {/* Quick Prompts - Colorful & Interactive */}
+                    <div className="flex flex-wrap gap-2.5 pt-5 pl-1 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                      <button
+                        onClick={() => sendMindyMessage("Analyze my wallet")}
+                        disabled={isMindyLoading}
+                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20 disabled:opacity-50"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        Analyze wallet
+                      </button>
+                      <button
+                        onClick={() => sendMindyMessage("Find yield opportunities")}
+                        disabled={isMindyLoading}
+                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all font-bold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 disabled:opacity-50"
+                      >
+                        <TrendingUp className="w-4 h-4" />
+                        Find yield
+                      </button>
+                      <button
+                        onClick={() => sendMindyMessage("Check risks in my portfolio")}
+                        disabled={isMindyLoading}
+                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-bold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-lg shadow-red-500/10 hover:shadow-red-500/20 disabled:opacity-50"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        Check risks
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {mindyMessages.map((msg, idx) => (
+                      <div key={idx} className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
+                          {msg.role === 'mindy' ? <Bot className="w-4 h-4 text-[#6FBEE5]" /> : <Users className="w-4 h-4 text-purple-300" />}
+                        </div>
+                        <div className={`px-4 py-3 max-w-[85%] border shadow-lg ${msg.role === 'mindy'
+                          ? 'bg-white/10 rounded-xl rounded-tl-none border-white/5 text-white/90'
+                          : 'bg-purple-500/20 rounded-xl rounded-tr-none border-purple-500/10 text-white'
+                          }`}>
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                        </div>
+                      </div>
+                    ))}
+
+                    {isMindyLoading && (
+                      <div className="flex gap-2">
+                        <div className="w-8 h-8 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0 border border-[#6FBEE5]/30">
+                          <Bot className="w-4 h-4 text-[#6FBEE5]" />
+                        </div>
+                        <div className="bg-white/10 rounded-xl rounded-tl-none px-4 py-3 border border-white/5">
+                          <div className="flex space-x-2">
+                            <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={mindyMessagesEndRef} />
+                  </>
+                )}
               </div>
 
               {/* Premium Chat Input - Matching Mindy Page */}
@@ -404,28 +471,31 @@ export default function WalletDashboard() {
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault()
-                            console.log("Sending to Mindy:", mindyInput)
-                            setMindyInput("")
+                            handleMindySend()
                           }
                         }}
+                        disabled={isMindyLoading}
                         placeholder="Ask Mindy AI anything..."
                         rows={1}
-                        className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-normal leading-relaxed scrollbar-none"
+                        className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-normal leading-relaxed scrollbar-none disabled:opacity-50"
                       />
 
                       <div className="flex items-center justify-end">
                         <button
-                          onClick={() => {
-                            console.log("Sending to Mindy:", mindyInput)
-                            setMindyInput("")
-                          }}
-                          disabled={!mindyInput.trim()}
-                          className={`cursor-pointer w-11 h-11 rounded-full bg-[#A890FE] flex items-center justify-center text-white transition-all duration-300 ${mindyInput.trim()
-                            ? "opacity-100 scale-100 shadow-[0_0_20px_rgba(168,144,254,0.4)]"
-                            : "opacity-0 scale-50 pointer-events-none"
+                          onClick={handleMindySend}
+                          disabled={isMindyLoading || !mindyInput.trim()}
+                          className={`cursor-pointer w-11 h-11 rounded-full flex items-center justify-center text-white transition-all duration-300 ${isMindyLoading
+                            ? "bg-white/10 scale-100 opacity-100 cursor-wait"
+                            : mindyInput.trim()
+                              ? "bg-[#A890FE] opacity-100 scale-100 shadow-[0_0_20px_rgba(168,144,254,0.4)]"
+                              : "bg-white/5 opacity-0 scale-50 pointer-events-none"
                             }`}
                         >
-                          <ArrowUpRight className="w-6 h-6" />
+                          {isMindyLoading ? (
+                            <Square className="w-4 h-4 fill-current animate-pulse" />
+                          ) : (
+                            <ArrowUpRight className="w-6 h-6" />
+                          )}
                         </button>
                       </div>
                     </div>
