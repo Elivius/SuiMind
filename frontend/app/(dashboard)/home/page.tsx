@@ -15,6 +15,12 @@ import { graphql } from '@mysten/sui/graphql/schemas/latest';
 import { Transaction } from '@mysten/sui/transactions';
 import { useSignTransaction } from '@mysten/dapp-kit';
 import { toBase64 } from '@mysten/sui/utils';
+import { useSuiClientQuery } from "@mysten/dapp-kit";
+import { Bell } from "lucide-react"; 
+import { useEffect } from "react";
+import { usePaymentRequests } from "@/hooks/usePaymentRequests";
+
+
 
 
 
@@ -31,6 +37,8 @@ export default function WalletDashboard() {
   const [amount, setAmount] = useState('0.00');
   const [requestRecipient, setRequestRecipient] = useState('');
   const [requestAmount, setRequestAmount] = useState('0.00');
+  const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
+  const { pendingRequests, hasUnread, refetch } = usePaymentRequests();
 
   // setup GraphQLClient
   const gqlClient = new SuiGraphQLClient({
@@ -58,6 +66,7 @@ export default function WalletDashboard() {
     }
     if (!recipient.startsWith('0x')) { alert("Please enter a valid Sui address."); return; }
     if (parseFloat(amount) <= 0) { alert("Please enter an amount greater than 0."); return; }
+    
 
     setIsSending(true);
     let execution: any = null;
@@ -65,10 +74,18 @@ export default function WalletDashboard() {
     try {     
       const tx = new Transaction();
       const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
+      const PACKAGE_ID = "0x674096762076f86223cd5cf569e248c5dce523309aebe350fc89d8e3a25cffe0";
 
       const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
       tx.transferObjects([coin], recipient);
       tx.setSender(account.address);
+
+      if (activeRequestObject) {
+        tx.moveCall({
+          target: `${PACKAGE_ID}::request::settle_payment_request`,
+          arguments: [tx.object(activeRequestObject.id)],
+        });
+      }
 
       const { bytes, signature } = await signTransaction({ transaction: tx });
 
@@ -95,6 +112,8 @@ export default function WalletDashboard() {
         setShowSendUI(false); 
         setAmount('0.00');    
         setRecipient('');
+        setActiveRequestObject(null);
+        refetch();
       } else {
         const detail = status?.error || "Check console for effects object";
         alert(`On-chain Failure: ${detail}`);
@@ -119,7 +138,7 @@ export default function WalletDashboard() {
       const MODULE_NAME = "request";
       const FUNCTION_NAME = "create_payment_request";
       const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
-      const expirationTimestamp = Date.now() + (7 * 24 * 60 * 60 * 1000);
+      const expirationTimestamp = Date.now() + (24 * 60 * 60 * 1000);
 
       tx.moveCall({
         target: `${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}`,
@@ -155,6 +174,40 @@ export default function WalletDashboard() {
       setIsSending(false);
     }
   };
+
+  useEffect(() => {
+    const handlePayFromHeader = (event: any) => {
+        const request = event.detail;
+        setRecipient(request.requester);
+        setAmount(request.amountSui.toString());
+        setActiveRequestObject(request);
+        setShowSendUI(true); // Open the existing send modal
+    };
+
+    window.addEventListener('PAY_REQUEST', handlePayFromHeader);
+    return () => window.removeEventListener('PAY_REQUEST', handlePayFromHeader);
+  }, []);
+
+  useEffect(() => {
+    const handleIncomingPaymentRequest = (event: any) => {
+      const requestData = event.detail;
+      
+      // 1. Fill the form state with data from the blockchain object
+      setRecipient(requestData.requester);
+      setAmount(requestData.amountSui.toString());
+      
+      // 2. Open the UI so the user can confirm
+      setShowSendUI(true); 
+    };
+  
+    // Listen for the event fired by header.tsx
+    window.addEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
+    
+    return () => {
+      window.removeEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
+    };
+  }, []);
+  
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
   const { data: transactionData, isLoading: isTransactionLoading } = useGetTransactions()
