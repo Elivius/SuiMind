@@ -1,5 +1,6 @@
 pyarrow==17.0.0
 tiktoken==0.7.0
+fastapi==0.118.3
 google-adk
 litellm
 python-dotenv
