@@ -219,7 +219,7 @@ export default function LandingPage() {
                         <div className="max-w-6xl mx-auto p-8 sm:p-16 lg:p-24 rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] bg-gradient-to-br from-[#06b6d4]/30 via-[#3b82f6]/30 to-[#8b5cf6]/30 relative overflow-hidden shadow-2xl shadow-indigo-500/30 border border-white/20">
                             <FadeReveal delay={200} distance={20} direction="none">
                                 <h2 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter mb-8 relative z-10 leading-[1.1]">
-                                    Ready to Upgrade Your <br />Financial Mindset?
+                                    Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6FBEE5] via-white to-[#4A9FCC]">Upgrade</span> Your <br />Financial Mindset?
                                 </h2>
                             </FadeReveal>
 
