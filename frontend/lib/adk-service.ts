@@ -67,6 +67,12 @@ export const sendMessageToAgent = async (
             }
         );
 
+        // Handle cloudrun instance scale to 0 (memory wiped out)
+        if (response.status === 404) {
+            // Tell the hook that the session is dead
+            throw new Error("SESSION_EXPIRED");
+        }
+
         if (!response.ok) {
             console.error("Failed to send message:", await response.text());
             throw new Error(response.statusText);
