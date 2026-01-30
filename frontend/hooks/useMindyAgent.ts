@@ -130,7 +130,7 @@ export const useMindyAgent = () => {
                 localStorage.removeItem('mindy_ai_session_id');
 
                 try {
-                    const newSession = await startSession({ skipLoading: true, forceNew: true });
+                    const newSession = await startSession({ skipLoading: true, forceNew: false }); // No need forceNew chat history since session is deleted (no history recorded)
                     
                     if (newSession) {
                         const retryResponse = await sendMessageToAgent(newSession.userId, newSession.sessionId, content)
