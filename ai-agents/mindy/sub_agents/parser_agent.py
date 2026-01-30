@@ -1,14 +1,14 @@
 from google.adk.agents import Agent
 
-from ..tools import get_current_time
-from ..config import AGENT_MODEL
-from ..instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
+from tools import get_current_time
+from config import GEMINI_3_FLASH_PREVIEW
+from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 
 # The Semantic Parser
 parser_agent = None
 parser_agent = Agent(
     name="parser_agent",
-    model=AGENT_MODEL,
+    model=GEMINI_3_FLASH_PREVIEW,
     description="Translates raw Sui transaction JSON into human-friendly language.",
     instruction=f"""
     You are the SuiMind Parser Agent.

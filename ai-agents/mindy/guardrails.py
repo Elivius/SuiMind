@@ -26,7 +26,7 @@ def _capture_sui_address(callback_context: CallbackContext, message_text: str) -
             callback_context.state["sui_address"] = "UNKNOWN_ADDRESS"
             print(f"--- Callback: No Sui Address found in message. Defaulting to 'UNKNOWN_ADDRESS'. ---")
     else:
-        print(f"--- Callback: Using existing Sui Address from State: {callback_context.state} ---")
+        print(f"--- Callback: Using existing Sui Address from State: {callback_context.state['sui_address']} ---")
 
 # Guardrail before model callback
 def secure_input_guardrail(

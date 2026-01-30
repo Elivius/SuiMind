@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
 import { graphql } from '@mysten/sui/graphql/schemas/latest';
-import { gqlClient } from "@/lib/suiClient";
+import { gqlClient } from "@/lib/sui-client";
 
 const GET_TRANSACTIONS_QUERY = graphql(`
 query getTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {

@@ -1,20 +1,27 @@
+import sys
+import os
+
+# This allows "from config import..." to work locally AND on Cloud Run
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from google.adk.agents import Agent
 from google.adk.apps.app import App
 from google.adk.agents.context_cache_config import ContextCacheConfig
 from google.adk.sessions import InMemorySessionService
+from google.adk.cli.fast_api import get_fast_api_app
 
-from .config import AGENT_MODEL
-from .instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
-from .tools import get_current_time
+from config import GEMINI_2_5_FLASH
+from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
+from tools import get_current_time
 
-from .sub_agents import (
+from sub_agents import (
     greeting_agent,
     farewell_agent,
     parser_agent,
     query_agent,
 )
 
-from .guardrails import (
+from guardrails import (
     secure_input_guardrail,
     transaction_security_guardrail
 )
@@ -22,11 +29,11 @@ from .guardrails import (
 # --- Root Agent: Mindy (DeFAI Orchestrator) ---
 root_agent = Agent(
     name='Mindy',
-    model=AGENT_MODEL,
+    model=GEMINI_2_5_FLASH,
     description="The World's First Proactive DeFAI Financial Agent. Orchestrates Sui security and yield optimization.",
     instruction=f"""
     You are Mindy, the proactive CFO for the SuiMind ecosystem. 
-    Your mission: Transform complex on-chain 'objects' into human-centric intelligence. 
+    Your mission: Transform complex on-chain 'objects' into human-centric intelligence.
     
     DELEGATION & LOGIC:
     1. GREETINGS: Delegate simple introductions to 'greeting_agent'.
