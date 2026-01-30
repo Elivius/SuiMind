@@ -29,6 +29,7 @@ export default function WalletDashboard() {
   const [showNewRequestUI,setShowRequestUI] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('0.00');
+  const [requestRecipient, setRequestRecipient] = useState('');
   const [requestAmount, setRequestAmount] = useState('0.00');
 
   // setup GraphQLClient
@@ -37,75 +38,123 @@ export default function WalletDashboard() {
   });
 
   const EXECUTE_TRANSACTION = graphql(`
-  mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
-    executeTransaction(transactionDataBcs: $transactionDataBcs, signatures: $signatures) {
-      errors
-      effects {
-        status
-        transaction {    # Digest lives here now
-          digest
+    mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
+      executeTransaction(transactionDataBcs: $transactionDataBcs, signatures: $signatures) {
+        errors
+        effects {
+          status
+          transaction {    # Digest lives here now
+            digest
+          }
         }
       }
     }
-  }
-`);
+  `);
 
-const handleSend = async () => {
-  if (!account) {
-    alert("Please connect your wallet first.");
-    return;
-  }
-  if (!recipient.startsWith('0x')) { alert("Please enter a valid Sui address."); return; }
-  if (parseFloat(amount) <= 0) { alert("Please enter an amount greater than 0."); return; }
-
-  setIsSending(true);
-  let execution: any = null;
-
-  try {     
-    const tx = new Transaction();
-    const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
-
-    const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
-    tx.transferObjects([coin], recipient);
-    tx.setSender(account.address);
-
-    const { bytes, signature } = await signTransaction({ transaction: tx });
-
-    const result = await gqlClient.query({
-      query: EXECUTE_TRANSACTION,
-      variables: {
-        transactionDataBcs: bytes,
-        signatures: [signature],
-      },
-    });
-
-    execution = result.data?.executeTransaction;
-
-    if (execution?.errors && execution.errors.length > 0) {
-      alert(`Execution Error: ${execution.errors[0]}`);
+  const handleSend = async () => {
+    if (!account) {
+      alert("Please connect your wallet first.");
       return;
     }
+    if (!recipient.startsWith('0x')) { alert("Please enter a valid Sui address."); return; }
+    if (parseFloat(amount) <= 0) { alert("Please enter an amount greater than 0."); return; }
 
-    const status = execution?.effects?.status;
-    const digest = execution?.effects?.transaction?.digest;
+    setIsSending(true);
+    let execution: any = null;
 
-    if (status === 'SUCCESS' || status?.status === 'success') {
-      alert(`Success! Digest: ${digest}`);
-      setShowSendUI(false); 
-      setAmount('0.00');    
-      setRecipient('');
-    } else {
-      const detail = status?.error || "Check console for effects object";
-      alert(`On-chain Failure: ${detail}`);
-      console.log("Effects Details:", execution?.effects);
+    try {     
+      const tx = new Transaction();
+      const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
+
+      const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
+      tx.transferObjects([coin], recipient);
+      tx.setSender(account.address);
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+
+      const result = await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: {
+          transactionDataBcs: bytes,
+          signatures: [signature],
+        },
+      });
+
+      execution = result.data?.executeTransaction;
+
+      if (execution?.errors && execution.errors.length > 0) {
+        alert(`Execution Error: ${execution.errors[0]}`);
+        return;
+      }
+
+      const status = execution?.effects?.status;
+      const digest = execution?.effects?.transaction?.digest;
+
+      if (status === 'SUCCESS' || status?.status === 'success') {
+        alert(`Success! Digest: ${digest}`);
+        setShowSendUI(false); 
+        setAmount('0.00');    
+        setRecipient('');
+      } else {
+        const detail = status?.error || "Check console for effects object";
+        alert(`On-chain Failure: ${detail}`);
+        console.log("Effects Details:", execution?.effects);
+      }
+    } catch (e: any) {
+      console.error("System Error:", e);
+      alert(`System Error: ${e.message}`);
+    } finally {
+      setIsSending(false);
     }
-  } catch (e: any) {
-    console.error("System Error:", e);
-    alert(`System Error: ${e.message}`);
-  } finally {
-    setIsSending(false);
-  }
-};
+  };
+
+  const handleRequest = async () => {
+    if (!account) return;
+    if (!requestRecipient.startsWith('0x')) { alert("Invalid address"); return; }
+  
+    setIsSending(true);
+    try {
+      const tx = new Transaction();
+      const PACKAGE_ID = "0x674096762076f86223cd5cf569e248c5dce523309aebe350fc89d8e3a25cffe0"; 
+      const MODULE_NAME = "request";
+      const FUNCTION_NAME = "create_payment_request";
+      const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
+      const expirationTimestamp = Date.now() + (7 * 24 * 60 * 60 * 1000);
+
+      tx.moveCall({
+        target: `${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}`,
+        arguments: [
+          tx.pure.address(requestRecipient),         
+          tx.pure.u64(amountInMist),                 
+          tx.pure.string("REQ-ABCD-" + Date.now()),  
+          tx.pure.u64(expirationTimestamp),          
+        ],
+      });
+  
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+  
+      const result = await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: {
+          transactionDataBcs: bytes,
+          signatures: [signature],
+        },
+      });
+  
+      if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
+        alert("Request Object sent successfully!");
+        setShowRequestUI(false); 
+        setRequestAmount('0.00');
+        setRequestRecipient('');
+      }
+    } catch (e: any) {
+      console.error("Request failed:", e);
+      alert(`Error: ${e.message}`);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
   const { data: transactionData, isLoading: isTransactionLoading } = useGetTransactions()
@@ -370,6 +419,8 @@ const handleSend = async () => {
               <input
                 type="text"
                 placeholder="0x..."
+                value={requestRecipient}
+                onChange={(e) => setRequestRecipient(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400"
               />
             </div>
@@ -420,7 +471,8 @@ const handleSend = async () => {
                 Cancel
               </button>
               <button 
-                onClick={() => {/* handle request */}}
+                onClick={handleRequest}
+                disabled={isSending}
                 className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors"
               >
                 Request
