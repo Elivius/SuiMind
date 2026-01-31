@@ -55,6 +55,41 @@ def execute_sui_graphql_query(query: str, variables: Optional[Dict[str, Any]] = 
         print(f"Error executing GraphQL query: {e}")
         return {"error": str(e)}
 
+def get_sui_schema_info(type_name: str) -> str:
+    """
+    Retrieves the GraphQL schema fields and types for a specific Sui object type.
+    Use this if you are unsure of the available fields for types like 'Transaction', 'Address', or 'GasEffects'.
+    
+    Args:
+        type_name: The name of the GraphQL type to inspect (e.g., 'Transaction', 'Address').
+    """
+    import requests
+    url = "https://graphql.testnet.sui.io/graphql"
+    query = """
+    query IntrospectType($name: String!) {
+      __type(name: $name) {
+        name
+        fields {
+          name
+          description
+          type {
+            name
+            kind
+            ofType {
+              name
+              kind
+            }
+          }
+        }
+      }
+    }
+    """
+    try:
+        response = requests.post(url, json={'query': query, 'variables': {'name': type_name}}, timeout=10)
+        return str(response.json())
+    except Exception as e:
+        return f"Error fetching schema: {str(e)}"
+
 def get_transactions(address: Optional[str] = None, limit: int = 5, before: Optional[str] = None, tool_context: ToolContext = None) -> Dict[str, Any]:
     """
     Fetches transaction history for a specific address.
@@ -114,37 +149,33 @@ def get_transactions(address: Optional[str] = None, limit: int = 5, before: Opti
     }
     return execute_sui_graphql_query(query, variables)
 
-def get_sui_schema_info(type_name: str) -> str:
+def get_balance(address: Optional[str] = None, tool_context: ToolContext = None) -> Dict[str, Any]:
     """
-    Retrieves the GraphQL schema fields and types for a specific Sui object type.
-    Use this if you are unsure of the available fields for types like 'Transaction', 'Address', or 'GasEffects'.
+    Fetches the balance of a specific address.
     
     Args:
-        type_name: The name of the GraphQL type to inspect (e.g., 'Transaction', 'Address').
+        address (str, optional): The Sui address to fetch the balance for. If None, tries to use 'sui_address' from context state.
+        tool_context (ToolContext, optional): The tool context to access session state.
+        
+    Returns:
+        dict: The balance data.
     """
-    import requests
-    url = "https://graphql.testnet.sui.io/graphql"
+    if not address and tool_context and tool_context.state:
+        address = tool_context.state.get("sui_address")
+        print(f"--- Tool: get_balance used context address: {address} ---")
+
+    if not address or address == "UNKNOWN_ADDRESS":
+        return {"error": "No address provided and no address found in session context. Please ask the user for their Sui address."}
     query = """
-    query IntrospectType($name: String!) {
-      __type(name: $name) {
-        name
-        fields {
-          name
-          description
-          type {
-            name
-            kind
-            ofType {
-              name
-              kind
-            }
-          }
+    query getBalances($address: SuiAddress!) {
+      address(address: $address) {
+        balance(coinType: "0x2::sui::SUI") {
+          totalBalance
         }
       }
     }
     """
-    try:
-        response = requests.post(url, json={'query': query, 'variables': {'name': type_name}}, timeout=10)
-        return str(response.json())
-    except Exception as e:
-        return f"Error fetching schema: {str(e)}"
+    variables = {
+        "address": address
+    }
+    return execute_sui_graphql_query(query, variables)

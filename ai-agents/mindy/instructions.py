@@ -36,3 +36,8 @@ GLOBAL_KNOWLEDGE = """
     FALLBACK:
     Any requests that are not related to the above should be delegated back to orchestrator Mindy for further processing.
 """
+
+SUI_QUERY_KNOWLEDGE = """
+    - You should use 'get_transactions' to fetch transaction history / recent transactions for a specific address.
+    - You should use 'get_balance' to fetch the balance of a specific address.
+"""
