@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { Card } from "@/components/ui"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
+import ReactMarkdown from "react-markdown"
 
 const QUICK_ACTIONS = [
     {
@@ -138,7 +139,20 @@ export default function MindyAIPage() {
                                             ? 'bg-white/10 rounded-2xl rounded-tl-none border-white/5 text-white/90'
                                             : 'bg-purple-500/20 rounded-2xl rounded-tr-none border-purple-500/10 text-white'
                                             }`}>
-                                            <p className="leading-relaxed whitespace-pre-wrap text-sm sm:text-base">{msg.content}</p>
+                                            <div className="leading-relaxed text-sm sm:text-base break-words">
+                                                <ReactMarkdown
+                                                    components={{
+                                                        p: ({ node: _node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                                        strong: ({ node: _node, ...props }) => <span className="font-bold text-white shadow-sm" {...props} />,
+                                                        ul: ({ node: _node, ...props }) => <ul className="list-disc ml-4 mt-2 mb-2 space-y-1" {...props} />,
+                                                        ol: ({ node: _node, ...props }) => <ol className="list-decimal ml-4 mt-2 mb-2 space-y-1" {...props} />,
+                                                        li: ({ node: _node, ...props }) => <li {...props} />,
+                                                        a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />
+                                                    }}
+                                                >
+                                                    {msg.content}
+                                                </ReactMarkdown>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
