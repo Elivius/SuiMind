@@ -116,6 +116,37 @@ export const useMindyAgent = () => {
 
             const response = await sendMessageToAgent(currentUserId!, currentSessionId!, content);
 
+            if (response.error === "SESSION_EXPIRED") {
+                console.warn("Session expired. Re-initializing...");
+                localStorage.removeItem('mindy_ai_session_id');
+                setSessionId(null); 
+
+                const newSession = await startSession({ skipLoading: true, forceNew: false }); // No need forceNew chat history since session is deleted (no history recorded)
+
+                if (newSession) {
+                    // Retry the message with the NEW credentials
+                    const retryResponse = await sendMessageToAgent(newSession.userId, newSession.sessionId, content);
+
+                    if (retryResponse.text) {
+                        setMessages(prev => [...prev, {
+                            role: 'mindy',
+                            content: retryResponse.text!,
+                            id: Date.now().toString()
+                        }]);
+                        return;
+                    } else if (retryResponse.error) {
+                        throw new Error(retryResponse.error);
+                    }
+                } else {
+                    throw new Error("Failed to re-initialize session.");
+                }
+                return;
+            }
+
+            if (response.error) {
+                throw new Error(response.error);
+            }
+
             const agentMsg: ChatMessage = {
                 role: 'mindy',
                 content: response.text || "I processed your request but have no text response.",
@@ -125,30 +156,6 @@ export const useMindyAgent = () => {
             setMessages(prev => [...prev, agentMsg]);
 
         } catch (e: any) {
-            if (e.message === "SESSION_EXPIRED") {
-                console.warn("Session removed. Re-initializing...");
-                localStorage.removeItem('mindy_ai_session_id');
-                localStorage.removeItem('mindy_ai_user_id');
-                setUserId(null);
-                setSessionId(null);
-
-                try {
-                    const newSession = await startSession({ skipLoading: true, forceNew: false }); // No need forceNew chat history since session is deleted (no history recorded)
-
-                    if (newSession) {
-                        const retryResponse = await sendMessageToAgent(newSession.userId, newSession.sessionId, content)
-                        setMessages(prev => [...prev, {
-                            role: 'mindy',
-                            content: retryResponse.text,
-                            id: Date.now().toString()
-                        }])
-                        return;
-                    }
-                } catch (retryError: any) {
-                    console.error("Retry failed:", retryError);
-                }
-            }
-
             console.error("Error sending message:", e);
             const errorMsgText = e.message || "Failed to send message.";
             setError(errorMsgText);
