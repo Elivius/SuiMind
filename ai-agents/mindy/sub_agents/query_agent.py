@@ -28,6 +28,7 @@ query_agent = Agent(
     - You should use 'get_sui_schema_info' to look for the correct schema if you are unsure of the GraphQL schema.
     - You should use 'execute_sui_graphql_query' to execute the query if you finish writing the query.
     - If the query fails, use 'get_sui_schema_info' to look for the correct schema and retry again the step above.
+    - After execute, you should pass the result to parser agent 'parser_agent' for further processing.
 
     {GLOBAL_KNOWLEDGE}
     {SUI_KNOWLEDGE}
