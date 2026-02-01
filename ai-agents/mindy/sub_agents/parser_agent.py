@@ -28,6 +28,7 @@ parser_agent = Agent(
         - Transactions: [View Transaction on Suiscan](https://suiscan.xyz/testnet/tx/<DIGEST>)
         - Addresses: [View Account on Suiscan](https://suiscan.xyz/testnet/account/<ADDRESS>)
         - Objects: [View Object on Suiscan](https://suiscan.xyz/testnet/object/<OBJECT_ID>)
+    - List all relevant links at the end of your response as a "References" section.
     
     {GLOBAL_KNOWLEDGE}
     {SUI_KNOWLEDGE}
