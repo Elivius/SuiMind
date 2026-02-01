@@ -13,12 +13,18 @@ export const useMindyAgent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Initial check for stored user ID
+    // Initial check for stored user ID and pending state
     useEffect(() => {
         const init = async () => {
             if (typeof window !== 'undefined') {
                 const storedUserId = localStorage.getItem('mindy_ai_user_id');
                 const storedSessionId = localStorage.getItem('mindy_ai_session_id');
+                const isPending = localStorage.getItem('mindy_ai_pending') === 'true';
+
+                // Restore loading state if there was a pending request
+                if (isPending) {
+                    setIsLoading(true);
+                }
 
                 if (storedUserId) {
                     setUserId(storedUserId);
@@ -31,15 +37,54 @@ export const useMindyAgent = () => {
                         const history = await getSessionHistory(storedUserId, storedSessionId);
                         if (history && history.length > 0) {
                             setMessages(history);
+                            // Only clear pending if the last message is from Mindy (AI has responded)
+                            if (isPending) {
+                                const lastMessage = history[history.length - 1];
+                                if (lastMessage.role === 'mindy') {
+                                    // AI has responded, clear pending
+                                    localStorage.removeItem('mindy_ai_pending');
+                                    setIsLoading(false);
+                                }
+                                // If last message is still from 'user', keep loading and let polling handle it
+                            }
                         }
                     } catch (e) {
                         console.error("Failed to load history", e);
+                        // Clear pending on error
+                        if (isPending) {
+                            localStorage.removeItem('mindy_ai_pending');
+                            setIsLoading(false);
+                        }
                     }
                 }
             }
         };
         init();
     }, []);
+
+    // Poll for AI response while loading (handles cross-page navigation)
+    useEffect(() => {
+        if (!isLoading || !sessionId || !userId) return;
+
+        const pollInterval = setInterval(async () => {
+            try {
+                const history = await getSessionHistory(userId, sessionId);
+                if (history && history.length > 0) {
+                    const lastMessage = history[history.length - 1];
+                    if (lastMessage.role === 'mindy') {
+                        // AI has responded
+                        setMessages(history);
+                        localStorage.removeItem('mindy_ai_pending');
+                        setIsLoading(false);
+                    }
+                }
+            } catch (e) {
+                console.error("Polling failed", e);
+            }
+        }, 5000);
+
+        return () => clearInterval(pollInterval);
+    }, [isLoading, sessionId, userId]);
 
     const startSession = useCallback(async ({ skipLoading = false, forceNew = false } = {}) => {
         if (!skipLoading) setIsLoading(true);
@@ -62,6 +107,9 @@ export const useMindyAgent = () => {
                 // If we forced a new session, clear the UI messages
                 if (forceNew) {
                     setMessages([]);
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('mindy_ai_pending');
+                    }
                 }
             }
 
@@ -93,6 +141,11 @@ export const useMindyAgent = () => {
         setIsLoading(true);
         setError(null);
 
+        // Set pending flag in localStorage
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('mindy_ai_pending', 'true');
+        }
+
         try {
             // Create session lazily if needed (Will be null if it is a new user)
             let currentSessionId = sessionId;
@@ -119,7 +172,7 @@ export const useMindyAgent = () => {
             if (response.error === "SESSION_EXPIRED") {
                 console.warn("Session expired. Re-initializing...");
                 localStorage.removeItem('mindy_ai_session_id');
-                setSessionId(null); 
+                setSessionId(null);
 
                 const newSession = await startSession({ skipLoading: true, forceNew: false }); // No need forceNew chat history since session is deleted (no history recorded)
 
@@ -169,6 +222,10 @@ export const useMindyAgent = () => {
             setMessages(prev => [...prev, errorChatMsg]);
         } finally {
             setIsLoading(false);
+            // Clear pending flag
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('mindy_ai_pending');
+            }
         }
     }, [sessionId, userId]);
 

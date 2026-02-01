@@ -162,7 +162,7 @@ export default function MindyAIPage() {
                                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0 border border-[#6FBEE5]/30">
                                             <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" />
                                         </div>
-                                        <div className="bg-white/10 rounded-2xl rounded-tl-none px-5 py-4 border border-white/5 shadow-xl">
+                                        <div className="bg-white/10 rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 border border-white/5">
                                             <div className="flex space-x-2">
                                                 <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                                                 <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
