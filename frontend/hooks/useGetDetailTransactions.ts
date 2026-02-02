@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { graphql } from '@mysten/sui/graphql/schemas/latest';
 import { gqlClient } from "@/lib/sui-client";
 
-const GET_TRANSACTIONS_QUERY = graphql(`
+const GET_DETAIL_TRANSACTIONS_QUERY = graphql(`
 query getDetailTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {
   transactions(last: $limit, before: $before, filter: {affectedAddress: $address}) {
     pageInfo {
@@ -48,7 +48,7 @@ export function useGetDetailTransactions(limit: number = 5, before?: string) {
       if (!address) return { nodes: [], pageInfo: { hasPreviousPage: false, startCursor: null } };
 
       const result = await gqlClient.query({
-        query: GET_TRANSACTIONS_QUERY,
+        query: GET_DETAIL_TRANSACTIONS_QUERY,
         variables: {
           address,
           limit,
