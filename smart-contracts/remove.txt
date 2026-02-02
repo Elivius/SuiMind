@@ -1,0 +1,5 @@
+SuiMind:
+
+1) after pay need to refresh
+2) enhance detection of request object
+3) tracking request (requester)
