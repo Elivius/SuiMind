@@ -51,6 +51,10 @@ export function Header() {
 
                     {/* Right side actions */}
                     <div className="flex items-center gap-1 sm:gap-2">
+                        <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10">
+                            <Bell className="w-5 h-5" />
+                        </Button>
+
                         <WalletConnectButton />
                     </div>
                 </div>
