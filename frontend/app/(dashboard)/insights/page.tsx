@@ -380,7 +380,7 @@ export default function DashboardPage() {
                             <div className="flex flex-wrap items-center gap-4 pt-2">
                                 <Button
                                     onClick={() => router.push('/mindy-ai')}
-                                    className="h-16 px-12 text-lg bg-gradient-to-r from-[#6FBEE5] to-[#A890FE] hover:from-[#A890FE] hover:to-[#6FBEE5] text-white font-black rounded-[20px] shadow-xl shadow-[#6FBEE5]/20 border border-white/20 transition-all hover:scale-105 active:scale-95 group/btn"
+                                    className="h-16 px-12 text-lg bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white font-black rounded-[20px] shadow-xl shadow-[#3B82F6]/20 border border-white/20 transition-all hover:scale-105 active:scale-95 group/btn"
                                 >
                                     View Opportunity
                                     <ArrowUpRight className="ml-3 w-6 h-6 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />

@@ -540,8 +540,8 @@ export default function RecentActivity() {
                             <div className="mt-auto px-1 pb-1">
                                 <div className="max-w-4xl mx-auto w-full relative group">
                                     {/* The Liquid Glowing Animated Border Wrap - Smoother Version */}
-                                    <div className="absolute -inset-[2px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.2rem] sm:rounded-[3.7rem] opacity-40 blur-xl group-focus-within:opacity-70 transition-all duration-1000 animate-border-flow" />
-                                    <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
+                                    <div className="absolute -inset-[4px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.2rem] sm:rounded-[3.7rem] opacity-40 blur-xl group-focus-within:opacity-70 transition-all duration-1000 animate-border-flow" />
+                                    <div className="absolute -inset-[2px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
 
                                     <div className="relative bg-[#050B15] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3.5rem] py-3 px-4 sm:p-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all">
                                         <div className="flex flex-col gap-3">
@@ -557,7 +557,7 @@ export default function RecentActivity() {
                                                 disabled={isMindyLoading}
                                                 placeholder="Ask Mindy AI anything..."
                                                 rows={1}
-                                                className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-normal leading-relaxed scrollbar-none disabled:opacity-50"
+                                                className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-lg py-1 px-1 font-normal leading-relaxed scrollbar-none disabled:opacity-50"
                                             />
 
                                             <div className="flex items-center justify-end">
@@ -567,7 +567,7 @@ export default function RecentActivity() {
                                                     className={`cursor-pointer w-11 h-11 rounded-full flex items-center justify-center text-white transition-all duration-300 ${isMindyLoading
                                                         ? "bg-white/10 scale-100 opacity-100 cursor-wait"
                                                         : mindyInput.trim()
-                                                            ? "bg-[#A890FE] opacity-100 scale-100 shadow-[0_0_20px_rgba(168,144,254,0.4)]"
+                                                            ? "bg-gradient-to-r from-[#3B82F6] to-[#9333EA] opacity-100 scale-100 shadow-[0_0_10px_rgba(147,51,234,0.3)]"
                                                             : "bg-white/5 opacity-0 scale-50 pointer-events-none"
                                                         }`}
                                                 >
