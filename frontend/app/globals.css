@@ -217,17 +217,24 @@
 }
 
 /* Fix for Recharts white border/outline on click */
-.recharts-surface:focus,
-.recharts-layer:focus,
-.recharts-wrapper:focus,
-.recharts-responsive-container:focus,
-path:focus,
-rect:focus,
-.recharts-rectangle:focus,
-.recharts-pie-sector:focus {
+.recharts-wrapper,
+.recharts-wrapper *,
+.recharts-surface,
+.recharts-surface *,
+.recharts-layer,
+.recharts-layer * {
   outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
-svg:focus {
+/* Scoped "Nuclear" option for Chart Focus rings */
+.chart-reset,
+.chart-reset *,
+.chart-reset *:focus,
+.chart-reset *:focus-visible {
   outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  ring: 0 !important;
 }
