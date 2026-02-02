@@ -69,7 +69,7 @@ export default function LandingPage() {
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
                             <Button
                                 onClick={() => router.push("/login")}
-                                className="w-full sm:w-auto sm:min-w-[250px] justify-center px-8 py-6 text-lg md:px-10 md:py-8 md:text-xl font-bold bg-gradient-to-r from-[#6FBEE5] to-[#4A9FCC] hover:from-[#5DAED5] hover:to-[#3A8FBC] text-white border-0 rounded-2xl shadow-xl shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all hover:scale-[1.05] active:scale-[0.98]"
+                                className="w-full sm:w-auto sm:min-w-[250px] justify-center px-8 py-6 text-lg md:px-10 md:py-8 md:text-xl font-bold bg-gradient-to-r from-[#6FBEE5] to-[#BE03FD] hover:from-[#5DAED5] hover:to-[#BE03FD] text-white border-0 rounded-2xl shadow-xl shadow-[#6FBEE5]/20 hover:shadow-[#6FBEE5]/40 transition-all hover:scale-[1.05] active:scale-[0.98]"
                             >
                                 Start for Free
                                 <ArrowRight className="ml-2 w-6 h-6" />

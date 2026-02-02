@@ -40,7 +40,7 @@ function ExpensesAllocation() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#6FBEE5]/10 rounded-full blur-[80px]" />
             <div className="relative z-10 backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[30px] sm:rounded-[40px] p-5 sm:p-8 shadow-2xl">
                 <div className="h-[320px] relative">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" style={{ outline: 'none' }}>
                         <PieChart>
                             <defs>
                                 <linearGradient id="grad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#6FBEE5" /><stop offset="100%" stopColor="#4A9FCC" /></linearGradient>
@@ -116,8 +116,8 @@ function MonthlyCashflowRecords() {
                 {/* Advanced Visual Enhancers */}
                 <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-[#6FBEE5]/5 to-transparent rounded-[40px] pointer-events-none opacity-50" />
 
-                <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={cashflowData} margin={{ top: 20, right: 0, left: -20, bottom: 20 }} barGap={12}>
+                <ResponsiveContainer width="100%" height="100%" style={{ outline: 'none' }}>
+                    <ComposedChart data={cashflowData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barGap={12} style={{ outline: 'none' }}>
                         <defs>
                             <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="#00FAFF" />
@@ -170,7 +170,7 @@ function MonthlyCashflowRecords() {
                         <ReferenceLine y={0} stroke="#FFFFFF" strokeWidth={2} />
 
                         <Tooltip
-                            cursor={{ fill: "rgba(255,255,255,0.03)", radius: 15 }}
+                            cursor={false}
                             content={({ active, payload }) => {
                                 if (active && payload && payload.length) {
                                     const net = payload[0].payload.net;
@@ -233,6 +233,8 @@ function MonthlyCashflowRecords() {
                             fill="url(#incomeGrad)"
                             radius={[isDesktop ? 6 : 4, isDesktop ? 6 : 4, 0, 0]}
                             barSize={isDesktop ? 24 : 12}
+                            stroke="none"
+                            style={{ outline: 'none' }}
                         />
 
                         <Bar
@@ -241,6 +243,8 @@ function MonthlyCashflowRecords() {
                             fill="url(#expenseGrad)"
                             radius={[isDesktop ? 6 : 4, isDesktop ? 6 : 4, 0, 0]}
                             barSize={isDesktop ? 24 : 12}
+                            stroke="none"
+                            style={{ outline: 'none' }}
                         />
 
                         <Line
@@ -253,6 +257,7 @@ function MonthlyCashflowRecords() {
                             activeDot={{ r: 6, fill: '#FFF', strokeWidth: 3 }}
                             filter="url(#line-glow)"
                             animationDuration={3000}
+                            style={{ outline: 'none' }}
                         />
                     </ComposedChart>
                 </ResponsiveContainer>
