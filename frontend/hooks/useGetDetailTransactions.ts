@@ -5,7 +5,7 @@ import { graphql } from '@mysten/sui/graphql/schemas/latest';
 import { gqlClient } from "@/lib/sui-client";
 
 const GET_TRANSACTIONS_QUERY = graphql(`
-query getTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {
+query getDetailTransactions($address: SuiAddress!, $limit: Int = 5, $before: String) {
   transactions(last: $limit, before: $before, filter: {affectedAddress: $address}) {
     pageInfo {
       hasPreviousPage
