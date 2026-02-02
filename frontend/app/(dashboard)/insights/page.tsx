@@ -8,7 +8,7 @@ import { ExpensesPieChart, CashflowChart } from "@/components/insightsChart"
 
 export default function InsightsPage() {
     const router = useRouter()
-    const { cashflowData, expensesData, totals, isLoading } = useInsightsData(50)
+    const { cashflowData, expensesData, totals, isLoading } = useInsightsData()
 
     return (
         <div className="w-full px-6 py-8 space-y-6">

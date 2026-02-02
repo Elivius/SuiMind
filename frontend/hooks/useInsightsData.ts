@@ -2,18 +2,18 @@
 
 import { useMemo } from "react"
 import { useCurrentAccount } from "@mysten/dapp-kit"
-import { useGetTransactions } from "@/hooks"
+import { useGetInsightTransactions } from "@/hooks"
 import { processTx, getMonthYearKey, getMonthDisplay } from "@/lib/utils"
 import type { ExpenseCategory, MonthlyCashflow, UseInsightsDataReturn } from "@/types/insights"
 
-export function useInsightsData(transactionLimit = 50): UseInsightsDataReturn {
+export function useInsightsData(): UseInsightsDataReturn {
     const account = useCurrentAccount()
-    const { data: transactionData, isLoading } = useGetTransactions(transactionLimit)
+    const { data: transactionData, isLoading } = useGetInsightTransactions()
 
     const { cashflowData, expensesData, totals } = useMemo(() => {
-        const nodes = transactionData?.nodes || []
+        const transactions = transactionData?.transactions || []
 
-        const transactions = nodes
+        const processedTransactions = transactions
             .map((tx) => processTx(tx, account?.address))
             .filter((tx): tx is NonNullable<typeof tx> => tx !== null)
 
@@ -26,7 +26,7 @@ export function useInsightsData(transactionLimit = 50): UseInsightsDataReturn {
         let inFlowTransactionCount = 0
         let outFlowTransactionCount = 0
 
-        transactions.forEach(tx => {
+        processedTransactions.forEach(tx => {
             const amount = tx.amount || 0
             const timestamp = tx.timestampMs || Date.now()
             const monthKey = getMonthYearKey(timestamp)
@@ -85,7 +85,7 @@ export function useInsightsData(transactionLimit = 50): UseInsightsDataReturn {
         const currentMonthKey = last6Months[last6Months.length - 1].key
         const thisMonthData = monthlyData[currentMonthKey]
         const thisMonthTransactionCount = thisMonthData
-            ? transactions.filter(tx => getMonthYearKey(tx.timestampMs || Date.now()) === currentMonthKey).length
+            ? processedTransactions.filter(tx => getMonthYearKey(tx.timestampMs || Date.now()) === currentMonthKey).length
             : 0
 
         // Calculate month-over-month percentage change
