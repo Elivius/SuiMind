@@ -14,7 +14,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
 import ReactMarkdown from "react-markdown"
 
-export default function WalletDashboard() {
+export default function HomePage() {
   const router = useRouter()
   const account = useCurrentAccount()
 
