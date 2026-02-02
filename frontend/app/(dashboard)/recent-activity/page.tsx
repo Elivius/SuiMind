@@ -3,7 +3,7 @@
 import { Button, Card, Skeleton } from "@/components/ui"
 import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, TrendingUp, CheckCircle2, Filter, Activity, Clock, Check, Bot, Users, Square, Trash2 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
-import { useGetTransactions } from "@/hooks"
+import { useGetDetailTransactions } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { processTx, formatSuiAmount } from "@/lib/utils"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
@@ -16,7 +16,7 @@ export default function RecentActivityPage() {
     const [cursor, setCursor] = useState<string | null>(null)
     const [paginationHistory, setPaginationHistory] = useState<(string | null)[]>([])
 
-    const { data: transactionData, isLoading: isTransactionLoading } = useGetTransactions(itemsPerPage, cursor || undefined)
+    const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(itemsPerPage, cursor || undefined)
 
     const [typeFilter, setTypeFilter] = useState("all")
     const [statusFilter, setStatusFilter] = useState("all")

@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetTransactions } from "@/hooks"
+import { useModal, useGetBalances, useGetDetailTransactions } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
 import ReactMarkdown from "react-markdown"
@@ -19,7 +19,7 @@ export default function HomePage() {
   const account = useCurrentAccount()
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
-  const { data: transactionData, isLoading: isTransactionLoading } = useGetTransactions()
+  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions()
 
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
