@@ -114,7 +114,7 @@ export default function WalletDashboard() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             {/* Left side: Balance + AI Insight */}
             <div className="flex-1">
-              <p className="text-white text-lg sm:text-2xl font-bold mb-2">Total Balance</p>
+              <p className="text-white text-lg sm:text-3xl font-bold mb-2">Total Balance</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
                   {isBalanceLoading ? (
