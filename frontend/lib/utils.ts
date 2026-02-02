@@ -149,3 +149,17 @@ export function formatRelativeTime(dateInput: string | number | Date): string {
 
   return date.toLocaleString();
 }
+
+// Get month-year key from timestamp for sorting (e.g., "2025-12")
+export function getMonthYearKey(timestampMs: number): string {
+  const date = new Date(timestampMs)
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  return `${year}-${month}`
+}
+
+// Get display month from timestamp (e.g., "Dec")
+export function getMonthDisplay(timestampMs: number): string {
+  const date = new Date(timestampMs)
+  return date.toLocaleString('en-US', { month: 'short' })
+}
