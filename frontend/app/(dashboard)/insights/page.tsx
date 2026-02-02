@@ -40,7 +40,7 @@ function ExpensesAllocation() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#6FBEE5]/10 rounded-full blur-[80px]" />
             <div className="relative z-10 backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[30px] sm:rounded-[40px] p-5 sm:p-8 shadow-2xl">
                 <div className="h-[320px] relative">
-                    <ResponsiveContainer width="100%" height="100%" style={{ outline: 'none' }}>
+                    <ResponsiveContainer width="100%" height="100%" className="chart-reset">
                         <PieChart>
                             <defs>
                                 <linearGradient id="grad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#6FBEE5" /><stop offset="100%" stopColor="#4A9FCC" /></linearGradient>
@@ -116,8 +116,8 @@ function MonthlyCashflowRecords() {
                 {/* Advanced Visual Enhancers */}
                 <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-[#6FBEE5]/5 to-transparent rounded-[40px] pointer-events-none opacity-50" />
 
-                <ResponsiveContainer width="100%" height="100%" style={{ outline: 'none' }}>
-                    <ComposedChart data={cashflowData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barGap={12} style={{ outline: 'none' }}>
+                <ResponsiveContainer width="100%" height="100%" className="chart-reset">
+                    <ComposedChart data={cashflowData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barGap={12} className="outline-none" style={{ outline: 'none' }}>
                         <defs>
                             <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="#00FAFF" />
@@ -167,7 +167,7 @@ function MonthlyCashflowRecords() {
                             width={35}
                         />
 
-                        <ReferenceLine y={0} stroke="#FFFFFF" strokeWidth={2} />
+                        <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
 
                         <Tooltip
                             cursor={false}

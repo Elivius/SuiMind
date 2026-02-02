@@ -22,7 +22,7 @@ import { Bell } from "lucide-react"
 import { usePaymentRequests } from "@/hooks/usePaymentRequests"
 import ReactMarkdown from "react-markdown"
 
-export default function WalletDashboard() {
+export default function HomePage() {
   const router = useRouter()
   const account = useCurrentAccount()
   // signTransaction

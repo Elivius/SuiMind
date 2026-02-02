@@ -9,7 +9,7 @@ import { processTx } from "@/lib/utils"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
 import ReactMarkdown from "react-markdown"
 
-export default function RecentActivity() {
+export default function RecentActivityPage() {
     const itemsPerPage = 10
     const account = useCurrentAccount()
 
