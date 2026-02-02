@@ -26,7 +26,7 @@ const FLAT_COLORS = [
 const cashflowData = [
     { month: "Aug", income: 4200, expenses: 10000 },
     { month: "Sep", income: 3800, expenses: 2850 },
-    { month: "Oct", income: 3500, expenses: 3400 },
+    { month: "Oct", income: 3400, expenses: 3400 },
     { month: "Nov", income: 4100, expenses: 3000 },
     { month: "Dec", income: 5200, expenses: 10000 },
     { month: "Jan", income: 4600, expenses: 3300 },
@@ -167,7 +167,7 @@ function MonthlyCashflowRecords() {
                             width={35}
                         />
 
-                        <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+                        <ReferenceLine y={0} stroke="rgba(255, 255, 255, 1)" strokeWidth={1} />
 
                         <Tooltip
                             cursor={false}

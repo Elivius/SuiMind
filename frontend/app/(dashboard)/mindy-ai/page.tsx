@@ -23,50 +23,56 @@ import ReactMarkdown from "react-markdown"
 
 const QUICK_ACTIONS = [
     {
-        icon: <Sparkles className="w-4 h-4 text-amber-300" />,
+        icon: <Sparkles className="w-8 h-8 text-amber-300" />,
         title: "What can SuiMind do?",
         prompt: "What are your main features and how can you help me?",
         className: "w-full lg:max-w-[400px] xl:max-w-[450px] xl:rotate-[-2deg] xl:-translate-x-4",
+        gradient: "hover:from-amber-300/20 hover:to-amber-500/20 hover:border-amber-300/50",
         hideOnMobile: false,
         hideOnTablet: false
     },
     {
-        icon: <Scan className="w-4 h-4 text-blue-400" />,
+        icon: <Scan className="w-8 h-8 text-blue-400" />,
         title: "Pay via screenshot",
         prompt: "I want to upload a screenshot to make a payment.",
         className: "w-full lg:max-w-[340px] xl:max-w-[360px] xl:rotate-[1.5deg] xl:translate-y-4",
+        gradient: "hover:from-blue-400/20 hover:to-blue-600/20 hover:border-blue-400/50",
         hideOnMobile: true,
         hideOnTablet: true
     },
     {
-        icon: <AtSign className="w-4 h-4 text-[#6FBEE5]" />,
+        icon: <AtSign className="w-8 h-8 text-[#6FBEE5]" />,
         title: "Pay @someone",
         prompt: "I want to send some SUI to a contact.",
         className: "w-full lg:max-w-[320px] xl:max-w-[340px] xl:rotate-[-1.2deg] xl:-translate-y-6 xl:translate-x-8",
+        gradient: "hover:from-[#6FBEE5]/20 hover:to-[#4A9FD8]/20 hover:border-[#6FBEE5]/50",
         hideOnMobile: false,
         hideOnTablet: false
     },
     {
-        icon: <FileText className="w-4 h-4 text-purple-400" />,
+        icon: <FileText className="w-8 h-8 text-purple-400" />,
         title: "Upload file and pay",
         prompt: "I want to upload a document or file for payment.",
         className: "w-full lg:max-w-[420px] xl:max-w-[480px] xl:rotate-[2deg] xl:translate-x-[-10px] xl:translate-y-2",
+        gradient: "hover:from-purple-400/20 hover:to-purple-600/20 hover:border-purple-400/50",
         hideOnMobile: true,
         hideOnTablet: true
     },
     {
-        icon: <Camera className="w-4 h-4 text-orange-400" />,
+        icon: <Camera className="w-8 h-8 text-orange-400" />,
         title: "Snap and pay",
         prompt: "I want to use my camera to snap a QR and pay.",
         className: "w-full lg:max-w-[340px] xl:max-w-[380px] xl:rotate-[-1.5deg] xl:translate-y-[-4px] xl:translate-x-4",
+        gradient: "hover:from-orange-400/20 hover:to-orange-600/20 hover:border-orange-400/50",
         hideOnMobile: true,
         hideOnTablet: true
     },
     {
-        icon: <Banknote className="w-4 h-4 text-emerald-300" />,
+        icon: <Banknote className="w-8 h-8 text-emerald-300" />,
         title: "Show latest transfers",
         prompt: "Show me my latest transaction history.",
         className: "w-full lg:max-w-[380px] xl:max-w-[420px] xl:rotate-[1deg] xl:translate-x-20 xl:translate-y-8",
+        gradient: "hover:from-emerald-300/20 hover:to-emerald-500/20 hover:border-emerald-300/50",
         hideOnMobile: true,
         hideOnTablet: false
     }
@@ -109,16 +115,13 @@ export default function MindyAIPage() {
                                     <button
                                         key={idx}
                                         onClick={() => sendMindyMessage(action.prompt)}
-                                        className={`flex items-center gap-3 sm:gap-4 px-6 sm:px-8 py-4 sm:py-5 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-white/[0.08] hover:border-[#6FBEE5]/40 transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white font-semibold text-left shadow-2xl backdrop-blur-3xl group ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
+                                        className={`flex items-center gap-4 sm:gap-6 px-6 sm:px-8 py-6 sm:py-8 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-gradient-to-r ${action.gradient} transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white font-semibold text-center shadow-2xl backdrop-blur-3xl group ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
                                     >
-                                        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#6FBEE5]/10 group-hover:border-[#6FBEE5]/30 transition-all">
-                                            <div className="group-hover:scale-110 transition-transform">
-                                                {action.icon}
-                                            </div>
+                                        <div className="group-hover:scale-500 group-hover:rotate-[-20deg] transition-all duration-500">
+                                            {action.icon}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-[#6FBEE5] transition-colors">{action.title}</h4>
-                                            <p className="text-white/20 text-[10px] uppercase font-bold tracking-widest mt-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-1 group-hover:translate-y-0">Execute Prompt</p>
+                                            <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-white transition-colors">{action.title}</h4>
                                         </div>
                                         <ArrowUpRight className="w-5 h-5 text-white/5 group-hover:text-[#6FBEE5] transition-all" />
                                     </button>
