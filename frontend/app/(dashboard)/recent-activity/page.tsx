@@ -5,7 +5,7 @@ import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, Trendi
 import { useState, useEffect, useRef } from "react"
 import { useGetTransactions } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
-import { processTx } from "@/lib/utils"
+import { processTx, formatSuiAmount } from "@/lib/utils"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
 import ReactMarkdown from "react-markdown"
 
@@ -295,7 +295,7 @@ export default function RecentActivityPage() {
                                                 <td className="px-6 py-4">
                                                     <p className={`font-semibold ${tx.type === "receive" ? "text-green-500" :
                                                         tx.type === "send" ? "text-red-500" : "text-blue-500"
-                                                        }`}>{tx.amount}</p>
+                                                        }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount)} SUI</p>
                                                     <p className="text-xs text-white">{tx.usd}</p>
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-white">
@@ -369,7 +369,7 @@ export default function RecentActivityPage() {
                                             <div className="text-right">
                                                 <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" :
                                                     tx.type === "send" ? "text-red-500" : "text-blue-500"
-                                                    }`}>{tx.amount}</p>
+                                                    }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount)} SUI</p>
                                                 <p className="text-[10px] text-white/50">{tx.usd}</p>
                                             </div>
                                         </div>
