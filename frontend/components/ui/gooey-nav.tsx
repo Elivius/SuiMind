@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 export interface GooeyNavItem {
   label: string;
   href: string;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: React.ElementType;
 }
 
 export interface GooeyNavProps {
@@ -333,7 +333,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
                     onKeyDown={e => handleKeyDown(e, index)}
                     className="cursor-pointer outline-none py-[0.6em] px-[1em] inline-flex items-center gap-2"
                   >
-                    {item.icon && <item.icon className="w-4 h-4" />}
+                    {item.icon && React.createElement(item.icon, { className: "w-4 h-4" })}
                     {item.label}
                   </a>
                 </li>
