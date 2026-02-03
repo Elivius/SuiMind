@@ -3,7 +3,7 @@
 import { ArrowDownLeft, ArrowUpRight, TrendingUp, Wallet, Sparkles } from "lucide-react"
 import { Button, Card, Skeleton } from "@/components/ui"
 import { useRouter } from "next/navigation"
-import { useInsightsData } from "@/hooks/useInsightsData"
+import { useInsightsData } from "@/hooks"
 import { ExpensesPieChart, CashflowChart } from "@/components/insightsChart"
 
 export default function InsightsPage() {

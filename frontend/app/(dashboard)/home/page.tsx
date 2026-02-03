@@ -9,9 +9,8 @@ import {
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetDetailTransactions } from "@/hooks"
+import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, usePaymentRequests } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
-import { useMindyAgent } from "@/hooks/useMindyAgent"
 import { SuiGraphQLClient } from '@mysten/sui/graphql'
 import { graphql } from '@mysten/sui/graphql/schemas/latest'
 import { Transaction } from '@mysten/sui/transactions'
@@ -19,7 +18,6 @@ import { useSignTransaction } from '@mysten/dapp-kit'
 import { toBase64 } from '@mysten/sui/utils'
 import { useSuiClientQuery } from "@mysten/dapp-kit"
 import { Bell } from "lucide-react"
-import { usePaymentRequests } from "@/hooks/usePaymentRequests"
 import ReactMarkdown from "react-markdown"
 
 export default function HomePage() {

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import GooeyNav from "@/components/ui/gooey-nav"
 import { navigation } from "@/lib/constants"
 import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
-import { usePaymentRequests } from "@/hooks/usePaymentRequests";
+import { usePaymentRequests } from "@/hooks";
 import { useState } from "react";
 import { Check, X } from "lucide-react";
 import {useEffect} from 'react';
