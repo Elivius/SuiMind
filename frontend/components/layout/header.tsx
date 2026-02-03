@@ -1,6 +1,6 @@
 "use client"
 
-import { Wallet, Bell } from "lucide-react"
+import { Wallet, Bell, Check, X } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -8,10 +8,7 @@ import GooeyNav from "@/components/ui/gooey-nav"
 import { navigation } from "@/lib/constants"
 import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
 import { usePaymentRequests } from "@/hooks";
-import { useState } from "react";
-import { Check, X } from "lucide-react";
-import { useEffect } from 'react';
-import { useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 
 export function Header() {
