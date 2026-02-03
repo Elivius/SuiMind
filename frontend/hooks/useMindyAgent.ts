@@ -5,7 +5,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { createSession, sendMessageToAgent, getSessionHistory, ChatMessage } from '@/lib/adk-service';
 import { useCurrentAccount } from '@mysten/dapp-kit';
-import { playSound } from '@/lib/mindyaisounds';
+import { playSound } from '@/lib/sound-effects';
 
 export const useMindyAgent = () => {
     const account = useCurrentAccount()

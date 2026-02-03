@@ -17,7 +17,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
-import { playSound } from "@/lib/mindyaisounds"
+import { playSound } from "@/lib/sound-effects"
 
 
 export default function HomePage() {

@@ -10,7 +10,7 @@ import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
 import { SuiMindLogo, MindyAILogo } from "@/components/icons"
 import { usePaymentRequests } from "@/hooks";
 import { useState, useEffect, useRef } from "react";
-import { playSound } from "@/lib/mindyaisounds";
+import { playSound } from "@/lib/sound-effects";
 
 
 export function Header() {

@@ -2,7 +2,7 @@
 
 import { useSuiClientQuery, useCurrentAccount } from "@mysten/dapp-kit";
 import { useQueryClient } from '@tanstack/react-query';
-import { playSound } from "../lib/mindyaisounds";
+import { playSound } from "../lib/sound-effects";
 
 export function usePaymentRequests() {
     const account = useCurrentAccount();
