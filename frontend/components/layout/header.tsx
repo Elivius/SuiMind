@@ -18,7 +18,7 @@ export function Header() {
     const pathname = usePathname()
 
     // Determine active nav index based on current path
-    const { pendingRequests, hasUnread } = usePaymentRequests();    
+    const { pendingRequests, hasUnread, onTransactionSuccess } = usePaymentRequests();    
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
     const activeIndex = navigation.findIndex(item => pathname === item.href)
@@ -148,8 +148,9 @@ export function Header() {
                                                     <Button
                                                     size="sm"
                                                     className="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium"
-                                                    onClick={() => {
+                                                    onClick={ async() => {
                                                         window.dispatchEvent(new CustomEvent('PAY_REQUEST', { detail: req }));
+                                                        await onTransactionSuccess();
                                                         setShowDropdown(false);
                                                     }}
                                                     >

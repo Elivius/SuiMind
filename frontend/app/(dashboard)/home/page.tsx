@@ -22,6 +22,7 @@ import { Bell } from "lucide-react"
 import { usePaymentRequests } from "@/hooks/usePaymentRequests"
 import ReactMarkdown from "react-markdown"
 
+
 export default function HomePage() {
   const router = useRouter()
   const account = useCurrentAccount()
@@ -35,7 +36,7 @@ export default function HomePage() {
   const [requestRecipient, setRequestRecipient] = useState('');
   const [requestAmount, setRequestAmount] = useState('0.00');
   const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
-  const { pendingRequests, hasUnread, refetch } = usePaymentRequests();
+  const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
 
   // setup GraphQLClient
   const gqlClient = new SuiGraphQLClient({
@@ -111,6 +112,7 @@ export default function HomePage() {
         setRecipient('');
         setActiveRequestObject(null);
         refetch();
+        await onTransactionSuccess();
       } else {
         const detail = status?.error || "Check console for effects object";
         alert(`On-chain Failure: ${detail}`);
@@ -178,7 +180,7 @@ export default function HomePage() {
         setRecipient(request.requester);
         setAmount(request.amountSui.toString());
         setActiveRequestObject(request);
-        setShowSendUI(true); // Open the existing send modal
+        setShowSendUI(true); 
     };
 
     window.addEventListener('PAY_REQUEST', handlePayFromHeader);
@@ -188,12 +190,9 @@ export default function HomePage() {
   useEffect(() => {
     const handleIncomingPaymentRequest = (event: any) => {
       const requestData = event.detail;
-      
-      // 1. Fill the form state with data from the blockchain object
+
       setRecipient(requestData.requester);
       setAmount(requestData.amountSui.toString());
-      
-      // 2. Open the UI so the user can confirm
       setShowSendUI(true); 
     };
   

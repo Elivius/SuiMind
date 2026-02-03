@@ -1,7 +1,14 @@
 import { useSuiClientQuery, useCurrentAccount } from "@mysten/dapp-kit";
+import { useQueryClient } from '@tanstack/react-query';
 
 export function usePaymentRequests() {
     const account = useCurrentAccount();
+    const queryClient = useQueryClient();
+
+    const onTransactionSuccess = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        queryClient.invalidateQueries(); 
+    };
 
     const { data: ownedObjects, refetch } = useSuiClientQuery('getOwnedObjects', {
     owner: account?.address || '',
@@ -33,6 +40,7 @@ export function usePaymentRequests() {
     return {
         pendingRequests,
         hasUnread: pendingRequests.length > 0,
+        onTransactionSuccess,
         refetch
     };
 }
