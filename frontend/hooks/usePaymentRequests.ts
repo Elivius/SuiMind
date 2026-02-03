@@ -47,7 +47,7 @@ export function usePaymentRequests() {
     const paidNotifications = paidData?.data?.map((obj: any) => {
         const fields = (obj.data?.content as any).fields;
         return {
-            id: obj.data?.objectId, // The brand new ID created by object::new
+            id: obj.data?.objectId, 
             paid_by: fields.paid_by,
             amountSui: Number(fields.amount) / 1_000_000_000,
             request_code: fields.request_code
