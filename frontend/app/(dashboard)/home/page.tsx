@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, Card, Skeleton } from "@/components/ui"
-import { processTx, mistToSui } from "@/lib/utils"
+import { processTx, mistToSui, formatSuiAmount } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetTransactions } from "@/hooks"
+import { useModal, useGetBalances, useGetDetailTransactions } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
 import { SuiGraphQLClient } from '@mysten/sui/graphql'
@@ -207,7 +207,7 @@ export default function HomePage() {
   
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
-  const { data: transactionData, isLoading: isTransactionLoading } = useGetTransactions()
+  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions()
 
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
@@ -726,7 +726,7 @@ export default function HomePage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.amount}</p>
+                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount)} SUI</p>
                         <p className="text-xs text-white/60">{tx.time}</p>
                         <p className="text-xs text-white/60 mt-1">
                           {tx.from && `From: ${tx.from}`}
