@@ -227,7 +227,9 @@ export default function HomePage() {
     }
 
     if (walletBalance > prevBalance.current) {
+      // Double sound
       playSound('received');
+      playSound('received_background')
     }
     prevBalance.current = walletBalance;
   }, [walletBalance, isBalanceLoading]);
