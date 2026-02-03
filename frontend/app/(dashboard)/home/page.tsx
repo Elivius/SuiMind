@@ -308,7 +308,7 @@ export default function HomePage() {
                   {isBalanceLoading ? (
                     <Skeleton className="h-10 sm:h-14 lg:h-[4.5rem] w-24 sm:w-40 bg-white/10 rounded-xl" />
                   ) : (
-                    `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SUI`
+                    `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 4, maximumFractionDigits: 4 })} SUI`
                   )}
                 </h2>
                 {/* AI Insight beside the number */}
@@ -768,7 +768,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <MindyAILogo className="w-5 h-5 text-[#6FBEE5]" />
-                  <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
+                  <h3 className="text-3xl font-bold text-white">Mindy AI</h3>
                 </div>
                 {mindyMessages.length > 0 && (
                   <button
@@ -928,7 +928,7 @@ export default function HomePage() {
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
               <MindyAILogo className="w-6 h-6 text-[#6FBEE5]" />
-              <h3 className="text-xl font-semibold" style={{ color: "white" }}>AI-Powered Suggestions</h3>
+              <h3 className="text-3xl font-bold text-white">AI-Powered Suggestions</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {suggestions.map((suggestion) => (

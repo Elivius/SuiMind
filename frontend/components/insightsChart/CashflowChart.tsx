@@ -47,10 +47,9 @@ export function CashflowChart({ data, isLoading }: CashflowChartProps) {
                                 <stop offset="100%" stopColor="#FF3DBC" stopOpacity={0.3} />
                             </linearGradient>
                             <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset={0} stopColor={allZero ? "#FFFFFF" : "#4ADE80"} stopOpacity={1} />
-                                <stop offset={off} stopColor={allZero ? "#FFFFFF" : "#4ADE80"} stopOpacity={1} />
-                                <stop offset={off} stopColor={allZero ? "#FFFFFF" : "#F87171"} stopOpacity={1} />
-                                <stop offset={1} stopColor={allZero ? "#FFFFFF" : "#F87171"} stopOpacity={1} />
+                                <stop offset={0} stopColor={dataMax > 0 ? "#4ADE80" : "#FFFFFF"} stopOpacity={1} />
+                                <stop offset={off} stopColor="#FFFFFF" stopOpacity={1} />
+                                <stop offset={1} stopColor={dataMin < 0 ? "#F87171" : "#FFFFFF"} stopOpacity={1} />
                             </linearGradient>
                             <filter id="line-glow" x="-20%" y="-20%" width="140%" height="140%">
                                 <feGaussianBlur stdDeviation="5" result="blur" />
@@ -93,29 +92,29 @@ export function CashflowChart({ data, isLoading }: CashflowChartProps) {
                             content={({ active, payload }) => {
                                 if (active && payload && payload.length) {
                                     const netFlow = payload[0].payload.netFlow
-                                    const isNegative = netFlow < 0
-                                    const isZero = netFlow === 0
+                                    const isZero = Math.abs(netFlow) < 0.0001
+                                    const isNegative = netFlow < 0 && !isZero
                                     const netLabelColor = isZero ? 'text-white' : isNegative ? 'text-red-400' : 'text-[#6FBEE5]'
                                     const netValueColor = isZero ? 'text-white' : isNegative ? 'text-red-400' : 'text-white'
                                     return (
                                         <div className="bg-[#050B15]/95 backdrop-blur-3xl border border-white/10 rounded-[24px] p-5 shadow-2xl min-w-[200px]">
-                                            <p className="text-white/30 text-[9px] font-black uppercase tracking-[3px] mb-4 text-center border-b border-white/5 pb-2">
+                                            <p className="text-white text-[12px] font-black uppercase tracking-[3px] mb-4 text-center border-b border-white/5 pb-2">
                                                 {payload[0].payload.month} Transaction Delta
                                             </p>
                                             <div className="space-y-3">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-black uppercase" style={{ color: '#00FAFF' }}>Inflow</span>
+                                                    <span className="text-[12px] font-black uppercase" style={{ color: '#00FAFF' }}>Inflow</span>
                                                     <span className="text-white font-black">{payload[0].payload.inFlow.toFixed(2)} SUI</span>
                                                 </div>
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-black uppercase" style={{ color: '#FF3DBC' }}>Outflow</span>
+                                                    <span className="text-[12px] font-black uppercase" style={{ color: '#FF3DBC' }}>Outflow</span>
                                                     <span className="text-white font-black">{payload[0].payload.outFlow.toFixed(2)} SUI</span>
                                                 </div>
                                                 <div className="h-[1px] bg-white/5 my-2" />
                                                 <div className="flex items-center justify-between">
                                                     <span className={`${netLabelColor} text-[10px] font-black uppercase`}>Net Flow</span>
                                                     <span className={`${netValueColor} text-lg font-black`}>
-                                                        {isNegative ? '-' : ''}{Math.abs(netFlow).toFixed(2)} SUI
+                                                        {isZero ? '' : isNegative ? '-' : ''}{Math.abs(netFlow).toFixed(2)} SUI
                                                     </span>
                                                 </div>
                                             </div>
