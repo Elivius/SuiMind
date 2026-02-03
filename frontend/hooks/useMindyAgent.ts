@@ -16,8 +16,8 @@ export const useMindyAgent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const prevMindyMessagesCount = useRef(0);
-    const isFirstLoadMessages = useRef(true);
+    const prevMindyMessagesCount = useRef(0); // Tracks message count to detect NEW messages for sound effects
+    const isFirstLoadMessages = useRef(true); // Flag to prevent sound on initial history load
 
     // Play sound when Mindy responds
     useEffect(() => {
