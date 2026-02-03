@@ -5,19 +5,204 @@ import { processTx, mistToSui, formatSuiAmount } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
-  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Scale, Minus
+  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetDetailTransactions } from "@/hooks"
-import { useCurrentAccount } from "@mysten/dapp-kit"
-import { useMindyAgent } from "@/hooks/useMindyAgent"
+import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, usePaymentRequests } from "@/hooks"
+import { useCurrentAccount, useSuiClientQuery, useSignTransaction } from "@mysten/dapp-kit"
+import { SuiGraphQLClient } from '@mysten/sui/graphql'
+import { graphql } from '@mysten/sui/graphql/schemas/latest'
+import { Transaction } from '@mysten/sui/transactions'
+import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
+
 
 export default function HomePage() {
   const router = useRouter()
   const account = useCurrentAccount()
+
+  // signTransaction
+  const { mutateAsync: signTransaction } = useSignTransaction();
+  const [isSending, setIsSending] = useState(false);
+  const [showNewSendUI, setShowSendUI] = useState(false);
+  const [showNewRequestUI, setShowRequestUI] = useState(false);
+  const [recipient, setRecipient] = useState('');
+  const [amount, setAmount] = useState('0.00');
+  const [requestRecipient, setRequestRecipient] = useState('');
+  const [requestAmount, setRequestAmount] = useState('0.00');
+  const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
+  const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
+
+  // setup GraphQLClient
+  const gqlClient = new SuiGraphQLClient({
+    url: 'https://graphql.testnet.sui.io/graphql', // Testnet
+  });
+
+  const EXECUTE_TRANSACTION = graphql(`
+    mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
+      executeTransaction(transactionDataBcs: $transactionDataBcs, signatures: $signatures) {
+        errors
+        effects {
+          status
+          transaction {    # Digest lives here now
+            digest
+          }
+        }
+      }
+    }
+  `);
+
+  const handleSend = async () => {
+    if (!account) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+    if (!recipient.startsWith('0x')) { alert("Please enter a valid Sui address."); return; }
+    if (parseFloat(amount) <= 0) { alert("Please enter an amount greater than 0."); return; }
+
+
+    setIsSending(true);
+    let execution: any = null;
+
+    try {
+      const tx = new Transaction();
+      const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
+      const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
+
+      const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
+      tx.transferObjects([coin], recipient);
+      tx.setSender(account.address);
+
+      if (activeRequestObject) {
+        tx.moveCall({
+          target: `${PACKAGE_ID}::request::settle_payment_request`,
+          arguments: [tx.object(activeRequestObject.id)],
+        });
+      }
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+
+      const result = await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: {
+          transactionDataBcs: bytes,
+          signatures: [signature],
+        },
+      });
+
+      execution = result.data?.executeTransaction;
+
+      if (execution?.errors && execution.errors.length > 0) {
+        alert(`Execution Error: ${execution.errors[0]}`);
+        return;
+      }
+
+      const status = execution?.effects?.status;
+      const digest = execution?.effects?.transaction?.digest;
+
+      if (status === 'SUCCESS' || status?.status === 'success') {
+        await onTransactionSuccess();
+        setShowSendUI(false); 
+        setAmount('0.00');    
+        setRecipient('');
+        setActiveRequestObject(null);
+        refetch();
+        alert(`Success! Digest: ${digest}`);
+        
+        
+      } else {
+        const detail = status?.error || "Check console for effects object";
+        alert(`On-chain Failure: ${detail}`);
+        console.log("Effects Details:", execution?.effects);
+      }
+    } catch (e: any) {
+      console.error("System Error:", e);
+      alert(`System Error: ${e.message}`);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleRequest = async () => {
+    if (!account) return;
+    if (!requestRecipient.startsWith('0x')) { alert("Invalid address"); return; }
+
+    setIsSending(true);
+    try {
+      const tx = new Transaction();
+      const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
+      const MODULE_NAME = "request";
+      const FUNCTION_NAME = "create_payment_request";
+      const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
+      const expirationTimestamp = Date.now() + (24 * 60 * 60 * 1000);
+
+      tx.moveCall({
+        target: `${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}`,
+        arguments: [
+          tx.pure.address(requestRecipient),
+          tx.pure.u64(amountInMist),
+          tx.pure.string("REQ-ABCD-" + Date.now()),
+          tx.pure.u64(expirationTimestamp),
+        ],
+      });
+
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+
+      const result = await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: {
+          transactionDataBcs: bytes,
+          signatures: [signature],
+        },
+      });
+
+      if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
+        alert("Request Object sent successfully!");
+        setShowRequestUI(false);
+        setRequestAmount('0.00');
+        setRequestRecipient('');
+      }
+    } catch (e: any) {
+      console.error("Request failed:", e);
+      alert(`Error: ${e.message}`);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  useEffect(() => {
+    const handlePayFromHeader = (event: any) => {
+        const request = event.detail;
+        setRecipient(request.requester);
+        setAmount(request.amountSui.toString());
+        setActiveRequestObject(request);
+        setShowSendUI(true); 
+    };
+
+    window.addEventListener('PAY_REQUEST', handlePayFromHeader);
+    return () => window.removeEventListener('PAY_REQUEST', handlePayFromHeader);
+  }, []);
+
+  useEffect(() => {
+    const handleIncomingPaymentRequest = (event: any) => {
+      const requestData = event.detail;
+
+      setRecipient(requestData.requester);
+      setAmount(requestData.amountSui.toString());
+      setShowSendUI(true); 
+    };
+
+    // Listen for the event fired by header.tsx
+    window.addEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
+
+    return () => {
+      window.removeEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
+    };
+  }, []);
+
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
   const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions()
@@ -29,7 +214,6 @@ export default function HomePage() {
     ?.map((tx) => processTx(tx, account?.address))
     .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [];
 
-  // AI Chatbot
   const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
   const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -44,6 +228,7 @@ export default function HomePage() {
     sendMindyMessage(mindyInput)
     setMindyInput("")
   }
+
 
   // ============   MOCK   ============
   const [salary, setSalary] = useState("0")
@@ -72,6 +257,8 @@ export default function HomePage() {
 
   const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
   const balance = calculateBalance()
+
+
 
   const [suggestions] = useState([
     {
@@ -154,17 +341,17 @@ export default function HomePage() {
             {/* Right side: Send & Request Buttons */}
             <div className="flex flex-row lg:flex-col gap-3">
               <Button
-                className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => setShowSendUI(true)} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0">
                   <SendHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors ml-0.5" />
                 </div>
-                <div className="flex flex-col items-center w-16 sm:w-20">
+                <div className="flex flex-col center w-16 sm:w-20">
                   <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors">Send</span>
                 </div>
               </Button>
               <Button
-                className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => setShowRequestUI(true)} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
                   <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
@@ -175,10 +362,202 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
-
-
         </div>
       </Card>
+
+      {/* After clicking send button*/}
+      {showNewSendUI && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowSendUI(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl p-6">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900">Send SUI</h2>
+            </div>
+
+            {/* Available Balance */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+              <p className="text-sm text-gray-500 mb-1">Available Balance</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {walletBalance.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
+                <span className="text-base font-normal text-gray-500">SUI</span>
+              </p>
+            </div>
+
+            {/* Recipient Address */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Recipient Address
+              </label>
+              <input
+                type="text"
+                placeholder="0x..."
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+              />
+            </div>
+
+            {/* Amount */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Amount
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full px-4 py-3 pr-24 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                />
+                <div className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col">
+                  <button
+                    onClick={() => setAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                  SUI
+                </span>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowSendUI(false)}
+                className="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={isSending}
+                className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+              >
+                {isSending ? 'Sending...' : 'Send'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showNewRequestUI && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Dark overlay */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowRequestUI(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl p-6">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900">Request SUI</h2>
+            </div>
+
+            {/* Requested Address */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Request From Address
+              </label>
+              <input
+                type="text"
+                placeholder="0x..."
+                value={requestRecipient}
+                onChange={(e) => setRequestRecipient(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+              />
+            </div>
+
+            {/* Amount */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Amount to Request
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  type="number"
+                  value={requestAmount}
+                  onChange={(e) => setRequestAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full px-4 py-3 pr-24 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                />
+                <div className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col">
+                  <button
+                    onClick={() => setRequestAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setRequestAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                  SUI
+                </span>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowRequestUI(false)}
+                className="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRequest}
+                disabled={isSending}
+                className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors"
+              >
+                Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="md:col-span-2 xl:col-span-2">
@@ -186,7 +565,7 @@ export default function HomePage() {
             <div className="p-6">
               <Button
                 variant="ghost"
-                className="justify-start text-2xl sm:text-3xl text-white font-bold mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.05] transition-transform"
+                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.05] transition-transform"
                 onClick={() => router.push('/insights')}
               >
                 Monthly Cashflow
@@ -221,14 +600,14 @@ export default function HomePage() {
                   </div>
 
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-bold">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
                     <input
                       id="salary"
                       type="number"
                       placeholder="0.00"
                       value={salary}
                       readOnly
-                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-bold cursor-not-allowed"
+                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -251,14 +630,14 @@ export default function HomePage() {
                     </button>
                   </div>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-bold">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
                     <input
                       id="expenses"
                       type="number"
                       placeholder="0.00"
                       value={totalExpenses}
                       readOnly
-                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-bold cursor-not-allowed"
+                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -268,15 +647,15 @@ export default function HomePage() {
                     <div className="min-w-0">
                       <p className="text-white/60 text-sm sm:text-base mb-2">Available Balance</p>
                       {balance > 0 ? (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-sky-400 truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-sky-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : balance === 0 ? (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-white truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       ) : (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-red-400 truncate">
+                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-red-400 truncate">
                           ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                       )}
@@ -295,7 +674,7 @@ export default function HomePage() {
                       ) : balance < 0 ? (
                         <div className="flex items-center gap-2 sm:gap-3">
                           <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5 rotate-180" />
-                          <span className="text-base sm:text-xl font-bold uppercase tracking-wider">Deficit</span>
+                          <span className="text-base sm:text-xl font-black uppercase tracking-wider">Deficit</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 sm:gap-3">
@@ -317,7 +696,7 @@ export default function HomePage() {
             <div className="p-6 h-full flex flex-col">
               <Button
                 variant="ghost"
-                className="justify-start text-2xl sm:text-3xl text-white font-bold mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.04] transition-transform"
+                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.04] transition-transform"
                 onClick={() => router.push('/recent-activity')}
               >
                 Recent Activity
@@ -402,6 +781,7 @@ export default function HomePage() {
                   </button>
                 )}
               </div>
+
 
               {/* Chat Messages Area */}
               <div className="flex-1 space-y-3 overflow-y-auto mb-4 min-h-[200px] scrollbar-thin scrollbar-thumb-white/10">

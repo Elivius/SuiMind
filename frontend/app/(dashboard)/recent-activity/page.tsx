@@ -3,10 +3,9 @@
 import { Button, Card, Skeleton } from "@/components/ui"
 import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, TrendingUp, CheckCircle2, Filter, Activity, Clock, Check, Bot, Users, Square, Trash2 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
-import { useGetDetailTransactions } from "@/hooks"
+import { useGetDetailTransactions, useMindyAgent } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { processTx, formatSuiAmount } from "@/lib/utils"
-import { useMindyAgent } from "@/hooks/useMindyAgent"
 import { MindyAILogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
 

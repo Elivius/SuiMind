@@ -1,3 +1,5 @@
+// Use to interact with ai-agent (mindy)
+
 "use client";
 
 import { useState, useCallback, useEffect } from 'react';
