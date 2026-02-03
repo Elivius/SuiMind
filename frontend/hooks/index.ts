@@ -1,4 +1,5 @@
 export * from "./useGetBalances";
-export * from "./useGetTransactions";
+export * from "./useGetDetailTransactions";
+export * from "./useGetInsightTransactions";
 
 export * from "./useModal";
