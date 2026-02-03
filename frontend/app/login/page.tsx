@@ -6,6 +6,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit"
 import { Card, GoogleLoginButton, WalletConnectButton } from "@/components/ui"
 import { LoadingScreen } from "@/components/layout"
 import { Wallet, ArrowLeft } from "lucide-react"
+import { SuiMindLogo } from "@/components/icons"
 import Link from "next/link"
 
 export default function LoginPage() {
@@ -38,8 +39,8 @@ export default function LoginPage() {
 
             <div className="relative z-10 w-full max-w-md p-6 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-out">
                 <div className="flex flex-col items-center mb-12">
-                    <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#9945FF] to-[#14F195] flex items-center justify-center shadow-2xl shadow-[#9945FF]/30 mb-6 animate-bounce-subtle">
-                        <Wallet className="w-10 h-10 text-white" />
+                    <div className="w-30 h-30 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-[#9945FF]/30 mb-8 animate-bounce-subtle">
+                        <SuiMindLogo />
                     </div>
                     <h1 className="text-4xl sm:text-6xl font-black tracking-tighter mb-3 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
                         SuiMind

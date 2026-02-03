@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 import { useModal, useGetBalances, useGetDetailTransactions } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
+import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
 
 export default function HomePage() {
@@ -135,7 +136,7 @@ export default function HomePage() {
                   <div className="relative z-10 flex flex-col gap-1.5">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(111,190,229,0.3)]">
-                        <Zap className="w-5 h-5 text-[#6FBEE5] fill-[#6FBEE5]" />
+                        <MindyAILogo className="w-5 h-5 text-[#6FBEE5] fill-[#6FBEE5]" />
                       </div>
                       <h4 className="text-lg font-black text-white tracking-wide">AI Insight</h4>
                     </div>
@@ -387,7 +388,7 @@ export default function HomePage() {
             <div className="p-6 h-full flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-[#6FBEE5]" />
+                  <MindyAILogo className="w-5 h-5 text-[#6FBEE5]" />
                   <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
                 </div>
                 {mindyMessages.length > 0 && (
@@ -408,7 +409,7 @@ export default function HomePage() {
                   <>
                     <div className="flex gap-2">
                       <div className="w-8 h-8 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0">
-                        <Bot className="w-4 h-4 text-[#6FBEE5]" />
+                        <MindyAILogo className="w-4 h-4 text-[#6FBEE5]" />
                       </div>
                       <div className="bg-white/10 rounded-xl rounded-tl-none px-4 py-3 max-w-[85%]">
                         <p className="text-sm text-white/90">Hello! I&apos;m your AI financial assistant. How can I help you today?</p>
@@ -422,7 +423,7 @@ export default function HomePage() {
                         disabled={isMindyLoading}
                         className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20 disabled:opacity-50"
                       >
-                        <Sparkles className="w-4 h-4" />
+                        <MindyAILogo className="w-4 h-4" />
                         Analyze wallet
                       </button>
                       <button
@@ -546,7 +547,7 @@ export default function HomePage() {
         <Card className="border-white/20 backdrop-blur-xl bg-white/5">
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <Zap className="w-6 h-6 text-[#6FBEE5]" />
+              <MindyAILogo className="w-6 h-6 text-[#6FBEE5]" />
               <h3 className="text-xl font-semibold" style={{ color: "white" }}>AI-Powered Suggestions</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

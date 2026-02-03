@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { Card } from "@/components/ui"
 import { useMindyAgent } from "@/hooks/useMindyAgent"
+import { MindyAILogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
 
 const QUICK_ACTIONS = [
@@ -105,12 +106,13 @@ export default function MindyAIPage() {
 
                 {!hasMindyMessages ? (
                     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-                        <div className="w-full mb-4 sm:mb-12 relative">
-                            <h1 className="text-4xl font-bold md:text-6xl lg:text-7xl text-white tracking-tight leading-tight relative z-10 px-4">
-                                How can I <span className="text-transparent font-bold bg-clip-text bg-gradient-to-r from-[#6FBEE5] to-[#A890FE]">help</span> you?
+                        <div className="w-full mb-4 sm:mb-16 relative">
+                            <h1 className="text-4xl font-bold md:text-6xl lg:text-7xl text-white tracking-tight leading-tight relative z-10 px-4 flex items-center justify-center gap-3 md:gap-6">
+                                <MindyAILogo className="w-10 h-10 md:w-16 md:h-16 shrink-0" />
+                                <span>How can I <span className="text-transparent font-bold bg-clip-text bg-gradient-to-r from-[#6FBEE5] to-[#A890FE]">help</span> you?</span>
                             </h1>
 
-                            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 xl:gap-x-20 xl:gap-y-12 w-full max-w-6xl mx-auto px-4 py-8 sm:py-10 relative">
+                            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 xl:gap-x-20 xl:gap-y-13 w-full max-w-6xl mx-auto px-4 py-4 sm:py-6 relative">
                                 {QUICK_ACTIONS.map((action, idx) => (
                                     <button
                                         key={idx}
@@ -136,7 +138,7 @@ export default function MindyAIPage() {
                                 {mindyMessages.map((msg, idx) => (
                                     <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                                         <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
-                                            {msg.role === 'mindy' ? <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" /> : <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />}
+                                            {msg.role === 'mindy' ? <MindyAILogo className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" /> : <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />}
                                         </div>
                                         <div className={`px-4 sm:px-5 py-3 sm:py-4 max-w-[85%] sm:max-w-[80%] border shadow-xl ${msg.role === 'mindy'
                                             ? 'bg-white/10 rounded-2xl rounded-tl-none border-white/5 text-white/90'
@@ -163,7 +165,7 @@ export default function MindyAIPage() {
                                 {isMindyLoading && (
                                     <div className="flex gap-4">
                                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0 border border-[#6FBEE5]/30">
-                                            <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" />
+                                            <MindyAILogo className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" />
                                         </div>
                                         <div className="bg-white/10 rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 border border-white/5">
                                             <div className="flex space-x-2">
@@ -187,8 +189,8 @@ export default function MindyAIPage() {
                         <div className="absolute -inset-[4px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.2rem] sm:rounded-[3.7rem] opacity-40 blur-xl group-focus-within:opacity-70 transition-all duration-1000 animate-border-flow" />
                         <div className="absolute -inset-[2px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
 
-                        <div className="relative bg-[#050B15] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3.5rem] py-2 sm:py-3 px-3 sm:px-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all">
-                            <div className="flex flex-col gap-2 sm:gap-4">
+                        <div className="relative bg-[#050B15] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3.5rem] py-3 sm:py-4 px-3 sm:px-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all">
+                            <div className="flex flex-col gap-0.5 sm:gap-1">
                                 <textarea
                                     value={mindyInput}
                                     onChange={(e) => setMindyInput(e.target.value)}
@@ -200,8 +202,8 @@ export default function MindyAIPage() {
                                     }}
                                     disabled={isMindyLoading}
                                     placeholder="Ask Mindy AI anything..."
-                                    rows={1}
-                                    className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base sm:text-lg py-2 sm:py-1 px-2 sm:px-4 font-normal leading-relaxed scrollbar-none disabled:opacity-50"
+                                    rows={2}
+                                    className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base sm:text-lg pt-2 pb-0 sm:pt-2 sm:pb-0 px-2 sm:px-4 font-normal leading-relaxed scrollbar-none disabled:opacity-50"
                                 />
 
                                 <div className="flex items-center justify-between px-1 sm:px-3">
@@ -214,16 +216,12 @@ export default function MindyAIPage() {
                                         >
                                             <Trash2 className="w-5 h-5 sm:w-6 sm:h-6" />
                                         </button>
-                                        <button disabled={isMindyLoading} className="cursor-pointer hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300 disabled:opacity-50"><Plus className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                        <button disabled={isMindyLoading} className="cursor-pointer hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300 disabled:opacity-50 hidden sm:block"><ImageIcon className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                        <button disabled={isMindyLoading} className="cursor-pointer hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300 disabled:opacity-50 hidden sm:block"><AtSign className="w-5 h-5 sm:w-6 sm:h-6" /></button>
-                                        <button disabled={isMindyLoading} className="cursor-pointer hover:text-[#6FBEE5] hover:scale-110 transition-all duration-300 disabled:opacity-50"><Sparkles className="w-5 h-5 sm:w-6 sm:h-6" /></button>
                                     </div>
 
                                     <button
                                         onClick={handleMindySend}
                                         disabled={isMindyLoading || !mindyInput.trim()}
-                                        className={`cursor-pointer w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-500 ${isMindyLoading
+                                        className={`cursor-pointer w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${isMindyLoading
                                             ? "bg-white/10 text-white scale-100 opacity-100 rotate-0 cursor-wait"
                                             : mindyInput.trim()
                                                 ? "bg-gradient-to-r from-[#3B82F6] to-[#9333EA] text-white scale-100 opacity-100 shadow-[0_0_15px_rgba(147,51,234,0.3)] rotate-0"
@@ -231,9 +229,9 @@ export default function MindyAIPage() {
                                             }`}
                                     >
                                         {isMindyLoading ? (
-                                            <Square className="w-4 h-4 sm:w-5 sm:h-5 fill-current animate-pulse" />
+                                            <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current animate-pulse" />
                                         ) : (
-                                            <ArrowUpRight className="w-6 h-6 sm:w-7 sm:h-7" />
+                                            <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6" />
                                         )}
                                     </button>
                                 </div>

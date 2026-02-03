@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation"
 import { LucideIcon } from 'lucide-react';
+import { MindyAILogo } from '../icons';
 
 interface GooeyNavItem {
   label: string;

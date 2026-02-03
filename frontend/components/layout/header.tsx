@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import GooeyNav from "@/components/ui/gooey-nav"
 import { navigation } from "@/lib/constants"
 import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
+import { SuiMindLogo, MindyAILogo } from "@/components/icons"
 
 export function Header() {
     const pathname = usePathname()
@@ -29,10 +30,10 @@ export function Header() {
                         }}
                         className="flex items-center gap-2 sm:gap-3 flex-shrink-0 hover:opacity-80 transition-opacity"
                     >
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center">
-                            <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl overflow-hidden flex-shrink-0 transition-transform active:scale-95 duration-200">
+                            <SuiMindLogo />
                         </div>
-                        <h1 className="text-lg sm:text-xl font-bold">SuiMind</h1>
+                        <h1 className="text-lg sm:text-2xl font-bold">SuiMind</h1>
                     </Link>
 
                     {/* Center Nav - Desktop only */}

@@ -5,6 +5,7 @@ import { Button, Card, Skeleton } from "@/components/ui"
 import { useRouter } from "next/navigation"
 import { useInsightsData } from "@/hooks/useInsightsData"
 import { ExpensesPieChart, CashflowChart } from "@/components/insightsChart"
+import { MindyAILogo } from "@/components/icons"
 
 export default function InsightsPage() {
     const router = useRouter()
@@ -137,8 +138,8 @@ export default function InsightsPage() {
                         {/* Interactive Icon Orb */}
                         <div className="relative shrink-0 animate-bounce-subtle">
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6FBEE5] to-[#A890FE] blur-xl opacity-40 animate-pulse" />
-                            <div className="relative w-16 h-16 rounded-[22px] bg-gradient-to-br from-[#6FBEE5] via-[#4A9FD8] to-[#A890FE] flex items-center justify-center border border-white/20 shadow-2xl">
-                                <Sparkles className="w-8 h-8 text-white" />
+                            <div className="relative w-16 h-16 rounded-[22px] bg-gradient-to-br from-[#6FBEE5]/20 via-[#4A9FD8]/20 to-[#A890FE]/20 flex items-center justify-center border border-white/20 shadow-2xl">
+                                <MindyAILogo className="w-8 h-8 text-white" />
                             </div>
                         </div>
 

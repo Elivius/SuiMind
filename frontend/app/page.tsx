@@ -5,7 +5,6 @@ import Link from "next/link"
 import { Button, Card, ScrollToTop } from "@/components/ui"
 import { FadeReveal } from "@/components/ui/fade-reveal"
 import {
-    Wallet,
     TrendingUp,
     ArrowRight,
     Shield,
@@ -15,6 +14,7 @@ import {
     Bell
 } from "lucide-react"
 import { Footer } from "@/components/layout"
+import { SuiMindLogo } from "@/components/icons"
 
 export default function LandingPage() {
     const router = useRouter()
@@ -23,11 +23,11 @@ export default function LandingPage() {
         <div className="relative min-h-screen text-white overflow-x-hidden selection:bg-[#6FBEE5]/30 scroll-smooth">
             <ScrollToTop />
             {/* Navbar */}
-            <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-6 md:py-10 w-full mx-auto">
+            <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-6 md:py-12 w-full mx-auto">
                 <FadeReveal direction="none" duration={800}>
                     <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20">
-                            <Wallet className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                        <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20 flex-shrink-0 transition-transform hover:scale-105 duration-300">
+                            <SuiMindLogo />
                         </div>
                         <span className="text-3xl md:text-4xl font-bold tracking-tighter">SuiMind</span>
                     </div>
