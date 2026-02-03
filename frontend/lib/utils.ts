@@ -12,6 +12,12 @@ export function mistToSui(mist: number | string | undefined | null): number {
   return Number(mist) / MIST_PER_SUI;
 }
 
+// SUI amount formatter: up to 4 decimals, trims trailing zeros (11.0000 → 11)
+export function formatSuiAmount(value: number, maxDecimals = 4): string {
+  const formatted = value.toFixed(maxDecimals)
+  return parseFloat(formatted).toString()
+}
+
 /**
  * Truncates a wallet/blockchain address for display
  * @example truncateAddress("0x7b62d94a0b62c5c37c7b62d94a0b62c57c75") => "0x7b62...7c75"
@@ -105,7 +111,7 @@ export function processTx(node: any, address?: string) {
   return {
     id: node.digest,
     type,
-    amount: amountDisplay,
+    amount: Number(mistToSui(Math.abs(rawAmountMIST))),
     usd: "$0.00", // Need real price feed
     time: formatRelativeTime(timestampMs),
     timestampMs,
@@ -142,4 +148,18 @@ export function formatRelativeTime(dateInput: string | number | Date): string {
   if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
 
   return date.toLocaleString();
+}
+
+// Get month-year key from timestamp for sorting (e.g., "2025-12")
+export function getMonthYearKey(timestampMs: number): string {
+  const date = new Date(timestampMs)
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  return `${year}-${month}`
+}
+
+// Get display month from timestamp (e.g., "Dec")
+export function getMonthDisplay(timestampMs: number): string {
+  const date = new Date(timestampMs)
+  return date.toLocaleString('en-US', { month: 'short' })
 }
