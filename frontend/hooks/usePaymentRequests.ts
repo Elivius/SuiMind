@@ -38,6 +38,22 @@ export function usePaymentRequests() {
         };
     }).filter(req => req.recipient === account?.address)  || [];
 
+    const { data: paidData, refetch: refetchPaid } = useSuiClientQuery('getOwnedObjects', {
+        owner: account?.address || '',
+        filter: { StructType: `${PACKAGE_ID}::request::PaidNotification` },
+        options: { showContent: true }
+    }, { enabled: !!account?.address });
+
+    const paidNotifications = paidData?.data?.map((obj: any) => {
+        const fields = (obj.data?.content as any).fields;
+        return {
+            id: obj.data?.objectId, // The brand new ID created by object::new
+            paid_by: fields.paid_by,
+            amountSui: Number(fields.amount) / 1_000_000_000,
+            request_code: fields.request_code
+        };
+    }) || [];
+
     const { data: rejectedData, refetch: refetchRejected } = useSuiClientQuery('getOwnedObjects', {
         owner: account?.address as string,
         filter: { StructType: `${PACKAGE_ID}::request::RejectedPayment` },
@@ -53,13 +69,16 @@ export function usePaymentRequests() {
         request_code: fields.request_code
         };
     }) || [];
+
+    
     
 
     return {
         pendingRequests,
         rejectedRequests,
+        paidNotifications,
         hasUnread: pendingRequests.length > 0 || rejectedRequests.length > 0,
         onTransactionSuccess,
-        refetch: () => { refetchRejected}
+        refetch: () => { refetchRejected(); refetch(); refetchPaid(); }
     };
 }
