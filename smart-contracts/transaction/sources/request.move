@@ -31,6 +31,13 @@ module transaction::request {
         request_code: String,
     }
 
+    public struct PaidNotification has key, store {
+        id: UID,
+        amount: u64,
+        paid_by: address,
+        request_code: String,
+    }
+
     // --- Functions ---
 
     public fun create_payment_request(
@@ -79,6 +86,14 @@ module transaction::request {
             expiration: _,
         } = request;
 
+        let notification = PaidNotification {
+            id: object::new(ctx),
+            amount,
+            paid_by: sender,
+            request_code,
+        };
+        
+        transfer::public_transfer(notification, requester);
         object::delete(id);
     }
 
