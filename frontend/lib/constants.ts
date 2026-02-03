@@ -1,8 +1,9 @@
 import { Home, Clock, Bot, Lightbulb } from "lucide-react"
 import { MindyAILogo } from "@/components/icons"
+import { GooeyNavItem } from "@/components/ui/gooey-nav"
 
 // Navigation items for the dashboard
-export const navigation = [
+export const navigation: GooeyNavItem[] = [
     { label: "Home", href: "/home", icon: Home },
     { label: "Insights", href: "/insights", icon: Lightbulb },
     { label: "Recent Activity", href: "/recent-activity", icon: Clock },

@@ -2,13 +2,11 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation"
-import { LucideIcon } from 'lucide-react';
-import { MindyAILogo } from '../icons';
 
-interface GooeyNavItem {
+export interface GooeyNavItem {
   label: string;
   href: string;
-  icon?: LucideIcon;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
 export interface GooeyNavProps {
