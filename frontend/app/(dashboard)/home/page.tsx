@@ -194,14 +194,66 @@ export default function HomePage() {
       setAmount(requestData.amountSui.toString());
       setShowSendUI(true); 
     };
-
-    // Listen for the event fired by header.tsx
     window.addEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
 
     return () => {
       window.removeEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
     };
   }, []);
+
+  useEffect(() => {
+    const handleRejectRequest = async (event: any) => {
+      const requestId = event.detail; // This is the ID passed from header.tsx [cite: 2]
+      
+      if (!account) {
+        alert("Please connect your wallet first.");
+        return;
+      }
+
+      setIsSending(true);
+      try {
+        const tx = new Transaction();
+        const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
+
+        tx.moveCall({
+          target: `${PACKAGE_ID}::request::reject_request`,
+          arguments: [tx.object(requestId)],
+        });
+
+        const { bytes, signature } = await signTransaction({ transaction: tx });
+
+        const result = await gqlClient.query({
+          query: EXECUTE_TRANSACTION,
+          variables: {
+            transactionDataBcs: bytes,
+            signatures: [signature],
+          },
+        });
+
+        const execution: any = result.data?.executeTransaction;
+        const statusObj = execution?.effects?.status;
+
+        const isSuccess = statusObj === 'SUCCESS' || statusObj?.status === 'success';
+
+        if (isSuccess) {
+          alert("Request rejected successfully.");
+          refetch(); 
+        } else {
+          const detail = statusObj?.error || "Check console for details";
+          alert(`Rejection failed: ${detail}`);
+        }
+      } catch (e: any) {
+        console.error("Rejection Error:", e);
+        alert(`System Error: ${e.message}`);
+      } finally {
+        setIsSending(false);
+      }
+    };
+
+    window.addEventListener('REJECT_REQUEST', handleRejectRequest);
+    return () => window.removeEventListener('REJECT_REQUEST', handleRejectRequest);
+  }, [account, signTransaction, gqlClient, refetch]);
+  
 
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
