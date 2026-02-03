@@ -186,24 +186,10 @@ export default function HomePage() {
     return () => window.removeEventListener('PAY_REQUEST', handlePayFromHeader);
   }, []);
 
-  // useEffect(() => {
-  //   const handleIncomingPaymentRequest = (event: any) => {
-  //     const requestData = event.detail;
-
-  //     setRecipient(requestData.requester);
-  //     setAmount(requestData.amountSui.toString());
-  //     setShowSendUI(true); 
-  //   };
-  //   window.addEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
-
-  //   return () => {
-  //     window.removeEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const handleRejectRequest = async (event: any) => {
-      const requestId = event.detail; // This is the ID passed from header.tsx [cite: 2]
+      const requestId = event.detail;
       
       if (!account) {
         alert("Please connect your wallet first.");
