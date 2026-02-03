@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 export function usePaymentRequests() {
     const account = useCurrentAccount();
     const queryClient = useQueryClient();
+    const PACKAGE_ID = "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299";
 
     const onTransactionSuccess = async () => {
         await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -37,12 +38,28 @@ export function usePaymentRequests() {
         };
     }).filter(req => req.recipient === account?.address)  || [];
 
+    const { data: rejectedData, refetch: refetchRejected } = useSuiClientQuery('getOwnedObjects', {
+        owner: account?.address as string,
+        filter: { StructType: `${PACKAGE_ID}::request::RejectedPayment` },
+        options: { showContent: true }
+    });
+
+    const rejectedRequests = rejectedData?.data?.map(obj => {
+        const fields = (obj.data?.content as any).fields;
+        return {
+        id: obj.data?.objectId,
+        rejected_by: fields.rejected_by,
+        amountSui: Number(fields.amount) / 1_000_000_000,
+        request_code: fields.request_code
+        };
+    }) || [];
     
 
     return {
         pendingRequests,
-        hasUnread: pendingRequests.length > 0,
+        rejectedRequests,
+        hasUnread: pendingRequests.length > 0 || rejectedRequests.length > 0,
         onTransactionSuccess,
-        refetch
+        refetch: () => { refetchRejected}
     };
 }
