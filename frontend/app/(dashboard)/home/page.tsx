@@ -208,7 +208,7 @@ export default function HomePage() {
 
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
-  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(5)
+  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(20)
 
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
