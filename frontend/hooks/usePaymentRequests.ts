@@ -15,7 +15,7 @@ export function usePaymentRequests() {
     const { data: ownedObjects, refetch } = useSuiClientQuery('getOwnedObjects', {
     owner: account?.address || '',
     filter: {
-      StructType: "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d::request::PaymentRequest",
+      StructType: "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299::request::PaymentRequest",
     },
     options: { showContent: true }
     }, {

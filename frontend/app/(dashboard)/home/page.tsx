@@ -69,7 +69,7 @@ export default function HomePage() {
     try {
       const tx = new Transaction();
       const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
-      const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
+      const PACKAGE_ID = "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299";
 
       const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
       tx.transferObjects([coin], recipient);
@@ -132,7 +132,7 @@ export default function HomePage() {
     setIsSending(true);
     try {
       const tx = new Transaction();
-      const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
+      const PACKAGE_ID = "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299";
       const MODULE_NAME = "request";
       const FUNCTION_NAME = "create_payment_request";
       const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
@@ -213,7 +213,7 @@ export default function HomePage() {
       setIsSending(true);
       try {
         const tx = new Transaction();
-        const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
+        const PACKAGE_ID = "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299";
 
         tx.moveCall({
           target: `${PACKAGE_ID}::request::reject_request`,
