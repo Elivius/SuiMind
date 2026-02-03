@@ -236,6 +236,7 @@ export default function HomePage() {
         const isSuccess = statusObj === 'SUCCESS' || statusObj?.status === 'success';
 
         if (isSuccess) {
+          await onTransactionSuccess();
           alert("Request rejected successfully.");
           refetch(); 
         } else {
