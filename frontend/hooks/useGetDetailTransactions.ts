@@ -1,4 +1,5 @@
-// Get more detail transactions
+// Use to get more detail transactions - for reccent activity / transaction history
+
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
 import { graphql } from '@mysten/sui/graphql/schemas/latest';

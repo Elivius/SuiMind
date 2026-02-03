@@ -1,3 +1,5 @@
+// Use to fetch if the current user has any pending payment requests
+
 import { useSuiClientQuery, useCurrentAccount } from "@mysten/dapp-kit";
 
 export function usePaymentRequests() {
