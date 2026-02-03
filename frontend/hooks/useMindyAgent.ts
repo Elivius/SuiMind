@@ -2,9 +2,10 @@
 
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { createSession, sendMessageToAgent, getSessionHistory, ChatMessage } from '@/lib/adk-service';
 import { useCurrentAccount } from '@mysten/dapp-kit';
+import { playSound } from '@/lib/sound-effects';
 
 export const useMindyAgent = () => {
     const account = useCurrentAccount()
@@ -14,6 +15,26 @@ export const useMindyAgent = () => {
     const [userId, setUserId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const prevMindyMessagesCount = useRef(0); // Tracks message count to detect NEW messages for sound effects
+    const isFirstLoadMessages = useRef(true); // Flag to prevent sound on initial history load
+
+    // Play sound when Mindy responds
+    useEffect(() => {
+        const mindyMessages = messages.filter(m => m.role === 'mindy');
+
+        // If it's the first time we actually get messages (from history), don't play sound
+        if (isFirstLoadMessages.current && messages.length > 0) {
+            prevMindyMessagesCount.current = mindyMessages.length;
+            isFirstLoadMessages.current = false;
+            return;
+        }
+
+        if (mindyMessages.length > prevMindyMessagesCount.current) {
+            playSound('message');
+        }
+        prevMindyMessagesCount.current = mindyMessages.length;
+    }, [messages]);
 
     // Initial check for stored user ID and pending state
     useEffect(() => {
@@ -140,6 +161,7 @@ export const useMindyAgent = () => {
         // Optimistically add user message
         const userMsg: ChatMessage = { role: 'user', content, id: Date.now().toString() };
         setMessages(prev => [...prev, userMsg]);
+        playSound('message');
         setIsLoading(true);
         setError(null);
 

@@ -27,7 +27,7 @@ export default function InsightsPage() {
                     <div className="space-y-6">
                         <div className="flex items-start justify-between">
                             <div className="space-y-2">
-                                <p className="text-white/70 font-bold text-xl sm:text-2xl">Monthly Cash Flow (Net Flow)</p>
+                                <p className="text-white font-bold text-xl sm:text-3xl">Monthly Cash Flow (Net Flow)</p>
                                 <div className="flex flex-wrap items-baseline gap-3">
                                     {isLoading ? (
                                         <Skeleton className="h-12 w-48" />
@@ -43,7 +43,7 @@ export default function InsightsPage() {
                                         </>
                                     )}
                                 </div>
-                                <span className="text-white/40 text-sm block">
+                                <span className="text-white text-sm block">
                                     {isLoading ? <Skeleton className="h-4 w-32 inline-block" /> : `${totals.thisMonthTransactionCount} total transactions`}
                                 </span>
                             </div>
@@ -57,7 +57,7 @@ export default function InsightsPage() {
                     <Card className="backdrop-blur-xl bg-gradient-to-r from-white/5 via-white/5 to-[#6FBEE5]/30 border-white/10 p-6 overflow-hidden">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <p className="text-white/60 text-sm">All Time Net Flow</p>
+                                <p className="text-xl text-blue-400 font-bold">All Time Net Flow</p>
                                 {isLoading ? (
                                     <>
                                         <Skeleton className="h-8 w-24" />
@@ -66,7 +66,7 @@ export default function InsightsPage() {
                                 ) : (
                                     <>
                                         <p className="text-2xl font-bold text-white">{totals.totalNetFlow.toFixed(2)} SUI</p>
-                                        <p className="text-white/40 text-xs">{totals.inFlowTransactionCount + totals.outFlowTransactionCount} transactions</p>
+                                        <p className="flex items-center gap-1 text-[xs] uppercase font-bold tracking-wider text-blue-400">{totals.inFlowTransactionCount + totals.outFlowTransactionCount} transactions</p>
                                     </>
                                 )}
                             </div>
@@ -79,7 +79,7 @@ export default function InsightsPage() {
                     <Card className="backdrop-blur-xl bg-gradient-to-r from-white/5 via-white/5 to-emerald-500/30 border-white/10 p-6 overflow-hidden">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <p className="text-white/60 text-sm">All Time Inflow</p>
+                                <p className="text-green-400 text-xl font-bold">All Time Inflow</p>
                                 {isLoading ? (
                                     <>
                                         <Skeleton className="h-8 w-24" />
@@ -88,8 +88,7 @@ export default function InsightsPage() {
                                 ) : (
                                     <>
                                         <p className="text-2xl font-bold text-white">{totals.totalInFlow.toFixed(2)} SUI</p>
-                                        <div className="flex items-center gap-1 text-[xs] uppercase font-bold tracking-wider" style={{ color: '#00FAFF' }}>
-                                            <TrendingUp className="w-3 h-3" />
+                                        <div className="flex items-center gap-1 text-[xs] uppercase font-bold tracking-wider text-green-400">
                                             <span>{totals.inFlowTransactionCount} transactions</span>
                                         </div>
                                     </>
@@ -104,7 +103,7 @@ export default function InsightsPage() {
                     <Card className="backdrop-blur-xl bg-gradient-to-r from-white/5 via-white/5 to-rose-500/30 border-white/10 p-6 overflow-hidden">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <p className="text-white/60 text-sm">All Time Outflow</p>
+                                <p className="text-red-400 text-xl font-bold">All Time Outflow</p>
                                 {isLoading ? (
                                     <>
                                         <Skeleton className="h-8 w-24" />
@@ -113,7 +112,7 @@ export default function InsightsPage() {
                                 ) : (
                                     <>
                                         <p className="text-2xl font-bold text-white">{totals.totalOutFlow.toFixed(2)} SUI</p>
-                                        <p className="text-[10px] font-bold uppercase tracking-widest mt-1" style={{ color: '#FF3DBC', opacity: 0.6 }}>{totals.outFlowTransactionCount} Transactions</p>
+                                        <p className="flex items-center gap-1 text-[xs] uppercase font-bold tracking-wider text-red-400">{totals.outFlowTransactionCount} Transactions</p>
                                     </>
                                 )}
                             </div>
@@ -145,7 +144,7 @@ export default function InsightsPage() {
 
                         <div className="space-y-4 flex-1">
                             <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent tracking-tight">
-                                Mindy AI Suggestion !
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4891ee] via-[#877acc] to-[#cd666e]">Mindy AI </span> Suggestion !
                             </h3>
 
                             <p className="text-white/70 text-lg leading-relaxed max-w-3xl font-medium">

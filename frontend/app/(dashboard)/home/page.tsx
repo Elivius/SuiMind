@@ -17,6 +17,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
+import { playSound } from "@/lib/sound-effects"
 
 
 export default function HomePage() {
@@ -110,6 +111,7 @@ export default function HomePage() {
         setActiveRequestObject(null);
         refetch();
         alert(`Success! Digest: ${digest}`);
+        playSound('success');
 
 
       } else {
@@ -161,6 +163,7 @@ export default function HomePage() {
 
       if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
         alert("Request Object sent successfully!");
+        playSound('request_success');
         setShowRequestUI(false);
         setRequestAmount('0.00');
         setRequestRecipient('');
@@ -205,10 +208,31 @@ export default function HomePage() {
 
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
-  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(5)
+  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(20)
 
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
+
+  // Play sound when new notifications arrive
+  const prevBalance = useRef(0)
+  const isFirstLoadBalance = useRef(true)
+
+  useEffect(() => {
+    if (isBalanceLoading) return;
+
+    if (isFirstLoadBalance.current) {
+      prevBalance.current = walletBalance;
+      isFirstLoadBalance.current = false;
+      return;
+    }
+
+    if (walletBalance > prevBalance.current) {
+      // Double sound
+      playSound('received');
+      playSound('received_background')
+    }
+    prevBalance.current = walletBalance;
+  }, [walletBalance, isBalanceLoading]);
 
   const recentTransactions = (transactionData?.transactions
     ?.map((tx: any) => processTx(tx, account?.address))
@@ -308,7 +332,7 @@ export default function HomePage() {
                   {isBalanceLoading ? (
                     <Skeleton className="h-10 sm:h-14 lg:h-[4.5rem] w-24 sm:w-40 bg-white/10 rounded-xl" />
                   ) : (
-                    `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SUI`
+                    `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 4, maximumFractionDigits: 4 })} SUI`
                   )}
                 </h2>
                 {/* AI Insight beside the number */}
@@ -768,7 +792,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <MindyAILogo className="w-5 h-5 text-[#6FBEE5]" />
-                  <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
+                  <h3 className="text-3xl font-bold text-white">Mindy AI</h3>
                 </div>
                 {mindyMessages.length > 0 && (
                   <button
@@ -928,7 +952,7 @@ export default function HomePage() {
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
               <MindyAILogo className="w-6 h-6 text-[#6FBEE5]" />
-              <h3 className="text-xl font-semibold" style={{ color: "white" }}>AI-Powered Suggestions</h3>
+              <h3 className="text-3xl font-bold text-white">AI-Powered Suggestions</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {suggestions.map((suggestion) => (
