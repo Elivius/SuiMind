@@ -1,3 +1,5 @@
+// Use to get user's current balance
+
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { SUI_COIN_TYPE } from "@/lib/constants";
 import { useQuery } from "@tanstack/react-query";

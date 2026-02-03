@@ -1,4 +1,4 @@
-// Process transactions history and generate insights data
+// Use to process transactions history and generate insights data
 
 import { useMemo } from "react"
 import { useCurrentAccount } from "@mysten/dapp-kit"

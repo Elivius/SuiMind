@@ -1,17 +1,14 @@
 "use client"
 
-import { Wallet, Bell } from "lucide-react"
+import { Wallet, Bell, Check, X } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import GooeyNav from "@/components/ui/gooey-nav"
 import { navigation } from "@/lib/constants"
 import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
-import { usePaymentRequests } from "@/hooks/usePaymentRequests";
-import { useState } from "react";
-import { Check, X } from "lucide-react";
-import {useEffect} from 'react';
-import { useRef } from "react";
+import { usePaymentRequests } from "@/hooks";
+import { useState, useEffect, useRef } from "react";
 
 
 export function Header() {
@@ -26,20 +23,20 @@ export function Header() {
     const dropdownRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false)
-        setSelectedRequestId(null)
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowDropdown(false)
+                setSelectedRequestId(null)
+            }
         }
-    }
 
-    if (showDropdown) {
-        document.addEventListener('mousedown', handleClickOutside)
-    }
+        if (showDropdown) {
+            document.addEventListener('mousedown', handleClickOutside)
+        }
 
-    return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
-    }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
     }, [showDropdown])
 
     return (
@@ -79,27 +76,27 @@ export function Header() {
 
                     {/* Right side actions */}
                     <div className="flex items-center gap-1 sm:gap-2">
-                    <div ref={dropdownRef} className="relative">
-                        <Button variant="ghost" size="icon" className=" relative text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10" onClick={() => setShowDropdown(!showDropdown)}>
-                            <Bell className="w-5 h-5" />
-                            {hasUnread && (
-                                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
-                            )}
-                        </Button>
+                        <div ref={dropdownRef} className="relative">
+                            <Button variant="ghost" size="icon" className=" relative text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10" onClick={() => setShowDropdown(!showDropdown)}>
+                                <Bell className="w-5 h-5" />
+                                {hasUnread && (
+                                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
+                                )}
+                            </Button>
 
-                        {showDropdown && (
-                            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden">
-                                {/* Header */}
-                                <div className="px-4 py-3 border-b border-white/10">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-sm font-semibold text-white">Payment Requests</h3>
-                                    {pendingRequests.length > 0 && (
-                                    <span className="px-2 py-0.5 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">
-                                        {pendingRequests.length} pending
-                                    </span>
-                                    )}
-                                </div>
-                                </div>
+                            {showDropdown && (
+                                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden">
+                                    {/* Header */}
+                                    <div className="px-4 py-3 border-b border-white/10">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-sm font-semibold text-white">Payment Requests</h3>
+                                            {pendingRequests.length > 0 && (
+                                                <span className="px-2 py-0.5 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">
+                                                    {pendingRequests.length} pending
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
 
                                 {/* Request List */}
                                 <div className="max-h-80 overflow-y-auto">
@@ -148,9 +145,8 @@ export function Header() {
                                                     <Button
                                                     size="sm"
                                                     className="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium"
-                                                    onClick={ async() => {
+                                                    onClick={() => {
                                                         window.dispatchEvent(new CustomEvent('PAY_REQUEST', { detail: req }));
-                                                        await onTransactionSuccess();
                                                         setShowDropdown(false);
                                                     }}
                                                     >

@@ -5,32 +5,28 @@ import { processTx, mistToSui, formatSuiAmount } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
-  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2
+  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetDetailTransactions } from "@/hooks"
-import { useCurrentAccount } from "@mysten/dapp-kit"
-import { useMindyAgent } from "@/hooks/useMindyAgent"
+import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, usePaymentRequests } from "@/hooks"
+import { useCurrentAccount, useSuiClientQuery, useSignTransaction } from "@mysten/dapp-kit"
 import { SuiGraphQLClient } from '@mysten/sui/graphql'
 import { graphql } from '@mysten/sui/graphql/schemas/latest'
 import { Transaction } from '@mysten/sui/transactions'
-import { useSignTransaction } from '@mysten/dapp-kit'
 import { toBase64 } from '@mysten/sui/utils'
-import { useSuiClientQuery } from "@mysten/dapp-kit"
-import { Bell } from "lucide-react"
-import { usePaymentRequests } from "@/hooks/usePaymentRequests"
 import ReactMarkdown from "react-markdown"
 
 
 export default function HomePage() {
   const router = useRouter()
   const account = useCurrentAccount()
+
   // signTransaction
   const { mutateAsync: signTransaction } = useSignTransaction();
   const [isSending, setIsSending] = useState(false);
   const [showNewSendUI, setShowSendUI] = useState(false);
-  const [showNewRequestUI,setShowRequestUI] = useState(false);
+  const [showNewRequestUI, setShowRequestUI] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('0.00');
   const [requestRecipient, setRequestRecipient] = useState('');
@@ -64,12 +60,12 @@ export default function HomePage() {
     }
     if (!recipient.startsWith('0x')) { alert("Please enter a valid Sui address."); return; }
     if (parseFloat(amount) <= 0) { alert("Please enter an amount greater than 0."); return; }
-    
+
 
     setIsSending(true);
     let execution: any = null;
 
-    try {     
+    try {
       const tx = new Transaction();
       const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
       const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
@@ -131,11 +127,11 @@ export default function HomePage() {
   const handleRequest = async () => {
     if (!account) return;
     if (!requestRecipient.startsWith('0x')) { alert("Invalid address"); return; }
-  
+
     setIsSending(true);
     try {
       const tx = new Transaction();
-      const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d"; 
+      const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
       const MODULE_NAME = "request";
       const FUNCTION_NAME = "create_payment_request";
       const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
@@ -144,16 +140,16 @@ export default function HomePage() {
       tx.moveCall({
         target: `${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}`,
         arguments: [
-          tx.pure.address(requestRecipient),         
-          tx.pure.u64(amountInMist),                 
-          tx.pure.string("REQ-ABCD-" + Date.now()),  
-          tx.pure.u64(expirationTimestamp),          
+          tx.pure.address(requestRecipient),
+          tx.pure.u64(amountInMist),
+          tx.pure.string("REQ-ABCD-" + Date.now()),
+          tx.pure.u64(expirationTimestamp),
         ],
       });
-  
+
 
       const { bytes, signature } = await signTransaction({ transaction: tx });
-  
+
       const result = await gqlClient.query({
         query: EXECUTE_TRANSACTION,
         variables: {
@@ -161,10 +157,10 @@ export default function HomePage() {
           signatures: [signature],
         },
       });
-  
+
       if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
         alert("Request Object sent successfully!");
-        setShowRequestUI(false); 
+        setShowRequestUI(false);
         setRequestAmount('0.00');
         setRequestRecipient('');
       }
@@ -197,15 +193,15 @@ export default function HomePage() {
       setAmount(requestData.amountSui.toString());
       setShowSendUI(true); 
     };
-  
+
     // Listen for the event fired by header.tsx
     window.addEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
-    
+
     return () => {
       window.removeEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
     };
   }, []);
-  
+
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
   const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions()
@@ -237,7 +233,7 @@ export default function HomePage() {
   const [salary, setSalary] = useState("0")
   const [activeSalary, setActiveSalary] = useState("0.00")
   const [passiveSalary, setPassiveSalary] = useState("0.00")
-  
+
   // Use reusable modal hook for all modals
   const insightModal = useModal()
   const salaryModal = useModal()
@@ -261,7 +257,7 @@ export default function HomePage() {
   const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
   const balance = calculateBalance()
 
-  
+
 
   const [suggestions] = useState([
     {
@@ -331,22 +327,22 @@ export default function HomePage() {
             {/* Right side: Send & Request Buttons */}
             <div className="flex flex-row lg:flex-col gap-3">
               <Button
-                onClick = {() => setShowSendUI(true)} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[180px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-start gap-5 overflow-hidden"
+                onClick={() => setShowSendUI(true)} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0">
                   <SendHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors ml-0.5" />
                 </div>
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col center w-16 sm:w-20">
                   <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors">Send</span>
                 </div>
               </Button>
               <Button
-                onClick={() => setShowRequestUI(true)} className="flex-1 lg:flex-none lg:min-w-[180px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-start gap-5 overflow-hidden"
+                onClick={() => setShowRequestUI(true)} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
                   <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
                 </div>
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-center w-16 sm:w-20">
                   <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors">Request</span>
                 </div>
               </Button>
@@ -357,115 +353,115 @@ export default function HomePage() {
 
       {/* After clicking send button*/}
       {showNewSendUI && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div 
-                  className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                  onClick={() => setShowSendUI(false)}
-                />
-                
-                {/* Modal */}
-                <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl p-6">
-                  {/* Header */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                      </svg>
-                    </div>
-                    <h2 className="text-xl font-semibold text-gray-900">Send SUI</h2>
-                  </div>
-              
-                  {/* Available Balance */}
-                  <div className="mb-6 p-4 bg-gray-50 rounded-xl">
-                    <p className="text-sm text-gray-500 mb-1">Available Balance</p>
-                    <p className="text-2xl font-semibold text-gray-900">
-                      {walletBalance.toLocaleString("en-US", { 
-                        minimumFractionDigits: 2, 
-                        maximumFractionDigits: 2 
-                      })} 
-                      <span className="text-base font-normal text-gray-500">SUI</span>
-                      </p>
-                  </div>
-                  
-                  {/* Recipient Address */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Recipient Address
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="0x..."
-                      value={recipient}
-                      onChange={(e) => setRecipient(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
-                    />
-                  </div>
-                  
-                  {/* Amount */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Amount
-                    </label>
-                    <div className="relative flex items-center">
-                      <input
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="0.00"
-                        className="w-full px-4 py-3 pr-24 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
-                      />
-                      <div className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col">
-                        <button 
-                          onClick={() => setAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
-                          className="text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                          </svg>
-                        </button>
-                        <button 
-                          onClick={() => setAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
-                          className="text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </button>
-                      </div>
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
-                        SUI
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {/* Buttons */}
-                  <div className="flex gap-3">
-                    <button 
-                      onClick={() => setShowSendUI(false)}
-                      className="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      onClick={handleSend}
-                      disabled={isSending}
-                      className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
-                    >
-                      {isSending ? 'Sending...':'Send'}
-                    </button>
-                  </div>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowSendUI(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl p-6">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
               </div>
-            )}
+              <h2 className="text-xl font-semibold text-gray-900">Send SUI</h2>
+            </div>
+
+            {/* Available Balance */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+              <p className="text-sm text-gray-500 mb-1">Available Balance</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {walletBalance.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
+                <span className="text-base font-normal text-gray-500">SUI</span>
+              </p>
+            </div>
+
+            {/* Recipient Address */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Recipient Address
+              </label>
+              <input
+                type="text"
+                placeholder="0x..."
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+              />
+            </div>
+
+            {/* Amount */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Amount
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full px-4 py-3 pr-24 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                />
+                <div className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col">
+                  <button
+                    onClick={() => setAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                  SUI
+                </span>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowSendUI(false)}
+                className="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={isSending}
+                className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+              >
+                {isSending ? 'Sending...' : 'Send'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showNewRequestUI && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Dark overlay */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setShowRequestUI(false)}
           />
-          
+
           {/* Modal */}
           <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl p-6">
             {/* Header */}
@@ -477,7 +473,7 @@ export default function HomePage() {
               </div>
               <h2 className="text-xl font-semibold text-gray-900">Request SUI</h2>
             </div>
-            
+
             {/* Requested Address */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -491,7 +487,7 @@ export default function HomePage() {
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400"
               />
             </div>
-            
+
             {/* Amount */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -506,7 +502,7 @@ export default function HomePage() {
                   className="w-full px-4 py-3 pr-24 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400"
                 />
                 <div className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col">
-                  <button 
+                  <button
                     onClick={() => setRequestAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
                     className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
@@ -514,7 +510,7 @@ export default function HomePage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                     </svg>
                   </button>
-                  <button 
+                  <button
                     onClick={() => setRequestAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
                     className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
@@ -528,16 +524,16 @@ export default function HomePage() {
                 </span>
               </div>
             </div>
-            
+
             {/* Buttons */}
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => setShowRequestUI(false)}
                 className="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleRequest}
                 disabled={isSending}
                 className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors"
@@ -746,24 +742,24 @@ export default function HomePage() {
         {/* Mindy AI */}
         <div className="xl:col-span-1">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden lg:h-[70vh]">
-              <div className="p-6 h-full flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-[#6FBEE5]" />
-                    <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
-                  </div>
-                  {mindyMessages.length > 0 && (
-                    <button
-                      onClick={() => startMindySession({ forceNew: true })}
-                      disabled={isMindyLoading}
-                      className="p-2 rounded-full hover:bg-white/10 text-white/30 hover:text-red-400 transition-all disabled:opacity-50"
-                      title="New Chat"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+            <div className="p-6 h-full flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-[#6FBEE5]" />
+                  <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
                 </div>
-              
+                {mindyMessages.length > 0 && (
+                  <button
+                    onClick={() => startMindySession({ forceNew: true })}
+                    disabled={isMindyLoading}
+                    className="p-2 rounded-full hover:bg-white/10 text-white/30 hover:text-red-400 transition-all disabled:opacity-50"
+                    title="New Chat"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
 
               {/* Chat Messages Area */}
               <div className="flex-1 space-y-3 overflow-y-auto mb-4 min-h-[200px] scrollbar-thin scrollbar-thumb-white/10">
