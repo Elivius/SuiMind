@@ -17,10 +17,19 @@ export const useMindyAgent = () => {
     const [error, setError] = useState<string | null>(null);
 
     const prevMindyMessagesCount = useRef(0);
+    const isFirstLoadMessages = useRef(true);
 
     // Play sound when Mindy responds
     useEffect(() => {
         const mindyMessages = messages.filter(m => m.role === 'mindy');
+
+        // If it's the first time we actually get messages (from history), don't play sound
+        if (isFirstLoadMessages.current && messages.length > 0) {
+            prevMindyMessagesCount.current = mindyMessages.length;
+            isFirstLoadMessages.current = false;
+            return;
+        }
+
         if (mindyMessages.length > prevMindyMessagesCount.current) {
             playSound('message');
         }

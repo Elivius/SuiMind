@@ -13,7 +13,7 @@ export function usePaymentRequests() {
         queryClient.invalidateQueries();
     };
 
-    const { data: ownedObjects, refetch } = useSuiClientQuery('getOwnedObjects', {
+    const { data: ownedObjects, isLoading, refetch } = useSuiClientQuery('getOwnedObjects', {
         owner: account?.address || '',
         filter: {
             StructType: "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d::request::PaymentRequest",
@@ -38,10 +38,9 @@ export function usePaymentRequests() {
         };
     }).filter(req => req.recipient === account?.address) || [];
 
-
-
     return {
         pendingRequests,
+        isLoading,
         hasUnread: pendingRequests.length > 0,
         onTransactionSuccess,
         playSound,

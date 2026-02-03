@@ -17,21 +17,30 @@ export function Header() {
     const pathname = usePathname()
 
     // Determine active nav index based on current path
-    const { pendingRequests, hasUnread, onTransactionSuccess } = usePaymentRequests();
+    const { pendingRequests, isLoading, hasUnread, onTransactionSuccess } = usePaymentRequests();
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
     const activeIndex = navigation.findIndex(item => pathname === item.href)
 
     const dropdownRef = useRef<HTMLDivElement>(null)
-    const prevRequestsCount = useRef(pendingRequests.length)
+    const prevRequestsCount = useRef(0)
+    const isFirstLoad = useRef(true)
 
     // Play sound when new notifications arrive
     useEffect(() => {
-        if (pendingRequests.length > 0 && pendingRequests.length > prevRequestsCount.current) {
-            playSound('notification');
+        if (isLoading) return;
+
+        if (isFirstLoad.current) {
             prevRequestsCount.current = pendingRequests.length;
+            isFirstLoad.current = false;
+            return;
         }
-    }, [pendingRequests]);
+
+        if (pendingRequests.length > prevRequestsCount.current) {
+            playSound('notification');
+        }
+        prevRequestsCount.current = pendingRequests.length;
+    }, [pendingRequests, isLoading]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {

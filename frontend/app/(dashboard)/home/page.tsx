@@ -214,13 +214,23 @@ export default function HomePage() {
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
 
   // Play sound when new notifications arrive
-  const prevBalance = useRef(walletBalance)
+  const prevBalance = useRef(0)
+  const isFirstLoadBalance = useRef(true)
+
   useEffect(() => {
+    if (isBalanceLoading) return;
+
+    if (isFirstLoadBalance.current) {
+      prevBalance.current = walletBalance;
+      isFirstLoadBalance.current = false;
+      return;
+    }
+
     if (walletBalance > prevBalance.current) {
       playSound('received');
-      prevBalance.current = walletBalance;
     }
-  }, [walletBalance]);
+    prevBalance.current = walletBalance;
+  }, [walletBalance, isBalanceLoading]);
 
   const recentTransactions = transactionData?.nodes
     ?.map((tx) => processTx(tx, account?.address))
