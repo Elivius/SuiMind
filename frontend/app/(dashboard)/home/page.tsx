@@ -17,6 +17,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { toBase64 } from '@mysten/sui/utils'
 import ReactMarkdown from "react-markdown"
 
+
 export default function HomePage() {
   const router = useRouter()
   const account = useCurrentAccount()
@@ -31,7 +32,7 @@ export default function HomePage() {
   const [requestRecipient, setRequestRecipient] = useState('');
   const [requestAmount, setRequestAmount] = useState('0.00');
   const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
-  const { pendingRequests, hasUnread, refetch } = usePaymentRequests();
+  const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
 
   // setup GraphQLClient
   const gqlClient = new SuiGraphQLClient({
@@ -101,12 +102,15 @@ export default function HomePage() {
       const digest = execution?.effects?.transaction?.digest;
 
       if (status === 'SUCCESS' || status?.status === 'success') {
-        alert(`Success! Digest: ${digest}`);
-        setShowSendUI(false);
-        setAmount('0.00');
+        await onTransactionSuccess();
+        setShowSendUI(false); 
+        setAmount('0.00');    
         setRecipient('');
         setActiveRequestObject(null);
         refetch();
+        alert(`Success! Digest: ${digest}`);
+        
+        
       } else {
         const detail = status?.error || "Check console for effects object";
         alert(`On-chain Failure: ${detail}`);
@@ -170,11 +174,11 @@ export default function HomePage() {
 
   useEffect(() => {
     const handlePayFromHeader = (event: any) => {
-      const request = event.detail;
-      setRecipient(request.requester);
-      setAmount(request.amountSui.toString());
-      setActiveRequestObject(request);
-      setShowSendUI(true); // Open the existing send modal
+        const request = event.detail;
+        setRecipient(request.requester);
+        setAmount(request.amountSui.toString());
+        setActiveRequestObject(request);
+        setShowSendUI(true); 
     };
 
     window.addEventListener('PAY_REQUEST', handlePayFromHeader);
@@ -185,12 +189,9 @@ export default function HomePage() {
     const handleIncomingPaymentRequest = (event: any) => {
       const requestData = event.detail;
 
-      // 1. Fill the form state with data from the blockchain object
       setRecipient(requestData.requester);
       setAmount(requestData.amountSui.toString());
-
-      // 2. Open the UI so the user can confirm
-      setShowSendUI(true);
+      setShowSendUI(true); 
     };
 
     // Listen for the event fired by header.tsx

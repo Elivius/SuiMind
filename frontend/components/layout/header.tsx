@@ -15,7 +15,7 @@ export function Header() {
     const pathname = usePathname()
 
     // Determine active nav index based on current path
-    const { pendingRequests, hasUnread } = usePaymentRequests();
+    const { pendingRequests, hasUnread, onTransactionSuccess } = usePaymentRequests();    
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
     const activeIndex = navigation.findIndex(item => pathname === item.href)
@@ -98,85 +98,85 @@ export function Header() {
                                         </div>
                                     </div>
 
-                                    {/* Request List */}
-                                    <div className="max-h-80 overflow-y-auto">
-                                        {pendingRequests.length === 0 ? (
-                                            <div className="px-4 py-8 text-center">
-                                                <Bell className="w-8 h-8 text-white/20 mx-auto mb-2" />
-                                                <p className="text-sm text-white/50">No pending requests</p>
-                                            </div>
-                                        ) : (
-                                            <div className="divide-y divide-white/5">
-                                                {pendingRequests.map((req) => {
-                                                    const isSelected = selectedRequestId === req.id
-                                                    return (
-                                                        <div key={req.id}>
-                                                            <button
-                                                                type="button"
-                                                                className="w-full px-4 py-3 hover:bg-white/5 transition-colors text-left cursor-pointer"
-                                                                onClick={() => setSelectedRequestId(isSelected ? null : req.id)}
-                                                            >
-                                                                <div className="flex items-center justify-between gap-3">
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <p className="text-sm font-medium text-[#6FBEE5] font-mono truncate">
-                                                                            {req.requester.slice(0, 6)}...{req.requester.slice(-4)}
-                                                                        </p>
-                                                                        <div className="flex items-center gap-2 mt-0.5">
-                                                                            <p className="text-lg font-semibold text-emerald-400">
-                                                                                {req.amountSui} SUI
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="shrink-0">
-                                                                        <svg
-                                                                            className={`w-4 h-4 text-white/40 transition-transform ${isSelected ? "rotate-180" : ""}`}
-                                                                            fill="none"
-                                                                            viewBox="0 0 24 24"
-                                                                            stroke="currentColor"
-                                                                        >
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                                        </svg>
-                                                                    </div>
-                                                                </div>
-                                                            </button>
-
-                                                            {isSelected && (
-                                                                <div className="px-4 pb-3 flex items-center gap-2 bg-white/5">
-                                                                    <Button
-                                                                        size="sm"
-                                                                        className="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium"
-                                                                        onClick={() => {
-                                                                            window.dispatchEvent(new CustomEvent('PAY_REQUEST', { detail: req }));
-                                                                            setShowDropdown(false);
-                                                                        }}
-                                                                    >
-                                                                        <Check className="w-4 h-4 mr-1.5" />
-                                                                        Pay
-                                                                    </Button>
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="outline"
-                                                                        className="flex-1 h-9 border-red-500/50 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm font-medium bg-transparent"
-                                                                        onClick={() => {
-                                                                            setSelectedRequestId(null);
-                                                                            window.dispatchEvent(new CustomEvent('REJECT_REQUEST', { detail: req.id }));
-                                                                        }}
-                                                                    >
-                                                                        <X className="w-4 h-4 mr-1.5" />
-                                                                        Reject
-                                                                    </Button>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                        )}
+                                {/* Request List */}
+                                <div className="max-h-80 overflow-y-auto">
+                                {pendingRequests.length === 0 ? (
+                                    <div className="px-4 py-8 text-center">
+                                    <Bell className="w-8 h-8 text-white/20 mx-auto mb-2" />
+                                    <p className="text-sm text-white/50">No pending requests</p>
                                     </div>
+                                ) : (
+                                    <div className="divide-y divide-white/5">
+                                    {pendingRequests.map((req) => {
+                                        const isSelected = selectedRequestId === req.id
+                                        return (
+                                        <div key={req.id}>
+                                            <button
+                                            type="button"
+                                            className="w-full px-4 py-3 hover:bg-white/5 transition-colors text-left cursor-pointer"
+                                            onClick={() => setSelectedRequestId(isSelected ? null : req.id)}
+                                            >
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-[#6FBEE5] font-mono truncate">
+                                                    {req.requester.slice(0, 6)}...{req.requester.slice(-4)}
+                                                </p>
+                                                <div className="flex items-center gap-2 mt-0.5">
+                                                    <p className="text-lg font-semibold text-emerald-400">
+                                                    {req.amountSui} SUI
+                                                    </p>
+                                                </div>
+                                                </div>
+                                                <div className="shrink-0">
+                                                <svg
+                                                    className={`w-4 h-4 text-white/40 transition-transform ${isSelected ? "rotate-180" : ""}`}
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                                </div>
+                                            </div>
+                                            </button>
+                                            
+                                            {isSelected && (
+                                                <div className="px-4 pb-3 flex items-center gap-2 bg-white/5">
+                                                    <Button
+                                                    size="sm"
+                                                    className="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium"
+                                                    onClick={() => {
+                                                        window.dispatchEvent(new CustomEvent('PAY_REQUEST', { detail: req }));
+                                                        setShowDropdown(false);
+                                                    }}
+                                                    >
+                                                    <Check className="w-4 h-4 mr-1.5" />
+                                                    Pay
+                                                    </Button>
+                                                    <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="flex-1 h-9 border-red-500/50 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm font-medium bg-transparent"
+                                                    onClick={() => {
+                                                        setSelectedRequestId(null);
+                                                        window.dispatchEvent(new CustomEvent('REJECT_REQUEST', {detail: req.id}));
+                                                    }}
+                                                    >
+                                                    <X className="w-4 h-4 mr-1.5" />
+                                                    Reject
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                        )
+                                    })}
+                                    </div>
+                                )}
                                 </div>
-                            )}
-                        </div>
-
+                            </div>
+                        )}
+                    </div>
+                        
 
                         <WalletConnectButton />
                     </div>
