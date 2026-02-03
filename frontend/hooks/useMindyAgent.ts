@@ -2,9 +2,10 @@
 
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { createSession, sendMessageToAgent, getSessionHistory, ChatMessage } from '@/lib/adk-service';
 import { useCurrentAccount } from '@mysten/dapp-kit';
+import { playSound } from '@/lib/mindyaisounds';
 
 export const useMindyAgent = () => {
     const account = useCurrentAccount()
@@ -14,6 +15,17 @@ export const useMindyAgent = () => {
     const [userId, setUserId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const prevMindyMessagesCount = useRef(0);
+
+    // Play sound when Mindy responds
+    useEffect(() => {
+        const mindyMessages = messages.filter(m => m.role === 'mindy');
+        if (mindyMessages.length > prevMindyMessagesCount.current) {
+            playSound('message');
+        }
+        prevMindyMessagesCount.current = mindyMessages.length;
+    }, [messages]);
 
     // Initial check for stored user ID and pending state
     useEffect(() => {
@@ -140,6 +152,7 @@ export const useMindyAgent = () => {
         // Optimistically add user message
         const userMsg: ChatMessage = { role: 'user', content, id: Date.now().toString() };
         setMessages(prev => [...prev, userMsg]);
+        playSound('message');
         setIsLoading(true);
         setError(null);
 

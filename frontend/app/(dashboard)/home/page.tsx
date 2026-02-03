@@ -17,6 +17,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
+import { playSound } from "@/lib/mindyaisounds"
 
 
 export default function HomePage() {
@@ -104,14 +105,15 @@ export default function HomePage() {
 
       if (status === 'SUCCESS' || status?.status === 'success') {
         await onTransactionSuccess();
-        setShowSendUI(false); 
-        setAmount('0.00');    
+        setShowSendUI(false);
+        setAmount('0.00');
         setRecipient('');
         setActiveRequestObject(null);
         refetch();
         alert(`Success! Digest: ${digest}`);
-        
-        
+        playSound('success');
+
+
       } else {
         const detail = status?.error || "Check console for effects object";
         alert(`On-chain Failure: ${detail}`);
@@ -161,6 +163,7 @@ export default function HomePage() {
 
       if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
         alert("Request Object sent successfully!");
+        playSound('request_success');
         setShowRequestUI(false);
         setRequestAmount('0.00');
         setRequestRecipient('');
@@ -175,11 +178,11 @@ export default function HomePage() {
 
   useEffect(() => {
     const handlePayFromHeader = (event: any) => {
-        const request = event.detail;
-        setRecipient(request.requester);
-        setAmount(request.amountSui.toString());
-        setActiveRequestObject(request);
-        setShowSendUI(true); 
+      const request = event.detail;
+      setRecipient(request.requester);
+      setAmount(request.amountSui.toString());
+      setActiveRequestObject(request);
+      setShowSendUI(true);
     };
 
     window.addEventListener('PAY_REQUEST', handlePayFromHeader);
@@ -192,7 +195,7 @@ export default function HomePage() {
 
       setRecipient(requestData.requester);
       setAmount(requestData.amountSui.toString());
-      setShowSendUI(true); 
+      setShowSendUI(true);
     };
 
     // Listen for the event fired by header.tsx
@@ -209,6 +212,15 @@ export default function HomePage() {
 
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
+
+  // Play sound when new notifications arrive
+  const prevBalance = useRef(walletBalance)
+  useEffect(() => {
+    if (walletBalance > prevBalance.current) {
+      playSound('received');
+      prevBalance.current = walletBalance;
+    }
+  }, [walletBalance]);
 
   const recentTransactions = transactionData?.nodes
     ?.map((tx) => processTx(tx, account?.address))
