@@ -106,13 +106,15 @@ export default function HomePage() {
       const digest = execution?.effects?.transaction?.digest;
 
       if (status === 'SUCCESS' || status?.status === 'success') {
-        alert(`Success! Digest: ${digest}`);
+        await onTransactionSuccess();
         setShowSendUI(false); 
         setAmount('0.00');    
         setRecipient('');
         setActiveRequestObject(null);
         refetch();
-        await onTransactionSuccess();
+        alert(`Success! Digest: ${digest}`);
+        
+        
       } else {
         const detail = status?.error || "Check console for effects object";
         alert(`On-chain Failure: ${detail}`);
