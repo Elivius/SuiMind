@@ -47,9 +47,10 @@ export function CashflowChart({ data, isLoading }: CashflowChartProps) {
                                 <stop offset="100%" stopColor="#FF3DBC" stopOpacity={0.3} />
                             </linearGradient>
                             <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset={0} stopColor={dataMax > 0 ? "#4ADE80" : "#FFFFFF"} stopOpacity={1} />
-                                <stop offset={off} stopColor="#FFFFFF" stopOpacity={1} />
-                                <stop offset={1} stopColor={dataMin < 0 ? "#F87171" : "#FFFFFF"} stopOpacity={1} />
+                                <stop offset={0} stopColor="#4ADE80" stopOpacity={1} />
+                                <stop offset={off} stopColor="#4ADE80" stopOpacity={1} />
+                                <stop offset={off} stopColor="#F87171" stopOpacity={1} />
+                                <stop offset={1} stopColor="#F87171" stopOpacity={1} />
                             </linearGradient>
                             <filter id="line-glow" x="-20%" y="-20%" width="140%" height="140%">
                                 <feGaussianBlur stdDeviation="5" result="blur" />
@@ -94,8 +95,8 @@ export function CashflowChart({ data, isLoading }: CashflowChartProps) {
                                     const netFlow = payload[0].payload.netFlow
                                     const isZero = Math.abs(netFlow) < 0.0001
                                     const isNegative = netFlow < 0 && !isZero
-                                    const netLabelColor = isZero ? 'text-white' : isNegative ? 'text-red-400' : 'text-[#6FBEE5]'
-                                    const netValueColor = isZero ? 'text-white' : isNegative ? 'text-red-400' : 'text-white'
+                                    const netLabelColor = isZero ? 'text-white' : isNegative ? 'text-red-400' : 'text-green-400'
+                                    const netValueColor = isZero ? 'text-white' : isNegative ? 'text-red-400' : 'text-green-400'
                                     return (
                                         <div className="bg-[#050B15]/95 backdrop-blur-3xl border border-white/10 rounded-[24px] p-5 shadow-2xl min-w-[200px]">
                                             <p className="text-white text-[12px] font-black uppercase tracking-[3px] mb-4 text-center border-b border-white/5 pb-2">
