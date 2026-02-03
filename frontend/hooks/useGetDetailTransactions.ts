@@ -10,29 +10,31 @@ query getDetailTransactions($address: SuiAddress!, $limit: Int = 5, $before: Str
   transactions(last: $limit, before: $before, filter: {affectedAddress: $address}) {
     pageInfo {
       hasPreviousPage
-      startCursor
     }
-    nodes {
-      digest
-      gasInput {
-        gasPrice
-        gasBudget
-        gasSponsor {
-          address
-        }
-      }
-      effects {
-        timestamp
-        status
-        gasEffects {
-          gasSummary {
-            computationCost
-            storageCost
-            storageRebate
-            nonRefundableStorageFee
+    edges {
+      cursor
+      node {
+        digest
+        gasInput {
+          gasPrice
+          gasBudget
+          gasSponsor {
+            address
           }
         }
-        balanceChangesJson
+        effects {
+          timestamp
+          status
+          gasEffects {
+            gasSummary {
+              computationCost
+              storageCost
+              storageRebate
+              nonRefundableStorageFee
+            }
+          }
+          balanceChangesJson
+        }
       }
     }
   }
@@ -46,7 +48,7 @@ export function useGetDetailTransactions(limit: number = 5, before?: string) {
   return useQuery({
     queryKey: ["get-detail-transactions", address, limit, before],
     queryFn: async () => {
-      if (!address) return { nodes: [], pageInfo: { hasPreviousPage: false, startCursor: null } };
+      if (!address) return { transactions: [], pageInfo: { hasPreviousPage: false } };
 
       const result = await gqlClient.query({
         query: GET_DETAIL_TRANSACTIONS_QUERY,
@@ -57,11 +59,16 @@ export function useGetDetailTransactions(limit: number = 5, before?: string) {
         },
       });
 
-      const transactions = result.data?.transactions?.nodes ?? [];
-      const pageInfo = result.data?.transactions?.pageInfo ?? { hasPreviousPage: false, startCursor: null };
+      const edges = result.data?.transactions?.edges ?? [];
+      const pageInfo = result.data?.transactions?.pageInfo ?? { hasPreviousPage: false };
+
+      const transactions = edges.map((edge: any) => ({
+        ...edge.node,
+        cursor: edge.cursor
+      })).reverse();
 
       return {
-        nodes: [...transactions].reverse(),
+        transactions,
         pageInfo
       };
     },

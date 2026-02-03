@@ -104,14 +104,14 @@ export default function HomePage() {
 
       if (status === 'SUCCESS' || status?.status === 'success') {
         await onTransactionSuccess();
-        setShowSendUI(false); 
-        setAmount('0.00');    
+        setShowSendUI(false);
+        setAmount('0.00');
         setRecipient('');
         setActiveRequestObject(null);
         refetch();
         alert(`Success! Digest: ${digest}`);
-        
-        
+
+
       } else {
         const detail = status?.error || "Check console for effects object";
         alert(`On-chain Failure: ${detail}`);
@@ -175,11 +175,11 @@ export default function HomePage() {
 
   useEffect(() => {
     const handlePayFromHeader = (event: any) => {
-        const request = event.detail;
-        setRecipient(request.requester);
-        setAmount(request.amountSui.toString());
-        setActiveRequestObject(request);
-        setShowSendUI(true); 
+      const request = event.detail;
+      setRecipient(request.requester);
+      setAmount(request.amountSui.toString());
+      setActiveRequestObject(request);
+      setShowSendUI(true);
     };
 
     window.addEventListener('PAY_REQUEST', handlePayFromHeader);
@@ -192,7 +192,7 @@ export default function HomePage() {
 
       setRecipient(requestData.requester);
       setAmount(requestData.amountSui.toString());
-      setShowSendUI(true); 
+      setShowSendUI(true);
     };
 
     // Listen for the event fired by header.tsx
@@ -205,14 +205,14 @@ export default function HomePage() {
 
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
-  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions()
+  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(5)
 
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
 
-  const recentTransactions = transactionData?.nodes
-    ?.map((tx) => processTx(tx, account?.address))
-    .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [];
+  const recentTransactions = (transactionData?.transactions
+    ?.map((tx: any) => processTx(tx, account?.address))
+    .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || []).slice(0, 5);
 
   const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
   const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
@@ -745,7 +745,7 @@ export default function HomePage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount)} SUI</p>
+                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                         <p className="text-xs text-white/60">{tx.time}</p>
                         <p className="text-xs text-white/60 mt-1">
                           {tx.from && `From: ${tx.from}`}
