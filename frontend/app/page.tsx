@@ -5,15 +5,16 @@ import Link from "next/link"
 import { Button, Card, ScrollToTop } from "@/components/ui"
 import { FadeReveal } from "@/components/ui/fade-reveal"
 import {
-    Wallet,
     TrendingUp,
     ArrowRight,
     Shield,
     Bot,
     BarChart3,
-    CheckCircle2
+    CheckCircle2,
+    Bell
 } from "lucide-react"
 import { Footer } from "@/components/layout"
+import { SuiMindLogo } from "@/components/icons"
 
 export default function LandingPage() {
     const router = useRouter()
@@ -22,11 +23,11 @@ export default function LandingPage() {
         <div className="relative min-h-screen text-white overflow-x-hidden selection:bg-[#6FBEE5]/30 scroll-smooth">
             <ScrollToTop />
             {/* Navbar */}
-            <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-6 md:py-10 w-full mx-auto">
+            <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-6 md:py-12 w-full mx-auto">
                 <FadeReveal direction="none" duration={800}>
                     <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20">
-                            <Wallet className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                        <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20 flex-shrink-0 transition-transform hover:scale-105 duration-300">
+                            <SuiMindLogo />
                         </div>
                         <span className="text-3xl md:text-4xl font-bold tracking-tighter">SuiMind</span>
                     </div>
@@ -83,31 +84,40 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                         <FadeReveal delay={100} direction="up" distance={60}>
                             <Card className="p-6 md:p-8 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full">
-                                <div className="w-14 h-14 rounded-2xl bg-[#6FBEE5]/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <TrendingUp className="w-7 h-7 text-[#6FBEE5]" />
+                                <div className="w-16 h-16 rounded-2xl bg-[#6FBEE5]/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <TrendingUp className="w-8 h-8 text-[#6FBEE5]" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-4 text-white">Cashflow Master</h3>
-                                <p className="text-white/50 leading-relaxed font-medium">Take full control of your financial flow by managing your active and passive income with intuitive visual insights into your monthly spending patterns.</p>
+                                <h3 className="text-3xl font-bold">
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4385f5] via-[#e94335] to-[#fcbc05]"> Cashflow Master
+                                    </span>
+                                </h3>
+                                <p className="text-white leading-relaxed font-medium">Take full control of your financial flow by managing your active and passive income with intuitive visual insights into your monthly spending patterns.</p>
                             </Card>
                         </FadeReveal>
 
                         <FadeReveal delay={300} direction="up" distance={60}>
                             <Card className="p-6 md:p-8 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full">
-                                <div className="w-14 h-14 rounded-2xl bg-sky-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <Bot className="w-7 h-7 text-sky-400" />
+                                <div className="w-16 h-16 rounded-2xl bg-sky-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <Bot className="w-8 h-8 text-sky-400" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-4 text-white">Mindy AI</h3>
-                                <p className="text-white/50 leading-relaxed font-medium">Your personal financial assistant that analyzes your Sui activity to provide actionable growth advice.</p>
+                                <h3 className="text-7xl font-bold">
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4891ee] via-[#877acc] to-[#cd666e]"> Mindy AI
+                                    </span>
+                                </h3>
+                                <p className="text-white leading-relaxed font-medium">Powered by Gemini 3.0 AI, your intelligent financial assistant analyzes your Sui blockchain activity in real-time to deliver personalized insights and actionable growth strategies.</p>
                             </Card>
                         </FadeReveal>
 
                         <FadeReveal delay={500} direction="up" distance={60}>
                             <Card className="p-6 md:p-8 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full">
-                                <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <Shield className="w-7 h-7 text-indigo-400" />
+                                <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <BarChart3 className="w-8 h-8 text-indigo-400" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-4 text-white">Sui Secure</h3>
-                                <p className="text-white/50 leading-relaxed font-medium">Enterprise-grade security integrated directly with your Sui wallet. Your data, your keys, your control.</p>
+                                <h3 className="text-4xl font-bold">
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4385f5] via-[#34a853] to-[#e94335]"> Smart Insights
+                                    </span>
+                                </h3>
+                                <p className="text-white leading-relaxed font-medium">Transform complex blockchain data into beautiful, actionable visualizations. Track spending patterns, analyze transaction history, and discover financial opportunities at a glance.</p>
                             </Card>
                         </FadeReveal>
                     </div>
@@ -119,23 +129,23 @@ export default function LandingPage() {
                         <div className="flex-1">
                             <FadeReveal direction="left" distance={60}>
                                 <h2 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter mb-8 leading-[0.9]">
-                                    Turn Data into <br /><span className="text-[#6FBEE5]">Decisions.</span>
+                                    Turn Data into <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6FBEE5] via-[#3B82F6] to-[#fffdfe]">Decisions.</span>
                                 </h2>
                             </FadeReveal>
 
                             <div className="space-y-6">
                                 {[
-                                    "Real-time transaction monitoring",
-                                    "AI-driven yield optimization",
-                                    "Automated expense categorization",
-                                    "Intuitive asset management"
+                                    "Real-time Sui blockchain transaction tracking",
+                                    "Gemini 3.0 AI-powered financial insights",
+                                    "Interactive cashflow visualizations",
+                                    "Smart expense pattern recognition"
                                 ].map((item, i) => (
                                     <FadeReveal key={i} delay={100 * i} direction="left" distance={40}>
                                         <div className="flex items-center gap-4">
                                             <div className="w-6 h-6 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center">
                                                 <CheckCircle2 className="w-4 h-4 text-[#6FBEE5]" />
                                             </div>
-                                            <span className="text-lg font-medium text-white/80">{item}</span>
+                                            <span className="text-xl font-medium text-white">{item}</span>
                                         </div>
                                     </FadeReveal>
                                 ))}
@@ -156,8 +166,8 @@ export default function LandingPage() {
                                                     <TrendingUp className="w-6 h-6 text-[#6FBEE5]" />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-1">Yield Optimization</p>
-                                                    <p className="text-white text-sm font-bold">Move 50 SUI to Scallop for +2.4% APR</p>
+                                                    <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-1">Cashflow Insight</p>
+                                                    <p className="text-white text-sm font-bold">Monthly surplus: +125 SUI</p>
                                                 </div>
                                                 <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
                                                     <ArrowRight className="w-4 h-4 text-white/40" />
@@ -172,10 +182,10 @@ export default function LandingPage() {
                                             <Card className="border-[#6FBEE5]/30 bg-gradient-to-br from-[#6FBEE5]/20 to-transparent backdrop-blur-3xl p-6 md:p-8 rounded-[2.5rem] shadow-2xl">
                                                 <div className="flex items-center gap-4 mb-6">
                                                     <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-[0_0_30px_rgba(111,190,229,0.5)]">
-                                                        <Bot className="w-7 h-7 sm:w-8 sm:h-8 text-[#6FBEE5]" />
+                                                        <Bot className="w-7 h-7 sm:w-8 sm:h-8 text-black" />
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-lg sm:text-xl font-black text-white leading-tight">Mindy AI is Thinking...</h4>
+                                                        <h4 className="text-lg sm:text-xl font-black text-white leading-tight">Mindy AI Analyzing...</h4>
                                                         <div className="flex gap-1 mt-1.5">
                                                             <div className="w-1.5 h-1.5 rounded-full bg-[#6FBEE5] animate-bounce" />
                                                             <div className="w-1.5 h-1.5 rounded-full bg-[#6FBEE5] animate-bounce [animation-delay:0.2s]" />
@@ -197,13 +207,13 @@ export default function LandingPage() {
                                         <div className="transform rotate-3 hover:rotate-0 transition-all duration-500 translate-x-8 sm:translate-x-12">
                                             <Card className="border-white/10 bg-white/5 backdrop-blur-2xl p-5 md:p-6 rounded-3xl shadow-2xl flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center shrink-0">
-                                                    <Shield className="w-6 h-6 text-indigo-400" />
+                                                    <BarChart3 className="w-6 h-6 text-indigo-400" />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-1">Security Update</p>
-                                                    <p className="text-white text-sm font-bold">Revoke 'UnknownDEX' permissions?</p>
+                                                    <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-1">Recent Activity</p>
+                                                    <p className="text-white text-sm font-bold">15 transactions this week</p>
                                                 </div>
-                                                <Button size="sm" className="bg-white/10 hover:bg-white/20 border-0 text-[10px] h-8 px-4 rounded-xl font-bold">Review</Button>
+                                                <Button size="sm" className="bg-white/10 hover:bg-white/20 border-0 text-[10px] h-8 px-4 rounded-xl font-bold">View All</Button>
                                             </Card>
                                         </div>
                                     </FadeReveal>
@@ -225,7 +235,7 @@ export default function LandingPage() {
 
                             <FadeReveal delay={300} distance={10} direction="none">
                                 <p className="text-white/80 text-lg sm:text-xl mb-12 relative z-10 font-medium max-w-2xl mx-auto">
-                                    Join thousands of users optimizing their Sui assets with AI intelligence. Build your wealth today.
+                                    Experience the power of Gemini 3.0 AI combined with real-time Sui blockchain insights. Transform your financial future today.
                                 </p>
                             </FadeReveal>
 

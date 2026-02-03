@@ -5,7 +5,7 @@ import { processTx, mistToSui, formatSuiAmount } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
-  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell
+  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -15,6 +15,7 @@ import { SuiGraphQLClient } from '@mysten/sui/graphql'
 import { graphql } from '@mysten/sui/graphql/schemas/latest'
 import { Transaction } from '@mysten/sui/transactions'
 import { toBase64 } from '@mysten/sui/utils'
+import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
 
 
@@ -301,7 +302,7 @@ export default function HomePage() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             {/* Left side: Balance + AI Insight */}
             <div className="flex-1">
-              <p className="text-white/70 text-base sm:text-xl font-bold mb-2">Total Balance</p>
+              <p className="text-white text-lg sm:text-3xl font-bold mb-2">Total Balance</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold break-all" style={{ color: "white" }}>
                   {isBalanceLoading ? (
@@ -312,14 +313,27 @@ export default function HomePage() {
                 </h2>
                 {/* AI Insight beside the number */}
                 <div
-                  className="inline-flex flex-col px-5 sm:px-7 py-3 sm:py-5 rounded-xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 cursor-pointer hover:bg-[#6FBEE5]/20 transition-all self-start sm:self-center"
+                  className="group relative overflow-hidden flex items-center justify-between px-8 py-5 rounded-[20px] bg-black/20 border border-white/10 cursor-pointer hover:border-[#6FBEE5]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(111,190,229,0.2)] self-start sm:self-center min-w-[340px] backdrop-blur-md"
                   onClick={insightModal.open}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <Zap className="w-4 h-4 text-[#6FBEE5]" />
-                    <h4 className="text-sm font-semibold text-white">AI Insight</h4>
+                  {/* Hover Gradients */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#6FBEE5]/10 to-[#A890FE]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* Left Side: Icon + Text */}
+                  <div className="relative z-10 flex flex-col gap-1.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(111,190,229,0.3)]">
+                        <MindyAILogo className="w-5 h-5 text-[#6FBEE5] fill-[#6FBEE5]" />
+                      </div>
+                      <h4 className="text-lg font-black text-white tracking-wide">AI Insight</h4>
+                    </div>
+                    <p className="text-sm font-medium text-white/50 group-hover:text-white/80 transition-colors pl-1">Tap for analysis</p>
                   </div>
-                  <p className="text-xs text-white/70">Click for advice</p>
+
+                  {/* Right Side: Arrow Action */}
+                  <div className="relative z-10 w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-[#6FBEE5] group-hover:border-[#6FBEE5] transition-all duration-300 group-hover:rotate-45">
+                    <ArrowUpRight className="w-6 h-6 text-white/60 group-hover:text-white transition-colors" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -647,17 +661,25 @@ export default function HomePage() {
                       )}
                     </div>
                     <div
-                      className={`px-6 py-3 sm:px-8 sm:py-4 rounded-2xl self-start sm:self-center shrink-0 shadow-lg ${balance >= 0 ? "bg-green-500/20 text-green-500 shadow-green-500/10" : "bg-red-500/20 text-red-500 shadow-red-500/10"}`}
+                      className={`px-6 py-3 sm:px-8 sm:py-4 rounded-2xl self-start sm:self-center shrink-0 shadow-lg ${balance > 0 ? "bg-green-500/20 text-green-500 shadow-green-500/10" :
+                        balance < 0 ? "bg-red-500/20 text-red-500 shadow-red-500/10" :
+                          "bg-white/10 text-white shadow-white/5"
+                        }`}
                     >
-                      {balance >= 0 ? (
+                      {balance > 0 ? (
                         <div className="flex items-center gap-2 sm:gap-3">
                           <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5" />
                           <span className="text-base sm:text-xl font-black uppercase tracking-wider">Surplus</span>
                         </div>
-                      ) : (
+                      ) : balance < 0 ? (
                         <div className="flex items-center gap-2 sm:gap-3">
                           <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5 rotate-180" />
                           <span className="text-base sm:text-xl font-black uppercase tracking-wider">Deficit</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <Minus className="w-6 h-6 sm:w-5 sm:h-5" />
+                          <span className="text-base sm:text-xl font-bold uppercase tracking-wider">Balanced</span>
                         </div>
                       )}
                     </div>
@@ -745,7 +767,7 @@ export default function HomePage() {
             <div className="p-6 h-full flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-[#6FBEE5]" />
+                  <MindyAILogo className="w-5 h-5 text-[#6FBEE5]" />
                   <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
                 </div>
                 {mindyMessages.length > 0 && (
@@ -767,7 +789,7 @@ export default function HomePage() {
                   <>
                     <div className="flex gap-2">
                       <div className="w-8 h-8 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0">
-                        <Bot className="w-4 h-4 text-[#6FBEE5]" />
+                        <MindyAILogo className="w-4 h-4 text-[#6FBEE5]" />
                       </div>
                       <div className="bg-white/10 rounded-xl rounded-tl-none px-4 py-3 max-w-[85%]">
                         <p className="text-sm text-white/90">Hello! I&apos;m your AI financial assistant. How can I help you today?</p>
@@ -781,7 +803,7 @@ export default function HomePage() {
                         disabled={isMindyLoading}
                         className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20 disabled:opacity-50"
                       >
-                        <Sparkles className="w-4 h-4" />
+                        <MindyAILogo className="w-4 h-4" />
                         Analyze wallet
                       </button>
                       <button
@@ -854,8 +876,8 @@ export default function HomePage() {
               <div className="mt-auto px-1 pb-1">
                 <div className="max-w-4xl mx-auto w-full relative group">
                   {/* The Liquid Glowing Animated Border Wrap - Smoother Version */}
-                  <div className="absolute -inset-[2px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.2rem] sm:rounded-[3.7rem] opacity-40 blur-xl group-focus-within:opacity-70 transition-all duration-1000 animate-border-flow" />
-                  <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
+                  <div className="absolute -inset-[4px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.2rem] sm:rounded-[3.7rem] opacity-40 blur-xl group-focus-within:opacity-70 transition-all duration-1000 animate-border-flow" />
+                  <div className="absolute -inset-[2px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] via-[#FF3DBC] via-[#00FFD1] via-[#FF3DBC] via-[#A890FE] to-[#6FBEE5] rounded-[2.1rem] sm:rounded-[3.6rem] opacity-100 animate-border-flow" />
 
                   <div className="relative bg-[#050B15] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3.5rem] py-3 px-4 sm:p-6 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] transition-all">
                     <div className="flex flex-col gap-3">
@@ -871,7 +893,7 @@ export default function HomePage() {
                         disabled={isMindyLoading}
                         placeholder="Ask Mindy AI anything..."
                         rows={1}
-                        className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-base py-1 px-1 font-normal leading-relaxed scrollbar-none disabled:opacity-50"
+                        className="w-full bg-transparent text-white placeholder:text-white/20 focus:outline-none resize-none text-lg py-1 px-1 font-normal leading-relaxed scrollbar-none disabled:opacity-50"
                       />
 
                       <div className="flex items-center justify-end">
@@ -881,7 +903,7 @@ export default function HomePage() {
                           className={`cursor-pointer w-11 h-11 rounded-full flex items-center justify-center text-white transition-all duration-300 ${isMindyLoading
                             ? "bg-white/10 scale-100 opacity-100 cursor-wait"
                             : mindyInput.trim()
-                              ? "bg-[#A890FE] opacity-100 scale-100 shadow-[0_0_20px_rgba(168,144,254,0.4)]"
+                              ? "bg-gradient-to-r from-[#3B82F6] to-[#9333EA] opacity-100 scale-100 shadow-[0_0_10px_rgba(147,51,234,0.3)]"
                               : "bg-white/5 opacity-0 scale-50 pointer-events-none"
                             }`}
                         >
@@ -905,7 +927,7 @@ export default function HomePage() {
         <Card className="border-white/20 backdrop-blur-xl bg-white/5">
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <Zap className="w-6 h-6 text-[#6FBEE5]" />
+              <MindyAILogo className="w-6 h-6 text-[#6FBEE5]" />
               <h3 className="text-xl font-semibold" style={{ color: "white" }}>AI-Powered Suggestions</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -948,191 +970,217 @@ export default function HomePage() {
       </div>
       {/* AI Insight Modal */}
       {insightModal.isOpen && (
-        <div className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 ${insightModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <Card className={`bg-[#111] border-white/20 p-6 rounded-2xl text-white w-full max-w-md shadow-2xl transition-all duration-300 ${insightModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"} animate-in fade-in zoom-in duration-200`}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-[#6FBEE5]" />
-                <h2 className="text-xl font-bold">AI Financial Insight</h2>
+        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${insightModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <div className={`relative w-full max-w-lg group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${insightModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
+            {/* Glowing Border Background */}
+            <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
+
+            <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
+
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                      <Zap className="w-6 h-6 text-[#6FBEE5]" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-black tracking-tight">AI Insight</h2>
+                      <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">Smart Analysis</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={insightModal.close}
+                    className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors text-white/30 hover:text-white"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/5 mb-8">
+                  <p className="text-white/80 leading-relaxed text-lg font-medium">
+                    Based on your current cashflow, we suggest diversifying into <span className="text-[#6FBEE5] font-bold">Sui-native liquid staking protocols</span>. You could potentially increase your passive income by <span className="text-green-400 font-bold">8-12% annually</span>.
+                  </p>
+                </div>
+
+                <Button
+                  className="w-full bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white py-6 rounded-xl font-black shadow-lg shadow-[#3B82F6]/20 border border-white/10 uppercase tracking-widest text-xs"
+                  onClick={insightModal.close}
+                >
+                  Action Plan
+                </Button>
               </div>
-              <button
-                onClick={insightModal.close}
-                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors text-white/30 hover:text-white"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <p className="text-white/70 leading-relaxed mb-6">
-              Based on your current cashflow, we suggest diversifying into Sui-native liquid staking protocols. You could potentially increase your passive income by 8-12% annually.
-            </p>
-            <Button
-              className="w-full bg-[#6FBEE5] hover:bg-[#5DAED5] text-white py-6 rounded-xl font-bold shadow-lg shadow-[#6FBEE5]/20"
-              onClick={insightModal.close}
-            >
-              Got it, thanks!
-            </Button>
-          </Card>
+            </Card>
+          </div>
         </div>
       )}
 
       {/* Salary Edit Modal */}
       {salaryModal.isOpen && (
-        <div className={`fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${salaryModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <Card className={`relative overflow-hidden bg-[#0A0A0B] border border-[#1A1A1B] p-0 rounded-[32px] text-white w-full max-w-xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${salaryModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
-            {/* Top Accent Line */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
+        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${salaryModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <div className={`relative w-full max-w-xl group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${salaryModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
+            {/* Glowing Border Background */}
+            <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
 
-            <div className="p-10 md:p-12">
-              <div className="flex items-center justify-between mb-12">
-                <div className="flex items-center gap-5">
-                  <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-                    <Pencil className="w-8 h-8 text-[#6FBEE5]" />
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-black tracking-tight">Edit Salary</h2>
-                    <p className="text-white/40 text-xs uppercase tracking-[0.3em] font-black mt-1.5 text-[10px]">Income Configuration</p>
-                  </div>
-                </div>
-                <button
-                  onClick={salaryModal.close}
-                  className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
-                >
-                  <X className="w-7 h-7" />
-                </button>
-              </div>
+            <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
+              {/* Top Accent Line */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
 
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1">Active Income</label>
-                  <div className="relative group">
-                    <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
-                    <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-xl px-4 py-4 group-focus-within:border-[#6FBEE5]/50 transition-all">
-                      <span className="text-xl font-bold text-[#6FBEE5] mr-2">$</span>
-                      <input
-                        type="number"
-                        placeholder="0.00"
-                        value={activeSalary}
-                        onFocus={(e) => {
-                          if (activeSalary === "0.00") setActiveSalary("");
-                        }}
-                        onBlur={(e) => {
-                          if (e.target.value === "") setActiveSalary("0.00");
-                        }}
-                        onChange={(e) => setActiveSalary(e.target.value)}
-                        className={`bg-transparent border-none text-xl font-bold focus:outline-none w-full placeholder:text-white/10 ${activeSalary === "0.00" ? "text-white/30" : "text-white"}`}
-                      />
+              <div className="p-10 md:p-12">
+                <div className="flex items-center justify-between mb-12">
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                      <Pencil className="w-8 h-8 text-[#6FBEE5]" />
+                    </div>
+                    <div>
+                      <h2 className="text-3xl font-black tracking-tight">Edit Salary</h2>
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1">Passive Income</label>
-                  <div className="relative group">
-                    <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
-                    <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-xl px-4 py-4 group-focus-within:border-[#6FBEE5]/50 transition-all">
-                      <span className="text-xl font-bold text-[#6FBEE5] mr-2">$</span>
-                      <input
-                        type="number"
-                        placeholder="0.00"
-                        value={passiveSalary}
-                        onFocus={(e) => {
-                          if (passiveSalary === "0.00") setPassiveSalary("");
-                        }}
-                        onBlur={(e) => {
-                          if (e.target.value === "") setPassiveSalary("0.00");
-                        }}
-                        onChange={(e) => setPassiveSalary(e.target.value)}
-                        className={`bg-transparent border-none text-xl font-bold focus:outline-none w-full placeholder:text-white/10 ${passiveSalary === "0.00" ? "text-white/30" : "text-white"}`}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-10 pt-8 border-t border-white/5">
-                <div className="flex items-end justify-between mb-8 px-1">
-                  <span className="text-white/30 text-xs font-bold uppercase tracking-widest pb-1">Total Monthly</span>
-                  <span className="text-3xl font-black text-white">
-                    ${(Number(activeSalary) + Number(passiveSalary)).toLocaleString()}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    variant="ghost"
-                    className="py-6 rounded-xl border border-white/5 text-white/60 hover:text-white hover:bg-white/5 h-auto text-xs font-bold uppercase tracking-widest"
+                  <button
                     onClick={salaryModal.close}
+                    className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
                   >
-                    Discard
-                  </Button>
-                  <Button
-                    className="py-6 rounded-xl bg-[#6FBEE5] hover:bg-[#5DAED5] text-black font-black h-auto text-xs uppercase tracking-widest shadow-xl shadow-[#6FBEE5]/10"
-                    onClick={() => {
-                      setSalary((Number(activeSalary) + Number(passiveSalary)).toString())
-                      salaryModal.close()
-                    }}
-                  >
-                    Apply
-                  </Button>
+                    <X className="w-7 h-7" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Active Income</label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
+                      <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-2xl px-5 py-6 group-focus-within:border-[#6FBEE5]/50 transition-all">
+                        <span className="text-2xl font-bold text-[#6FBEE5] mr-3">$</span>
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          value={activeSalary}
+                          onFocus={(e) => {
+                            if (activeSalary === "0.00") setActiveSalary("");
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === "") setActiveSalary("0.00");
+                          }}
+                          onChange={(e) => setActiveSalary(e.target.value)}
+                          className={`bg-transparent border-none text-2xl font-bold focus:outline-none w-full placeholder:text-white/10 ${activeSalary === "0.00" ? "text-white/30" : "text-white"}`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Passive Income</label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
+                      <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-2xl px-5 py-6 group-focus-within:border-[#6FBEE5]/50 transition-all">
+                        <span className="text-2xl font-bold text-[#6FBEE5] mr-3">$</span>
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          value={passiveSalary}
+                          onFocus={(e) => {
+                            if (passiveSalary === "0.00") setPassiveSalary("");
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === "") setPassiveSalary("0.00");
+                          }}
+                          onChange={(e) => setPassiveSalary(e.target.value)}
+                          className={`bg-transparent border-none text-2xl font-bold focus:outline-none w-full placeholder:text-white/10 ${passiveSalary === "0.00" ? "text-white/30" : "text-white"}`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-10 pt-8 border-t border-white/5">
+                  <div className="flex items-end justify-between mb-8 px-1">
+                    <span className="text-white text-xs font-bold uppercase tracking-widest pb-1">Total Monthly</span>
+                    <span className="text-3xl font-black text-white">
+                      ${(Number(activeSalary) + Number(passiveSalary)).toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      variant="ghost"
+                      className="py-6 rounded-xl border border-white/50 text-white/60 hover:text-white hover:bg-white/5 h-auto text-xs font-bold uppercase tracking-widest"
+                      onClick={salaryModal.close}
+                    >
+                      Discard
+                    </Button>
+                    <Button
+                      className="py-6 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white font-black h-auto text-xs uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20 border border-white/10"
+                      onClick={() => {
+                        setSalary((Number(activeSalary) + Number(passiveSalary)).toString())
+                        salaryModal.close()
+                      }}
+                    >
+                      Apply
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
       )}
       {/* Expenses Breakdown Modal */}
       {expensesModal.isOpen && (
-        <div className={`fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <Card className={`relative overflow-hidden bg-[#0A0A0B] border border-[#1A1A1B] p-0 rounded-[32px] text-white w-full max-w-xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${expensesModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
+        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+          <div className={`relative w-full max-w-xl group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${expensesModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
+            {/* Glowing Border Background */}
+            <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
 
-            <div className="p-10 md:p-12">
-              <div className="flex items-center justify-between mb-12">
-                <div className="flex items-center gap-5">
-                  <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-                    <Eye className="w-8 h-8 text-[#6FBEE5]" />
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-black tracking-tight">Expenses</h2>
-                    <p className="text-white/40 text-xs uppercase tracking-[0.3em] font-black mt-1.5 text-[10px]">Spending Insights</p>
-                  </div>
-                </div>
-                <button
-                  onClick={expensesModal.close}
-                  className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
-                >
-                  <X className="w-7 h-7" />
-                </button>
-              </div>
+            <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
 
-              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-8">
-                {expenseCategories.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-6 rounded-[24px] bg-[#141415] border border-white/5 hover:border-[#6FBEE5]/30 hover:bg-white/[0.02] transition-all group">
-                    <div className="flex items-center gap-6">
-                      <p className="text-lg font-bold text-white group-hover:text-[#6FBEE5] transition-colors">{item.name}</p>
+              <div className="p-10 md:p-12">
+                <div className="flex items-center justify-between mb-12">
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                      <Eye className="w-8 h-8 text-[#6FBEE5]" />
                     </div>
-                    <span className="text-2xl font-black text-white tracking-tight">$ {Number(item.amount).toLocaleString()}</span>
+                    <div>
+                      <h2 className="text-3xl font-black tracking-tight">Expenses</h2>
+                    </div>
                   </div>
-                ))}
-              </div>
-
-              <div className="pt-8 border-t border-white/5">
-                <div className="flex items-end justify-between mb-8 px-1">
-                  <span className="text-white/30 text-xs font-bold uppercase tracking-widest pb-1">Total Spending</span>
-                  <span className="text-3xl font-black text-white">
-                    ${expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0).toLocaleString()}
-                  </span>
+                  <button
+                    onClick={expensesModal.close}
+                    className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
+                  >
+                    <X className="w-7 h-7" />
+                  </button>
                 </div>
 
-                <Button
-                  className="w-full bg-white/5 hover:bg-white/10 text-white py-6 rounded-xl font-bold border border-white/5 shadow-xl h-auto text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
-                  onClick={expensesModal.close}
-                >
-                  Dismiss
-                </Button>
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-8">
+                  {expenseCategories.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between p-6 rounded-[24px] bg-[#141415] border border-white/5 hover:border-[#6FBEE5]/30 hover:bg-white/[0.02] transition-all group">
+                      <div className="flex items-center gap-6">
+                        <p className="text-lg font-bold text-white group-hover:text-[#6FBEE5] transition-colors">{item.name}</p>
+                      </div>
+                      <span className="text-2xl font-black text-white tracking-tight">$ {Number(item.amount).toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-8 border-t border-white/5">
+                  <div className="flex items-end justify-between mb-8 px-1">
+                    <span className="text-white text-xs font-bold uppercase tracking-widest pb-1">Total Spending</span>
+                    <span className="text-3xl font-black text-white">
+                      ${expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0).toLocaleString()}
+                    </span>
+                  </div>
+
+                  <Button
+                    className="w-full bg-white/5 hover:bg-white/10 text-white py-6 rounded-xl font-bold border border-white/5 shadow-xl h-auto text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
+                    onClick={expensesModal.close}
+                  >
+                    Dismiss
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
       )}
     </div>

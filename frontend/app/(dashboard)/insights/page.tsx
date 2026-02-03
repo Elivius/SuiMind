@@ -5,6 +5,7 @@ import { Button, Card, Skeleton } from "@/components/ui"
 import { useRouter } from "next/navigation"
 import { useInsightsData } from "@/hooks"
 import { ExpensesPieChart, CashflowChart } from "@/components/insightsChart"
+import { MindyAILogo } from "@/components/icons"
 
 export default function InsightsPage() {
     const router = useRouter()
@@ -137,8 +138,8 @@ export default function InsightsPage() {
                         {/* Interactive Icon Orb */}
                         <div className="relative shrink-0 animate-bounce-subtle">
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6FBEE5] to-[#A890FE] blur-xl opacity-40 animate-pulse" />
-                            <div className="relative w-16 h-16 rounded-[22px] bg-gradient-to-br from-[#6FBEE5] via-[#4A9FD8] to-[#A890FE] flex items-center justify-center border border-white/20 shadow-2xl">
-                                <Sparkles className="w-8 h-8 text-white" />
+                            <div className="relative w-16 h-16 rounded-[22px] bg-gradient-to-br from-[#6FBEE5]/20 via-[#4A9FD8]/20 to-[#A890FE]/20 flex items-center justify-center border border-white/20 shadow-2xl">
+                                <MindyAILogo className="w-8 h-8 text-white" />
                             </div>
                         </div>
 
@@ -155,7 +156,7 @@ export default function InsightsPage() {
                             <div className="flex flex-wrap items-center gap-4 pt-2">
                                 <Button
                                     onClick={() => router.push('/mindy-ai')}
-                                    className="h-16 px-12 text-lg bg-gradient-to-r from-[#6FBEE5] to-[#A890FE] hover:from-[#A890FE] hover:to-[#6FBEE5] text-white font-black rounded-[20px] shadow-xl shadow-[#6FBEE5]/20 border border-white/20 transition-all hover:scale-105 active:scale-95 group/btn"
+                                    className="h-16 px-12 text-lg bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white font-black rounded-[20px] shadow-xl shadow-[#3B82F6]/20 border border-white/20 transition-all hover:scale-105 active:scale-95 group/btn"
                                 >
                                     View Opportunity
                                     <ArrowUpRight className="ml-3 w-6 h-6 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
