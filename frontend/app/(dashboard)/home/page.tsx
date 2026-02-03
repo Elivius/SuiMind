@@ -186,20 +186,20 @@ export default function HomePage() {
     return () => window.removeEventListener('PAY_REQUEST', handlePayFromHeader);
   }, []);
 
-  useEffect(() => {
-    const handleIncomingPaymentRequest = (event: any) => {
-      const requestData = event.detail;
+  // useEffect(() => {
+  //   const handleIncomingPaymentRequest = (event: any) => {
+  //     const requestData = event.detail;
 
-      setRecipient(requestData.requester);
-      setAmount(requestData.amountSui.toString());
-      setShowSendUI(true); 
-    };
-    window.addEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
+  //     setRecipient(requestData.requester);
+  //     setAmount(requestData.amountSui.toString());
+  //     setShowSendUI(true); 
+  //   };
+  //   window.addEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
 
-    return () => {
-      window.removeEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
+  //   };
+  // }, []);
 
   useEffect(() => {
     const handleRejectRequest = async (event: any) => {
