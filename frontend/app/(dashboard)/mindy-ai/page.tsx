@@ -18,7 +18,7 @@ import {
     Bot
 } from "lucide-react"
 import { Card } from "@/components/ui"
-import { useMindyAgent } from "@/hooks/useMindyAgent"
+import { useMindyAgent } from "@/hooks"
 import ReactMarkdown from "react-markdown"
 
 const QUICK_ACTIONS = [

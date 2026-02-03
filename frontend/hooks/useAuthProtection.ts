@@ -1,3 +1,5 @@
+// Use to protect auth - Prevent user from accessing protected routes (dashboard) if not connected
+
 "use client"
 
 import { useEffect, useState } from "react"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuthProtection } from "@/hooks/useAuthProtection"
+import { useAuthProtection } from "@/hooks"
 import { LoadingScreen } from "@/components/layout"
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {

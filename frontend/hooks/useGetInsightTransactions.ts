@@ -1,4 +1,5 @@
 // Paginated transaction fetching for insights - fetches until 6-month boundary
+
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { graphql } from '@mysten/sui/graphql/schemas/latest'
