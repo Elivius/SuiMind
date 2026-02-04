@@ -244,6 +244,69 @@ export default function HomePage() {
     window.addEventListener('REJECT_REQUEST', handleRejectRequest);
     return () => window.removeEventListener('REJECT_REQUEST', handleRejectRequest);
   }, [account, signTransaction, gqlClient, refetch]);
+
+  useEffect(() => {
+  const handleClearPaid = async (event: any) => {
+    const objectId = event.detail;
+    if (!account) return;
+
+    setIsSending(true);
+    try {
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${PACKAGE_ID}::request::delete_paid`, 
+        arguments: [tx.object(objectId)],
+      });
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+      await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: { transactionDataBcs: bytes, signatures: [signature] },
+      });
+
+      await onTransactionSuccess(); 
+    } catch (e) {
+      console.error("Failed to clear notification:", e);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  window.addEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
+  return () => window.removeEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid); 
+  }, [account, signTransaction, onTransactionSuccess]);
+
+
+useEffect(() => {
+  const handleClearReject = async (event: any) => {
+    const objectId = event.detail;
+    if (!account) return;
+
+    setIsSending(true);
+    try {
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${PACKAGE_ID}::request::delete_reject`, 
+        arguments: [tx.object(objectId)],
+      });
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+      await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: { transactionDataBcs: bytes, signatures: [signature] },
+      });
+
+      await onTransactionSuccess();
+    } catch (e) {
+      console.error("Failed to clear rejection:", e);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  window.addEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
+  return () => window.removeEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
+}, [account, signTransaction, onTransactionSuccess]);
   
 
 

@@ -128,12 +128,23 @@ module transaction::request {
     }
 
     public fun delete_paid(noti: PaidNotification){
-        let PaidNotification {id, amount, paid_by, request_code,} = noti;
+        let PaidNotification { 
+            id, 
+            amount: _, 
+            paid_by: _, 
+            request_code: _ 
+        } = noti;
         object::delete(id);
     }
 
     public fun delete_reject(rej: RejectedPayment){
-        let RejectedPayment {id,recipient,amount,request_code,expiration,}= rej;
+        let RejectedPayment { 
+            id, 
+            original_request_id: _, 
+            rejected_by: _, 
+            amount: _, 
+            request_code: _ 
+        } = rej;
         object::delete(id);
     }
 }
