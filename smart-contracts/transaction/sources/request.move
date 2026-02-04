@@ -127,7 +127,13 @@ module transaction::request {
         transfer::public_transfer(rejected_obj, requester);
     }
 
-    public fun delete_object<T: key + store>(obj: T){
-        let id = object::id(&obj);
+    public fun delete_paid(noti: PaidNotification){
+        let PaidNotification {id, amount, paid_by, request_code,} = noti;
+        object::delete(id);
+    }
+
+    public fun delete_reject(rej: RejectedPayment){
+        let RejectedPayment {id,recipient,amount,request_code,expiration,}= rej;
+        object::delete(id);
     }
 }
