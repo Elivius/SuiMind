@@ -43,8 +43,8 @@ export function FadeReveal({
                 }
             },
             {
-                threshold: 0.1,
-                rootMargin: "-20px 0px -20px 0px"
+                threshold: 0.05, // Slightly lower threshold for better responsiveness
+                rootMargin: "0px" // Using 0px to prevent flickering near viewport edges
             }
         )
 
@@ -61,23 +61,25 @@ export function FadeReveal({
     }
 
     return (
-        <div
-            ref={ref}
-            style={{
-                transitionDelay: isVisible ? `${delay}ms` : "0ms",
-                transitionDuration: `${duration}ms`,
-                transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
-                opacity: isVisible ? 1 : 0,
-                transform: isVisible
-                    ? "translate3d(0, 0, 0) scale(1)"
-                    : `${transformMap[direction]} scale(${scale})`,
-                filter: blur ? (isVisible ? "none" : "blur(8px)") : "none",
-                WebkitBackfaceVisibility: "hidden",
-                backfaceVisibility: "hidden"
-            }}
-            className="transition-all"
-        >
-            {children}
+        <div ref={ref} className="w-full h-full transition-none">
+            <div
+                style={{
+                    transitionDelay: isVisible ? `${delay}ms` : "0ms",
+                    transitionDuration: `${duration}ms`,
+                    transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+                    opacity: isVisible ? 1 : 0,
+                    transform: isVisible
+                        ? "translate3d(0, 0, 0) scale(1)"
+                        : `${transformMap[direction]} scale(${scale})`,
+                    filter: blur && !isVisible ? "blur(8px)" : "none",
+                    WebkitBackfaceVisibility: "hidden",
+                    backfaceVisibility: "hidden",
+                    willChange: "transform, opacity, filter"
+                }}
+                className="transition-all w-full h-full"
+            >
+                {children}
+            </div>
         </div>
     )
 }
