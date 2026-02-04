@@ -18,6 +18,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
 import { PACKAGE_ID } from "@/lib/config";
 
@@ -194,7 +195,7 @@ export default function HomePage() {
   useEffect(() => {
     const handleRejectRequest = async (event: any) => {
       const requestId = event.detail;
-      
+
       if (!account) {
         alert("Please connect your wallet first.");
         return;
@@ -219,7 +220,7 @@ export default function HomePage() {
           },
         });
 
-        
+
 
         const execution: any = result.data?.executeTransaction;
         const statusObj = execution?.effects?.status;
@@ -229,7 +230,7 @@ export default function HomePage() {
         if (isSuccess) {
           await onTransactionSuccess();
           alert("Request rejected successfully.");
-          refetch(); 
+          refetch();
         } else {
           const detail = statusObj?.error || "Check console for details";
           alert(`Rejection failed: ${detail}`);
@@ -247,68 +248,68 @@ export default function HomePage() {
   }, [account, signTransaction, gqlClient, refetch]);
 
   useEffect(() => {
-  const handleClearPaid = async (event: any) => {
-    const objectId = event.detail;
-    if (!account) return;
+    const handleClearPaid = async (event: any) => {
+      const objectId = event.detail;
+      if (!account) return;
 
-    setIsSending(true);
-    try {
-      const tx = new Transaction();
-      tx.moveCall({
-        target: `${PACKAGE_ID}::request::delete_paid`, 
-        arguments: [tx.object(objectId)],
-      });
+      setIsSending(true);
+      try {
+        const tx = new Transaction();
+        tx.moveCall({
+          target: `${PACKAGE_ID}::request::delete_paid`,
+          arguments: [tx.object(objectId)],
+        });
 
-      const { bytes, signature } = await signTransaction({ transaction: tx });
-      await gqlClient.query({
-        query: EXECUTE_TRANSACTION,
-        variables: { transactionDataBcs: bytes, signatures: [signature] },
-      });
+        const { bytes, signature } = await signTransaction({ transaction: tx });
+        await gqlClient.query({
+          query: EXECUTE_TRANSACTION,
+          variables: { transactionDataBcs: bytes, signatures: [signature] },
+        });
 
-      await onTransactionSuccess(); 
-    } catch (e) {
-      console.error("Failed to clear notification:", e);
-    } finally {
-      setIsSending(false);
-    }
-  };
+        await onTransactionSuccess();
+      } catch (e) {
+        console.error("Failed to clear notification:", e);
+      } finally {
+        setIsSending(false);
+      }
+    };
 
-  window.addEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
-  return () => window.removeEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid); 
+    window.addEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
+    return () => window.removeEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
   }, [account, signTransaction, onTransactionSuccess]);
 
 
-useEffect(() => {
-  const handleClearReject = async (event: any) => {
-    const objectId = event.detail;
-    if (!account) return;
+  useEffect(() => {
+    const handleClearReject = async (event: any) => {
+      const objectId = event.detail;
+      if (!account) return;
 
-    setIsSending(true);
-    try {
-      const tx = new Transaction();
-      tx.moveCall({
-        target: `${PACKAGE_ID}::request::delete_reject`, 
-        arguments: [tx.object(objectId)],
-      });
+      setIsSending(true);
+      try {
+        const tx = new Transaction();
+        tx.moveCall({
+          target: `${PACKAGE_ID}::request::delete_reject`,
+          arguments: [tx.object(objectId)],
+        });
 
-      const { bytes, signature } = await signTransaction({ transaction: tx });
-      await gqlClient.query({
-        query: EXECUTE_TRANSACTION,
-        variables: { transactionDataBcs: bytes, signatures: [signature] },
-      });
+        const { bytes, signature } = await signTransaction({ transaction: tx });
+        await gqlClient.query({
+          query: EXECUTE_TRANSACTION,
+          variables: { transactionDataBcs: bytes, signatures: [signature] },
+        });
 
-      await onTransactionSuccess();
-    } catch (e) {
-      console.error("Failed to clear rejection:", e);
-    } finally {
-      setIsSending(false);
-    }
-  };
+        await onTransactionSuccess();
+      } catch (e) {
+        console.error("Failed to clear rejection:", e);
+      } finally {
+        setIsSending(false);
+      }
+    };
 
-  window.addEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
-  return () => window.removeEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
-}, [account, signTransaction, onTransactionSuccess]);
-  
+    window.addEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
+    return () => window.removeEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
+  }, [account, signTransaction, onTransactionSuccess]);
+
 
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
@@ -965,12 +966,19 @@ useEffect(() => {
                           }`}>
                           <div className="text-sm leading-relaxed break-words">
                             <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
                               components={{
                                 p: ({ node: _node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                                 strong: ({ node: _node, ...props }) => <span className="font-bold text-white" {...props} />,
                                 ul: ({ node: _node, ...props }) => <ul className="list-disc ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                 ol: ({ node: _node, ...props }) => <ol className="list-decimal ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                 li: ({ node: _node, ...props }) => <li {...props} />,
+                                table: ({ node: _node, ...props }) => <div className="overflow-x-auto my-4"><table className="w-full border-collapse border border-white/20 text-sm" {...props} /></div>,
+                                thead: ({ node: _node, ...props }) => <thead className="bg-white/10" {...props} />,
+                                tbody: ({ node: _node, ...props }) => <tbody {...props} />,
+                                tr: ({ node: _node, ...props }) => <tr className="border-b border-white/10 last:border-0" {...props} />,
+                                th: ({ node: _node, ...props }) => <th className="px-4 py-2 text-left font-bold text-white border-r border-white/10 last:border-0" {...props} />,
+                                td: ({ node: _node, ...props }) => <td className="px-4 py-2 text-white/80 border-r border-white/10 last:border-0" {...props} />,
                                 a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
                                 hr: ({ node: _node, ...props }) => <hr className="my-4 border-t border-white/60" {...props} /> // Subtle spacer line
                               }}
