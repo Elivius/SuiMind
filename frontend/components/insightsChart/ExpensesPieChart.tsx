@@ -3,6 +3,7 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts"
 import { Skeleton } from "@/components/ui"
 import type { ExpensesPieChartProps } from "@/types/insights"
+import { truncateAddress } from "@/lib/utils"
 
 const CHART_GRADIENT_COLORS = Array.from({ length: 20 }, (_, i) => `url(#grad${i + 1})`)
 
@@ -36,9 +37,6 @@ const renderCustomizedLabel = (props: any) => {
     const ey = my
     const textAnchor = cos >= 0 ? "start" : "end"
 
-    // Truncate name if it's a long address
-    const displayName = name.length > 12 ? `${name.substring(0, 6)}...${name.substring(name.length - 4)}` : name
-
     return (
         <g>
             <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke="rgba(255,255,255,0.2)" fill="none" strokeWidth={1} />
@@ -50,7 +48,7 @@ const renderCustomizedLabel = (props: any) => {
                 fill="white"
                 className="font-bold text-[11px]"
             >
-                {displayName}
+                {truncateAddress(name)}
             </text>
             <text
                 x={ex + (cos >= 0 ? 1 : -1) * 8}
