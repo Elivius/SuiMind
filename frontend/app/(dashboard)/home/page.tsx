@@ -5,7 +5,8 @@ import { processTx, mistToSui, formatSuiAmount } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
-  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus
+  Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus,
+  Wallet
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -346,8 +347,8 @@ export default function HomePage() {
                   {/* Left Side: Icon + Text */}
                   <div className="relative z-10 flex flex-col gap-1.5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#6FBEE5]/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(111,190,229,0.3)]">
-                        <MindyAILogo className="w-5 h-5 text-[#6FBEE5] fill-[#6FBEE5]" />
+                      <div className="bg-transparent w-15 h-15 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <MindyAILogo className="w-15 h-15 text-[#6FBEE5]" />
                       </div>
                       <h4 className="text-lg font-black text-white tracking-wide">AI Insight</h4>
                     </div>
@@ -788,10 +789,10 @@ export default function HomePage() {
         {/* Mindy AI */}
         <div className="xl:col-span-1">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden lg:h-[70vh]">
-            <div className="p-6 h-full flex flex-col">
+            <div className="p-4 h-full flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <MindyAILogo className="w-5 h-5 text-[#6FBEE5]" />
+                  <MindyAILogo className="w-15 h-15 text-[#6FBEE5]" />
                   <h3 className="text-3xl font-bold text-white">Mindy AI</h3>
                 </div>
                 {mindyMessages.length > 0 && (
@@ -801,7 +802,7 @@ export default function HomePage() {
                     className="p-2 rounded-full hover:bg-white/10 text-white/30 hover:text-red-400 transition-all disabled:opacity-50"
                     title="New Chat"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-6 h-6" />
                   </button>
                 )}
               </div>
@@ -812,8 +813,8 @@ export default function HomePage() {
                 {mindyMessages.length === 0 ? (
                   <>
                     <div className="flex gap-2">
-                      <div className="w-8 h-8 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0">
-                        <MindyAILogo className="w-4 h-4 text-[#6FBEE5]" />
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                        <MindyAILogo className="w-8 h-8 text-[#6FBEE5]" />
                       </div>
                       <div className="bg-white/10 rounded-xl rounded-tl-none px-4 py-3 max-w-[85%]">
                         <p className="text-sm text-white/90">Hello! I&apos;m your AI financial assistant. How can I help you today?</p>
@@ -827,7 +828,7 @@ export default function HomePage() {
                         disabled={isMindyLoading}
                         className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20 disabled:opacity-50"
                       >
-                        <MindyAILogo className="w-4 h-4" />
+                        <Wallet className="w-4 h-4" />
                         Analyze wallet
                       </button>
                       <button
@@ -852,8 +853,8 @@ export default function HomePage() {
                   <>
                     {mindyMessages.map((msg, idx) => (
                       <div key={idx} className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
-                          {msg.role === 'mindy' ? <Bot className="w-4 h-4 text-[#6FBEE5]" /> : <Users className="w-4 h-4 text-purple-300" />}
+                        <div className={`bg-transparent w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
+                          {msg.role === 'mindy' ? <MindyAILogo className="w-8 h-8 text-[#6FBEE5]" /> : <Users className="w-4 h-4 text-purple-300" />}
                         </div>
                         <div className={`px-4 py-3 max-w-[85%] border shadow-lg ${msg.role === 'mindy'
                           ? 'bg-white/10 rounded-xl rounded-tl-none border-white/5 text-white/90'
@@ -879,8 +880,8 @@ export default function HomePage() {
 
                     {isMindyLoading && (
                       <div className="flex gap-2">
-                        <div className="w-8 h-8 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0 border border-[#6FBEE5]/30">
-                          <Bot className="w-4 h-4 text-[#6FBEE5]" />
+                        <div className="bg-transparent w-8 h-8 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0">
+                          <MindyAILogo className="w-8 h-8 text-[#6FBEE5]" />
                         </div>
                         <div className="bg-white/10 rounded-xl rounded-tl-none px-4 py-3 border border-white/5">
                           <div className="flex space-x-2">

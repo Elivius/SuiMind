@@ -101,7 +101,10 @@ export default function MindyAIPage() {
     }
 
     return (
-        <div className="w-full mx-auto px-4 sm:px-6 py-4 h-[calc(100vh-100px)] flex flex-col relative overflow-hidden">
+        <div className={`w-full mx-auto px-4 sm:px-6 pb-4 flex flex-col relative overflow-hidden transition-all duration-700 ease-in-out ${hasMindyMessages
+            ? "pt-7 h-[calc(100vh-60px)]"
+            : "pt-1 h-[calc(100vh-140px)]"
+            }`}>
             <div className="flex-1 flex flex-col relative z-10 max-w-6xl mx-auto w-full min-h-0">
 
                 {!hasMindyMessages ? (
@@ -119,7 +122,7 @@ export default function MindyAIPage() {
                                         onClick={() => sendMindyMessage(action.prompt)}
                                         className={`flex items-center gap-4 sm:gap-6 px-6 sm:px-8 py-6 sm:py-8 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-gradient-to-r ${action.gradient} transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white font-semibold text-center shadow-2xl backdrop-blur-3xl group ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
                                     >
-                                        <div className="group-hover:scale-500 group-hover:rotate-[-20deg] transition-all duration-500">
+                                        <div className="group-hover:scale-400 group-hover:rotate-[-15deg] transition-all duration-500">
                                             {action.icon}
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -137,8 +140,8 @@ export default function MindyAIPage() {
                             <div className="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
                                 {mindyMessages.map((msg, idx) => (
                                     <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
-                                            {msg.role === 'mindy' ? <MindyAILogo className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" /> : <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />}
+                                        <div className={`bg-transparent w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
+                                            {msg.role === 'mindy' ? <MindyAILogo className="w-8 h-8 sm:w-10 sm:h-10 text-[#6FBEE5]" /> : <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />}
                                         </div>
                                         <div className={`px-4 sm:px-5 py-3 sm:py-4 max-w-[85%] sm:max-w-[80%] border shadow-xl ${msg.role === 'mindy'
                                             ? 'bg-white/10 rounded-2xl rounded-tl-none border-white/5 text-white/90'
@@ -164,8 +167,8 @@ export default function MindyAIPage() {
 
                                 {isMindyLoading && (
                                     <div className="flex gap-4">
-                                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0 border border-[#6FBEE5]/30">
-                                            <MindyAILogo className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" />
+                                        <div className="bg-transparent w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0">
+                                            <MindyAILogo className="w-8 h-8 sm:w-10 sm:h-10 text-[#6FBEE5]" />
                                         </div>
                                         <div className="bg-white/10 rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 border border-white/5">
                                             <div className="flex space-x-2">

@@ -23,6 +23,48 @@ const CHART_TOOLTIP_STYLE = {
     padding: "12px 16px",
 }
 
+const renderCustomizedLabel = (props: any) => {
+    const { cx, cy, midAngle, outerRadius, value, name } = props
+    const RADIAN = Math.PI / 180
+    const sin = Math.sin(-RADIAN * midAngle)
+    const cos = Math.cos(-RADIAN * midAngle)
+    const sx = cx + (outerRadius + 5) * cos
+    const sy = cy + (outerRadius + 5) * sin
+    const mx = cx + (outerRadius + 25) * cos
+    const my = cy + (outerRadius + 25) * sin
+    const ex = mx + (cos >= 0 ? 1 : -1) * 25
+    const ey = my
+    const textAnchor = cos >= 0 ? "start" : "end"
+
+    // Truncate name if it's a long address
+    const displayName = name.length > 12 ? `${name.substring(0, 6)}...${name.substring(name.length - 4)}` : name
+
+    return (
+        <g>
+            <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke="rgba(255,255,255,0.2)" fill="none" strokeWidth={1} />
+            <circle cx={ex} cy={ey} r={2} fill="rgba(255,255,255,0.5)" stroke="none" />
+            <text
+                x={ex + (cos >= 0 ? 1 : -1) * 8}
+                y={ey - 9}
+                textAnchor={textAnchor}
+                fill="white"
+                className="font-bold text-[11px]"
+            >
+                {displayName}
+            </text>
+            <text
+                x={ex + (cos >= 0 ? 1 : -1) * 8}
+                y={ey + 9}
+                textAnchor={textAnchor}
+                fill="#6FBEE5"
+                className="font-black text-[10px] tracking-tight"
+            >
+                {`${value.toFixed(4)} SUI`}
+            </text>
+        </g>
+    )
+}
+
 export function ExpensesPieChart({ data, isLoading }: ExpensesPieChartProps) {
     const total = data.reduce((acc, curr) => acc + curr.value, 0)
 
@@ -31,7 +73,7 @@ export function ExpensesPieChart({ data, isLoading }: ExpensesPieChartProps) {
             <div className="relative mt-2">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#6FBEE5]/10 rounded-full blur-[80px]" />
                 <div className="relative z-10 backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[30px] sm:rounded-[40px] p-5 sm:p-8 shadow-2xl">
-                    <div className="h-[320px] flex items-center justify-center">
+                    <div className="h-[450px] flex items-center justify-center">
                         <Skeleton className="w-[200px] h-[200px] rounded-full" />
                     </div>
                     <div className="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-white/5">
@@ -52,7 +94,7 @@ export function ExpensesPieChart({ data, isLoading }: ExpensesPieChartProps) {
         <div className="relative mt-2">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#6FBEE5]/10 rounded-full blur-[80px]" />
             <div className="relative z-10 backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[30px] sm:rounded-[40px] p-5 sm:p-8 shadow-2xl">
-                <div className="h-[320px] relative">
+                <div className="h-[450px] relative">
                     <ResponsiveContainer width="100%" height="100%" className="chart-reset">
                         <PieChart>
                             <defs>
@@ -66,26 +108,23 @@ export function ExpensesPieChart({ data, isLoading }: ExpensesPieChartProps) {
                                 data={data}
                                 dataKey="value"
                                 nameKey="name"
-                                innerRadius={95}
-                                outerRadius={125}
+                                innerRadius={130}
+                                outerRadius={165}
                                 paddingAngle={8}
                                 cornerRadius={12}
                                 stroke="none"
+                                label={renderCustomizedLabel}
+                                labelLine={false}
                             >
                                 {data.map((_, index) => (
                                     <Cell key={`cell-${index}`} fill={CHART_GRADIENT_COLORS[index % CHART_GRADIENT_COLORS.length]} />
                                 ))}
                             </Pie>
-                            <Tooltip
-                                contentStyle={CHART_TOOLTIP_STYLE}
-                                itemStyle={{ color: "#fff", fontSize: "14px", fontWeight: 600 }}
-                                cursor={{ fill: "transparent" }}
-                            />
                         </PieChart>
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                         <span className="text-white/40 text-sm font-medium uppercase tracking-[3px]">Total</span>
-                        <span className="text-3xl font-bold text-white mt-1">{total.toFixed(2)} SUI</span>
+                        <span className="text-3xl font-bold text-white mt-1">{total.toFixed(4)} SUI</span>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-white/5">

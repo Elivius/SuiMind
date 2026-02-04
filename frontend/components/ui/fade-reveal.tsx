@@ -11,6 +11,7 @@ interface FadeRevealProps {
     blur?: boolean
     scale?: number
     triggerOnce?: boolean
+    className?: string
 }
 
 /**
@@ -25,7 +26,8 @@ export function FadeReveal({
     distance = 40,
     blur = true,
     scale = 0.99,
-    triggerOnce = false
+    triggerOnce = false,
+    className = "w-full h-full"
 }: FadeRevealProps) {
     const [isVisible, setIsVisible] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
@@ -61,7 +63,7 @@ export function FadeReveal({
     }
 
     return (
-        <div ref={ref} className="w-full h-full transition-none">
+        <div ref={ref} className={`transition-none ${className}`}>
             <div
                 style={{
                     transitionDelay: isVisible ? `${delay}ms` : "0ms",

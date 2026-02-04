@@ -331,9 +331,11 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
                     href={item.href}
                     onClick={e => handleClick(e, index)}
                     onKeyDown={e => handleKeyDown(e, index)}
-                    className="cursor-pointer outline-none py-[0.6em] px-[1em] inline-flex items-center gap-2"
+                    className="cursor-pointer outline-none py-[0.6em] px-[1em] inline-flex items-center gap-3"
                   >
-                    {item.icon && React.createElement(item.icon, { className: "w-4 h-4" })}
+                    {item.icon && React.createElement(item.icon, {
+                      className: item.label === "Mindy AI" ? "w-7 h-7" : "w-4 h-4"
+                    })}
                     {item.label}
                   </a>
                 </li>
@@ -349,8 +351,10 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
         <span className="effect filter" ref={filterRef} />
         <div className={`effect text ${!mounted ? 'opacity-0' : ''}`} ref={textRef}>
           {mounted && items[activeIndex]?.icon && (
-            <span className="inline-flex items-center gap-2">
-              {React.createElement(items[activeIndex].icon, { className: "w-4 h-4" })}
+            <span className="inline-flex items-center gap-3">
+              {React.createElement(items[activeIndex].icon, {
+                className: items[activeIndex].label === "Mindy AI" ? "w-7 h-7" : "w-4 h-4"
+              })}
               {items[activeIndex]?.label}
             </span>
           )}
