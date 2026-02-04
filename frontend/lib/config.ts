@@ -1,4 +1,4 @@
-export const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
+export const PACKAGE_ID = "0x9fde5921ceb9ba13f4bfd073f8c7b31f48b5ad676a088a73132a48835a19a588";
 export const MODULE_NAME = "request";
 export const TARGETS = {  
     CREATE: `${PACKAGE_ID}::${MODULE_NAME}::create_payment_request`,
