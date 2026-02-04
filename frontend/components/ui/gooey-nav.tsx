@@ -180,9 +180,9 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
         {`
           :root {
             --color-1: #6FBEE5;
-            --color-2: #4A9FCC;
-            --color-3: #5DAED5;
-            --color-4: #3A8FBC;
+            --color-2: #8B5CF6;
+            --color-3: #A855F7;
+            --color-4: #EC4899;
             --linear-ease: linear(0, 0.068, 0.19 2.7%, 0.804 8.1%, 1.037, 1.199 13.2%, 1.245, 1.27 15.8%, 1.274, 1.272 17.4%, 1.249 19.1%, 0.996 28%, 0.949, 0.928 33.3%, 0.926, 0.933 36.8%, 1.001 45.6%, 1.013, 1.019 50.8%, 1.018 54.4%, 1 63.1%, 0.995 68%, 1.001 85%, 1);
           }
           .effect {
@@ -196,6 +196,8 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
           .effect.text {
             color: white;
             transition: color 0.3s ease;
+            font-weight: 800;
+            letter-spacing: 0.025em;
           }
           .effect.text.active {
             color: white;
@@ -207,11 +209,12 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             content: "";
             position: absolute;
             inset: 0;
-            background: #6FBEE5;
+            background: linear-gradient(135deg, #6FBEE5 0%, #8B5CF6 50%, #EC4899 100%);
             transform: scale(0);
             opacity: 0;
             z-index: -1;
             border-radius: 9999px;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(111, 190, 229, 0.2);
           }
           .effect.active::after {
             animation: pill 0.3s ease both;
@@ -289,9 +292,14 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
               opacity: 0;
             }
           }
+          li.active a {
+            color: transparent !important;
+          }
+          li.active svg {
+            opacity: 0 !important;
+          }
           li.active {
-            color: white;
-            text-shadow: none;
+            text-shadow: none !important;
           }
           li.active::after {
             opacity: 1;
@@ -302,11 +310,12 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
             position: absolute;
             inset: 0;
             border-radius: 9999px;
-            background: #6FBEE5;
+            background: linear-gradient(135deg, #6FBEE5 0%, #8B5CF6 50%, #EC4899 100%);
             opacity: 0;
             transform: scale(0);
             transition: all 0.3s ease;
             z-index: -1;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
           }
         `}
       </style>

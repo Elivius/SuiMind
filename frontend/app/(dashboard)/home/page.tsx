@@ -952,7 +952,7 @@ export default function HomePage() {
         <Card className="border-white/20 backdrop-blur-xl bg-white/5">
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <MindyAILogo className="w-6 h-6 text-[#6FBEE5]" />
+              <MindyAILogo className="w-20 h-20 text-[#6FBEE5]" />
               <h3 className="text-3xl font-bold text-white">AI-Powered Suggestions</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
