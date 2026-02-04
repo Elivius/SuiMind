@@ -3,11 +3,11 @@
 import { useSuiClientQuery, useCurrentAccount } from "@mysten/dapp-kit";
 import { useQueryClient } from '@tanstack/react-query';
 import { playSound } from "../lib/sound-effects";
+import { PACKAGE_ID } from "@/lib/config";
 
 export function usePaymentRequests() {
     const account = useCurrentAccount();
     const queryClient = useQueryClient();
-    const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
 
     const onTransactionSuccess = async () => {
         await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -17,7 +17,7 @@ export function usePaymentRequests() {
     const { data: ownedObjects, isLoading , refetch } = useSuiClientQuery('getOwnedObjects', {
     owner: account?.address || '',
     filter: {
-      StructType: "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810::request::PaymentRequest",
+      StructType: `${PACKAGE_ID}::request::PaymentRequest`,
     },
     options: { showContent: true }
     }, {

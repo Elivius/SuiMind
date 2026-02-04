@@ -18,6 +18,8 @@ import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
 import { playSound } from "@/lib/sound-effects"
+import { PACKAGE_ID } from "@/lib/config";
+
 
 
 export default function HomePage() {
@@ -70,7 +72,6 @@ export default function HomePage() {
     try {
       const tx = new Transaction();
       const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
-      const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
 
       const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
       tx.transferObjects([coin], recipient);
@@ -134,7 +135,6 @@ export default function HomePage() {
     setIsSending(true);
     try {
       const tx = new Transaction();
-      const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
       const MODULE_NAME = "request";
       const FUNCTION_NAME = "create_payment_request";
       const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
@@ -202,7 +202,6 @@ export default function HomePage() {
       setIsSending(true);
       try {
         const tx = new Transaction();
-        const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
 
         tx.moveCall({
           target: `${PACKAGE_ID}::request::reject_request`,
