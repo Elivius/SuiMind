@@ -126,4 +126,8 @@ module transaction::request {
 
         transfer::public_transfer(rejected_obj, requester);
     }
+
+    public fun delete_object<T: key + store>(obj: T){
+        let id = object::id(&obj);
+    }
 }

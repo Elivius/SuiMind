@@ -206,7 +206,7 @@ export function Header() {
                                                     <p className="text-sm font-bold text-emerald-400">+{noti.amountSui} SUI</p>
                                                 </div>
                                                 <button 
-                                                    onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_NOTIFICATION', { detail: noti.id }))}
+                                                    onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_PAID_NOTIFICATION', { detail: noti.id }))}
                                                     className="ml-2 p-1 hover:bg-white/10 rounded-full text-white/20"
                                                 >
                                                     <X className="w-4 h-4" />
@@ -232,7 +232,7 @@ export function Header() {
                                             </div>
                                             {/* Dismiss Button */}
                                             <button 
-                                            onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_NOTIFICATION', { detail: rej.id }))}
+                                            onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_REJECT_NOTIFICATION', { detail: rej.id }))}
                                             className="ml-2 p-1 hover:bg-white/10 rounded-full text-white/20"
                                             >
                                             <X className="w-4 h-4" />

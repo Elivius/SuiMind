@@ -219,6 +219,7 @@ export default function HomePage() {
         });
 
         
+
         const execution: any = result.data?.executeTransaction;
         const statusObj = execution?.effects?.status;
 
