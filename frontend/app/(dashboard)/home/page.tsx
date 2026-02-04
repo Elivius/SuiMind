@@ -19,6 +19,8 @@ import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
 import { playSound } from "@/lib/sound-effects"
+import { PACKAGE_ID } from "@/lib/config";
+
 
 
 export default function HomePage() {
@@ -71,7 +73,6 @@ export default function HomePage() {
     try {
       const tx = new Transaction();
       const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
-      const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
 
       const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
       tx.transferObjects([coin], recipient);
@@ -135,7 +136,6 @@ export default function HomePage() {
     setIsSending(true);
     try {
       const tx = new Transaction();
-      const PACKAGE_ID = "0x5ae2ee3de630c587707ae71729e54e272cbab874a465ade2939ae8cf71d4c26d";
       const MODULE_NAME = "request";
       const FUNCTION_NAME = "create_payment_request";
       const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
@@ -190,22 +190,125 @@ export default function HomePage() {
     return () => window.removeEventListener('PAY_REQUEST', handlePayFromHeader);
   }, []);
 
+
   useEffect(() => {
-    const handleIncomingPaymentRequest = (event: any) => {
-      const requestData = event.detail;
+    const handleRejectRequest = async (event: any) => {
+      const requestId = event.detail;
+      
+      if (!account) {
+        alert("Please connect your wallet first.");
+        return;
+      }
 
-      setRecipient(requestData.requester);
-      setAmount(requestData.amountSui.toString());
-      setShowSendUI(true);
+      setIsSending(true);
+      try {
+        const tx = new Transaction();
+
+        tx.moveCall({
+          target: `${PACKAGE_ID}::request::reject_request`,
+          arguments: [tx.object(requestId)],
+        });
+
+        const { bytes, signature } = await signTransaction({ transaction: tx });
+
+        const result = await gqlClient.query({
+          query: EXECUTE_TRANSACTION,
+          variables: {
+            transactionDataBcs: bytes,
+            signatures: [signature],
+          },
+        });
+
+        
+
+        const execution: any = result.data?.executeTransaction;
+        const statusObj = execution?.effects?.status;
+
+        const isSuccess = statusObj === 'SUCCESS' || statusObj?.status === 'success';
+
+        if (isSuccess) {
+          await onTransactionSuccess();
+          alert("Request rejected successfully.");
+          refetch(); 
+        } else {
+          const detail = statusObj?.error || "Check console for details";
+          alert(`Rejection failed: ${detail}`);
+        }
+      } catch (e: any) {
+        console.error("Rejection Error:", e);
+        alert(`System Error: ${e.message}`);
+      } finally {
+        setIsSending(false);
+      }
     };
 
-    // Listen for the event fired by header.tsx
-    window.addEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
+    window.addEventListener('REJECT_REQUEST', handleRejectRequest);
+    return () => window.removeEventListener('REJECT_REQUEST', handleRejectRequest);
+  }, [account, signTransaction, gqlClient, refetch]);
 
-    return () => {
-      window.removeEventListener('PAY_REQUEST', handleIncomingPaymentRequest);
-    };
-  }, []);
+  useEffect(() => {
+  const handleClearPaid = async (event: any) => {
+    const objectId = event.detail;
+    if (!account) return;
+
+    setIsSending(true);
+    try {
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${PACKAGE_ID}::request::delete_paid`, 
+        arguments: [tx.object(objectId)],
+      });
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+      await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: { transactionDataBcs: bytes, signatures: [signature] },
+      });
+
+      await onTransactionSuccess(); 
+    } catch (e) {
+      console.error("Failed to clear notification:", e);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  window.addEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
+  return () => window.removeEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid); 
+  }, [account, signTransaction, onTransactionSuccess]);
+
+
+useEffect(() => {
+  const handleClearReject = async (event: any) => {
+    const objectId = event.detail;
+    if (!account) return;
+
+    setIsSending(true);
+    try {
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${PACKAGE_ID}::request::delete_reject`, 
+        arguments: [tx.object(objectId)],
+      });
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+      await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: { transactionDataBcs: bytes, signatures: [signature] },
+      });
+
+      await onTransactionSuccess();
+    } catch (e) {
+      console.error("Failed to clear rejection:", e);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  window.addEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
+  return () => window.removeEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
+}, [account, signTransaction, onTransactionSuccess]);
+  
 
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
