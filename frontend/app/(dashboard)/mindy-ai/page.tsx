@@ -163,7 +163,8 @@ export default function MindyAIPage() {
                                                         ul: ({ node: _node, ...props }) => <ul className="list-disc ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                                         ol: ({ node: _node, ...props }) => <ol className="list-decimal ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                                         li: ({ node: _node, ...props }) => <li {...props} />,
-                                                        a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />
+                                                        a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                                                        hr: ({ node: _node, ...props }) => <hr className="my-6 border-t border-white/60" {...props} />
                                                     }}
                                                 >
                                                     {msg.content}
