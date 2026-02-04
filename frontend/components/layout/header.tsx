@@ -10,18 +10,37 @@ import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
 import { SuiMindLogo, MindyAILogo } from "@/components/icons"
 import { usePaymentRequests } from "@/hooks";
 import { useState, useEffect, useRef } from "react";
+import { playSound } from "@/lib/sound-effects";
 
 
 export function Header() {
     const pathname = usePathname()
 
     // Determine active nav index based on current path
-    const { pendingRequests, hasUnread, onTransactionSuccess, rejectedRequests } = usePaymentRequests();    
+    const { pendingRequests, isLoading, hasUnread, onTransactionSuccess, rejectedRequests, paidNotifications } = usePaymentRequests();    
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
     const activeIndex = navigation.findIndex(item => pathname === item.href)
 
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const prevRequestsCount = useRef(0)
+    const isFirstLoad = useRef(true)
+
+    // Play sound when new notifications arrive
+    useEffect(() => {
+        if (isLoading) return;
+
+        if (isFirstLoad.current) {
+            prevRequestsCount.current = pendingRequests.length;
+            isFirstLoad.current = false;
+            return;
+        }
+
+        if (pendingRequests.length > prevRequestsCount.current) {
+            playSound('notification');
+        }
+        prevRequestsCount.current = pendingRequests.length;
+    }, [pendingRequests, isLoading]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -173,6 +192,28 @@ export function Header() {
                                             })}
                                         </div>
                                     )}
+
+                                    {paidNotifications.length > 0 && (
+                                        <div className="px-4 py-2 bg-emerald-500/10 border-y border-white/10 mt-2">
+                                            <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Received Payments</p>
+                                        </div>
+                                    )}
+                                    {paidNotifications.map((noti) => (
+                                        <div key={noti.id} className="px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex-1">
+                                                    <p className="text-xs text-white/50">{noti.paid_by.slice(0,6)}... paid you</p>
+                                                    <p className="text-sm font-bold text-emerald-400">+{noti.amountSui} SUI</p>
+                                                </div>
+                                                <button 
+                                                    onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_PAID_NOTI', { detail: noti.id }))}
+                                                    className="ml-2 p-1 hover:bg-white/10 rounded-full text-white/20"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
 
                                     {rejectedRequests.length > 0 && (
                                         <div className="px-4 py-2 bg-red-500/10 border-b border-white/10 mt-2">

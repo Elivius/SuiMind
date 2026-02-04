@@ -17,6 +17,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
+import { playSound } from "@/lib/sound-effects"
 
 
 export default function HomePage() {
@@ -69,7 +70,7 @@ export default function HomePage() {
     try {
       const tx = new Transaction();
       const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
-      const PACKAGE_ID = "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299";
+      const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
 
       const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
       tx.transferObjects([coin], recipient);
@@ -104,14 +105,15 @@ export default function HomePage() {
 
       if (status === 'SUCCESS' || status?.status === 'success') {
         await onTransactionSuccess();
-        setShowSendUI(false); 
-        setAmount('0.00');    
+        setShowSendUI(false);
+        setAmount('0.00');
         setRecipient('');
         setActiveRequestObject(null);
         refetch();
         alert(`Success! Digest: ${digest}`);
-        
-        
+        playSound('success');
+
+
       } else {
         const detail = status?.error || "Check console for effects object";
         alert(`On-chain Failure: ${detail}`);
@@ -132,7 +134,7 @@ export default function HomePage() {
     setIsSending(true);
     try {
       const tx = new Transaction();
-      const PACKAGE_ID = "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299";
+      const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
       const MODULE_NAME = "request";
       const FUNCTION_NAME = "create_payment_request";
       const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
@@ -161,6 +163,7 @@ export default function HomePage() {
 
       if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
         alert("Request Object sent successfully!");
+        playSound('request_success');
         setShowRequestUI(false);
         setRequestAmount('0.00');
         setRequestRecipient('');
@@ -175,11 +178,11 @@ export default function HomePage() {
 
   useEffect(() => {
     const handlePayFromHeader = (event: any) => {
-        const request = event.detail;
-        setRecipient(request.requester);
-        setAmount(request.amountSui.toString());
-        setActiveRequestObject(request);
-        setShowSendUI(true); 
+      const request = event.detail;
+      setRecipient(request.requester);
+      setAmount(request.amountSui.toString());
+      setActiveRequestObject(request);
+      setShowSendUI(true);
     };
 
     window.addEventListener('PAY_REQUEST', handlePayFromHeader);
@@ -199,7 +202,7 @@ export default function HomePage() {
       setIsSending(true);
       try {
         const tx = new Transaction();
-        const PACKAGE_ID = "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299";
+        const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
 
         tx.moveCall({
           target: `${PACKAGE_ID}::request::reject_request`,
@@ -244,14 +247,35 @@ export default function HomePage() {
 
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
-  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions()
+  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(20)
 
   // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
 
-  const recentTransactions = transactionData?.nodes
-    ?.map((tx) => processTx(tx, account?.address))
-    .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [];
+  // Play sound when new notifications arrive
+  const prevBalance = useRef(0)
+  const isFirstLoadBalance = useRef(true)
+
+  useEffect(() => {
+    if (isBalanceLoading) return;
+
+    if (isFirstLoadBalance.current) {
+      prevBalance.current = walletBalance;
+      isFirstLoadBalance.current = false;
+      return;
+    }
+
+    if (walletBalance > prevBalance.current) {
+      // Double sound
+      playSound('received');
+      playSound('received_background')
+    }
+    prevBalance.current = walletBalance;
+  }, [walletBalance, isBalanceLoading]);
+
+  const recentTransactions = (transactionData?.transactions
+    ?.map((tx: any) => processTx(tx, account?.address))
+    .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || []).slice(0, 5);
 
   const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
   const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
@@ -347,7 +371,7 @@ export default function HomePage() {
                   {isBalanceLoading ? (
                     <Skeleton className="h-10 sm:h-14 lg:h-[4.5rem] w-24 sm:w-40 bg-white/10 rounded-xl" />
                   ) : (
-                    `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SUI`
+                    `${walletBalance.toLocaleString("en-US", { minimumFractionDigits: 4, maximumFractionDigits: 4 })} SUI`
                   )}
                 </h2>
                 {/* AI Insight beside the number */}
@@ -784,7 +808,7 @@ export default function HomePage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount)} SUI</p>
+                        <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                         <p className="text-xs text-white/60">{tx.time}</p>
                         <p className="text-xs text-white/60 mt-1">
                           {tx.from && `From: ${tx.from}`}
@@ -807,7 +831,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <MindyAILogo className="w-5 h-5 text-[#6FBEE5]" />
-                  <h3 className="text-xl font-semibold" style={{ color: "white" }}>Mindy AI</h3>
+                  <h3 className="text-3xl font-bold text-white">Mindy AI</h3>
                 </div>
                 {mindyMessages.length > 0 && (
                   <button
@@ -967,7 +991,7 @@ export default function HomePage() {
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
               <MindyAILogo className="w-6 h-6 text-[#6FBEE5]" />
-              <h3 className="text-xl font-semibold" style={{ color: "white" }}>AI-Powered Suggestions</h3>
+              <h3 className="text-3xl font-bold text-white">AI-Powered Suggestions</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {suggestions.map((suggestion) => (

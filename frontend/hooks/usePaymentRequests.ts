@@ -2,39 +2,40 @@
 
 import { useSuiClientQuery, useCurrentAccount } from "@mysten/dapp-kit";
 import { useQueryClient } from '@tanstack/react-query';
+import { playSound } from "../lib/sound-effects";
 
 export function usePaymentRequests() {
     const account = useCurrentAccount();
     const queryClient = useQueryClient();
-    const PACKAGE_ID = "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299";
+    const PACKAGE_ID = "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810";
 
     const onTransactionSuccess = async () => {
         await new Promise((resolve) => setTimeout(resolve, 1500));
-        queryClient.invalidateQueries(); 
+        queryClient.invalidateQueries();
     };
 
-    const { data: ownedObjects, refetch } = useSuiClientQuery('getOwnedObjects', {
+    const { data: ownedObjects, isLoading , refetch } = useSuiClientQuery('getOwnedObjects', {
     owner: account?.address || '',
     filter: {
-      StructType: "0xfd4c560a06b6b00fe7a6b43abbaeab016ba7db07082bd817143ad21c2b3e5299::request::PaymentRequest",
+      StructType: "0x3d0082057e44918b7607d5d8972e783b439dc9a7193c591aeeca34dd40f61810::request::PaymentRequest",
     },
     options: { showContent: true }
     }, {
         enabled: !!account?.address,
-        gcTime: 0,       
-        staleTime: 0,     
+        gcTime: 0,
+        staleTime: 0,
         refetchOnMount: true,
     });
 
     const pendingRequests = ownedObjects?.data?.map((obj: any) => {
         const fields = obj.data?.content?.fields;
         return {
-        id: obj.data?.objectId,
-        requester: fields.requester,
-        recipient: fields.recipient,
-        amountMist: fields.amount,
-        amountSui: Number(fields.amount) / 1_000_000_000,
-        requestCode: fields.request_code,
+            id: obj.data?.objectId,
+            requester: fields.requester,
+            recipient: fields.recipient,
+            amountMist: fields.amount,
+            amountSui: Number(fields.amount) / 1_000_000_000,
+            requestCode: fields.request_code,
         };
     }).filter(req => req.recipient === account?.address)  || [];
 
@@ -75,6 +76,7 @@ export function usePaymentRequests() {
 
     return {
         pendingRequests,
+        isLoading,  
         rejectedRequests,
         paidNotifications,
         hasUnread: pendingRequests.length > 0 || rejectedRequests.length > 0,

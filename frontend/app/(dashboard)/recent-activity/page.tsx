@@ -11,12 +11,13 @@ import ReactMarkdown from "react-markdown"
 
 export default function RecentActivityPage() {
     const itemsPerPage = 10
+    const fetchLimit = 50
     const account = useCurrentAccount()
 
     const [cursor, setCursor] = useState<string | null>(null)
     const [paginationHistory, setPaginationHistory] = useState<(string | null)[]>([])
 
-    const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(itemsPerPage, cursor || undefined)
+    const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(fetchLimit, cursor || undefined)
 
     const [typeFilter, setTypeFilter] = useState("all")
     const [statusFilter, setStatusFilter] = useState("all")
@@ -57,15 +58,19 @@ export default function RecentActivityPage() {
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [])
 
-    // Destructure nodes and pageInfo from the new hook return
-    const nodes = transactionData?.nodes || [];
+    // Destructure transactions and pageInfo from the new hook return
+    const rawTransactions = transactionData?.transactions || [];
     const pageInfo = transactionData?.pageInfo;
 
-    const recentTransactions = nodes
-        .map((tx) => processTx(tx, account?.address))
-        .filter((tx): tx is NonNullable<typeof tx> => tx !== null);
+    const recentTransactionsWithCursor = rawTransactions
+        .map((tx: any) => ({
+            ...processTx(tx, account?.address),
+            cursor: tx.cursor,
+            rawTimestamp: tx.effects?.timestamp // Keep raw timestamp for time filtering
+        }))
+        .filter((item: any) => item !== null && item.id); // Ensure processTx succeeded
 
-    const filteredTransactions = recentTransactions.filter(tx => {
+    const filteredTransactionsWithCursor = recentTransactionsWithCursor.filter((tx: any) => {
         const matchesType = typeFilter === "all" || tx.type === typeFilter
         const matchesStatus = statusFilter === "all" || tx.status === statusFilter
 
@@ -93,12 +98,16 @@ export default function RecentActivityPage() {
     })
 
     // Alias for compatibility with existing render code
-    const paginatedTransactions = filteredTransactions;
+    const paginatedTransactions = filteredTransactionsWithCursor.slice(0, itemsPerPage);
 
     const handleNextPage = () => {
-        if (pageInfo?.hasPreviousPage && pageInfo?.startCursor) {
+        // If we have more than itemsPerPage filtered items, we can just move the cursor to the 10th item
+        // But since we over-fetched, the "next page" logic is tricky.
+        // We use the cursor of the LAST DISPLAYED item to fetch the next batch "before" it.
+        if (paginatedTransactions.length > 0) {
+            const lastItem = paginatedTransactions[paginatedTransactions.length - 1];
             setPaginationHistory((prev) => [...prev, cursor]);
-            setCursor(pageInfo.startCursor)
+            setCursor(lastItem.cursor)
         }
     }
 
@@ -295,7 +304,7 @@ export default function RecentActivityPage() {
                                                 <td className="px-6 py-4">
                                                     <p className={`font-semibold ${tx.type === "receive" ? "text-green-500" :
                                                         tx.type === "send" ? "text-red-500" : "text-blue-500"
-                                                        }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount)} SUI</p>
+                                                        }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                                                     <p className="text-xs text-white">{tx.usd}</p>
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-white">
@@ -369,7 +378,7 @@ export default function RecentActivityPage() {
                                             <div className="text-right">
                                                 <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" :
                                                     tx.type === "send" ? "text-red-500" : "text-blue-500"
-                                                    }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount)} SUI</p>
+                                                    }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                                                 <p className="text-[10px] text-white/50">{tx.usd}</p>
                                             </div>
                                         </div>
@@ -398,7 +407,7 @@ export default function RecentActivityPage() {
 
                         <div className="px-6 py-4 border-t border-white/10 flex items-center justify-center sm:justify-between gap-4 flex-wrap">
                             <p className="text-sm text-white/50">
-                                {isTransactionLoading ? "Loading..." : `Showing ${filteredTransactions.length} transaction(s)`}
+                                {isTransactionLoading ? "Loading..." : `Showing ${paginatedTransactions.length} transaction(s)`}
                             </p>
                             <div className="flex items-center gap-2">
                                 <Button
@@ -414,7 +423,11 @@ export default function RecentActivityPage() {
                                     variant="outline"
                                     size="sm"
                                     onClick={handleNextPage}
-                                    disabled={!pageInfo?.hasPreviousPage || isTransactionLoading || paginatedTransactions.length < itemsPerPage}
+                                    disabled={
+                                        isTransactionLoading ||
+                                        paginatedTransactions.length < itemsPerPage ||
+                                        (!pageInfo?.hasPreviousPage && filteredTransactionsWithCursor.length <= itemsPerPage)
+                                    }
                                     className="border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-auto"
                                 >
                                     Next

@@ -76,13 +76,14 @@ module transaction::request {
         request: PaymentRequest,
         ctx: &mut TxContext
     ) {
+        let sender = tx_context::sender(ctx);
         assert!(tx_context::sender(ctx) == request.recipient, 0);
         let PaymentRequest {
             id,
-            requester: _,
+            requester,
             recipient: _,
-            amount: _,
-            request_code: _,
+            amount,
+            request_code,
             expiration: _,
         } = request;
 
