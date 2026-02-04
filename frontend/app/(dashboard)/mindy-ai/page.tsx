@@ -29,6 +29,7 @@ const QUICK_ACTIONS = [
         prompt: "What are your main features and how can you help me?",
         className: "w-full lg:max-w-[400px] xl:max-w-[450px] xl:rotate-[-2deg] xl:-translate-x-4",
         gradient: "hover:from-amber-300/20 hover:to-amber-500/20 hover:border-amber-300/50",
+        textColor: "group-hover:text-amber-300",
         hideOnMobile: false,
         hideOnTablet: false
     },
@@ -38,6 +39,7 @@ const QUICK_ACTIONS = [
         prompt: "I want to upload a screenshot to make a payment.",
         className: "w-full lg:max-w-[340px] xl:max-w-[360px] xl:rotate-[1.5deg] xl:translate-y-4",
         gradient: "hover:from-blue-400/20 hover:to-blue-600/20 hover:border-blue-400/50",
+        textColor: "group-hover:text-blue-400",
         hideOnMobile: true,
         hideOnTablet: true
     },
@@ -47,6 +49,7 @@ const QUICK_ACTIONS = [
         prompt: "I want to send some SUI to a contact.",
         className: "w-full lg:max-w-[320px] xl:max-w-[340px] xl:rotate-[-1.2deg] xl:-translate-y-6 xl:translate-x-8",
         gradient: "hover:from-[#6FBEE5]/20 hover:to-[#4A9FD8]/20 hover:border-[#6FBEE5]/50",
+        textColor: "group-hover:text-[#6FBEE5]",
         hideOnMobile: false,
         hideOnTablet: false
     },
@@ -56,6 +59,7 @@ const QUICK_ACTIONS = [
         prompt: "I want to upload a document or file for payment.",
         className: "w-full lg:max-w-[420px] xl:max-w-[480px] xl:rotate-[2deg] xl:translate-x-[-10px] xl:translate-y-2",
         gradient: "hover:from-purple-400/20 hover:to-purple-600/20 hover:border-purple-400/50",
+        textColor: "group-hover:text-purple-400",
         hideOnMobile: true,
         hideOnTablet: true
     },
@@ -65,6 +69,7 @@ const QUICK_ACTIONS = [
         prompt: "I want to use my camera to snap a QR and pay.",
         className: "w-full lg:max-w-[340px] xl:max-w-[380px] xl:rotate-[-1.5deg] xl:translate-y-[-4px] xl:translate-x-4",
         gradient: "hover:from-orange-400/20 hover:to-orange-600/20 hover:border-orange-400/50",
+        textColor: "group-hover:text-orange-400",
         hideOnMobile: true,
         hideOnTablet: true
     },
@@ -74,6 +79,7 @@ const QUICK_ACTIONS = [
         prompt: "Show me my latest transaction history.",
         className: "w-full lg:max-w-[380px] xl:max-w-[420px] xl:rotate-[1deg] xl:translate-x-20 xl:translate-y-8",
         gradient: "hover:from-emerald-300/20 hover:to-emerald-500/20 hover:border-emerald-300/50",
+        textColor: "group-hover:text-emerald-300",
         hideOnMobile: true,
         hideOnTablet: false
     }
@@ -120,15 +126,17 @@ export default function MindyAIPage() {
                                     <button
                                         key={idx}
                                         onClick={() => sendMindyMessage(action.prompt)}
-                                        className={`flex items-center gap-4 sm:gap-6 px-6 sm:px-8 py-6 sm:py-8 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-gradient-to-r ${action.gradient} transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white font-semibold text-center shadow-2xl backdrop-blur-3xl group ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
+                                        className={`group outline-none border-none bg-transparent p-0 ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
                                     >
-                                        <div className="group-hover:scale-400 group-hover:rotate-[-15deg] transition-all duration-500">
-                                            {action.icon}
+                                        <div className={`w-full h-full flex items-center gap-4 sm:gap-6 px-6 sm:px-8 py-6 sm:py-8 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-gradient-to-r ${action.gradient} transition-all duration-500 group-hover:scale-[1.05] group-hover:rotate-0 group-hover:translate-x-0 group-hover:translate-y-0 text-white font-semibold text-center shadow-2xl backdrop-blur-3xl`}>
+                                            <div className="group-hover:scale-400 group-hover:rotate-[-15deg] transition-all duration-500">
+                                                {action.icon}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-white transition-colors">{action.title}</h4>
+                                            </div>
+                                            <ArrowUpRight className={`w-5 h-5 text-white/5 ${action.textColor} transition-all`} />
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-white transition-colors">{action.title}</h4>
-                                        </div>
-                                        <ArrowUpRight className="w-5 h-5 text-white/5 group-hover:text-[#6FBEE5] transition-all" />
                                     </button>
                                 ))}
                             </div>
