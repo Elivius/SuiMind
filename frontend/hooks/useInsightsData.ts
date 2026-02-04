@@ -45,7 +45,9 @@ export function useInsightsData(): UseInsightsDataReturn {
                 totalOutFlow += amount
                 outFlowTransactionCount++
 
-                const category = tx.to || 'Other'
+                // Becasue if tx.label === Sent is P2P
+                // So will check first, if not P2P then tx.label will be used (e.g. Smart Contract Interaction / Storage Rebate)
+                const category = tx.label === "Sent" ? (tx.to || 'Other') : tx.label
                 expenseCategories[category] = (expenseCategories[category] || 0) + amount
             }
         })
