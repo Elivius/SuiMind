@@ -29,6 +29,7 @@ const QUICK_ACTIONS = [
         prompt: "What are your main features and how can you help me?",
         className: "w-full lg:max-w-[400px] xl:max-w-[450px] xl:rotate-[-2deg] xl:-translate-x-4",
         gradient: "hover:from-amber-300/20 hover:to-amber-500/20 hover:border-amber-300/50",
+        textColor: "group-hover:text-amber-300",
         hideOnMobile: false,
         hideOnTablet: false
     },
@@ -38,6 +39,7 @@ const QUICK_ACTIONS = [
         prompt: "I want to upload a screenshot to make a payment.",
         className: "w-full lg:max-w-[340px] xl:max-w-[360px] xl:rotate-[1.5deg] xl:translate-y-4",
         gradient: "hover:from-blue-400/20 hover:to-blue-600/20 hover:border-blue-400/50",
+        textColor: "group-hover:text-blue-400",
         hideOnMobile: true,
         hideOnTablet: true
     },
@@ -47,6 +49,7 @@ const QUICK_ACTIONS = [
         prompt: "I want to send some SUI to a contact.",
         className: "w-full lg:max-w-[320px] xl:max-w-[340px] xl:rotate-[-1.2deg] xl:-translate-y-6 xl:translate-x-8",
         gradient: "hover:from-[#6FBEE5]/20 hover:to-[#4A9FD8]/20 hover:border-[#6FBEE5]/50",
+        textColor: "group-hover:text-[#6FBEE5]",
         hideOnMobile: false,
         hideOnTablet: false
     },
@@ -56,6 +59,7 @@ const QUICK_ACTIONS = [
         prompt: "I want to upload a document or file for payment.",
         className: "w-full lg:max-w-[420px] xl:max-w-[480px] xl:rotate-[2deg] xl:translate-x-[-10px] xl:translate-y-2",
         gradient: "hover:from-purple-400/20 hover:to-purple-600/20 hover:border-purple-400/50",
+        textColor: "group-hover:text-purple-400",
         hideOnMobile: true,
         hideOnTablet: true
     },
@@ -65,6 +69,7 @@ const QUICK_ACTIONS = [
         prompt: "I want to use my camera to snap a QR and pay.",
         className: "w-full lg:max-w-[340px] xl:max-w-[380px] xl:rotate-[-1.5deg] xl:translate-y-[-4px] xl:translate-x-4",
         gradient: "hover:from-orange-400/20 hover:to-orange-600/20 hover:border-orange-400/50",
+        textColor: "group-hover:text-orange-400",
         hideOnMobile: true,
         hideOnTablet: true
     },
@@ -74,6 +79,7 @@ const QUICK_ACTIONS = [
         prompt: "Show me my latest transaction history.",
         className: "w-full lg:max-w-[380px] xl:max-w-[420px] xl:rotate-[1deg] xl:translate-x-20 xl:translate-y-8",
         gradient: "hover:from-emerald-300/20 hover:to-emerald-500/20 hover:border-emerald-300/50",
+        textColor: "group-hover:text-emerald-300",
         hideOnMobile: true,
         hideOnTablet: false
     }
@@ -101,7 +107,10 @@ export default function MindyAIPage() {
     }
 
     return (
-        <div className="w-full mx-auto px-4 sm:px-6 py-4 h-[calc(100vh-100px)] flex flex-col relative overflow-hidden">
+        <div className={`w-full mx-auto px-4 sm:px-6 pb-4 flex flex-col relative overflow-hidden transition-all duration-700 ease-in-out ${hasMindyMessages
+            ? "pt-7 h-[calc(100vh-60px)]"
+            : "pt-1 h-[calc(100vh-140px)]"
+            }`}>
             <div className="flex-1 flex flex-col relative z-10 max-w-6xl mx-auto w-full min-h-0">
 
                 {!hasMindyMessages ? (
@@ -117,15 +126,17 @@ export default function MindyAIPage() {
                                     <button
                                         key={idx}
                                         onClick={() => sendMindyMessage(action.prompt)}
-                                        className={`flex items-center gap-4 sm:gap-6 px-6 sm:px-8 py-6 sm:py-8 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-gradient-to-r ${action.gradient} transition-all duration-500 hover:scale-[1.05] hover:rotate-0 hover:translate-x-0 hover:translate-y-0 text-white font-semibold text-center shadow-2xl backdrop-blur-3xl group ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
+                                        className={`group outline-none border-none bg-transparent p-0 ${action.className} ${action.hideOnMobile ? 'hidden' : 'flex'} ${action.hideOnTablet ? 'md:hidden xl:flex' : 'md:flex'}`}
                                     >
-                                        <div className="group-hover:scale-500 group-hover:rotate-[-20deg] transition-all duration-500">
-                                            {action.icon}
+                                        <div className={`w-full h-full flex items-center gap-4 sm:gap-6 px-6 sm:px-8 py-6 sm:py-8 rounded-3xl sm:rounded-[2.5rem] bg-white/[0.04] border border-white/5 hover:bg-gradient-to-r ${action.gradient} transition-all duration-500 group-hover:scale-[1.05] group-hover:rotate-0 group-hover:translate-x-0 group-hover:translate-y-0 text-white font-semibold text-center shadow-2xl backdrop-blur-3xl`}>
+                                            <div className="group-hover:scale-400 group-hover:rotate-[-15deg] transition-all duration-500">
+                                                {action.icon}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-white transition-colors">{action.title}</h4>
+                                            </div>
+                                            <ArrowUpRight className={`w-5 h-5 text-white/5 ${action.textColor} transition-all`} />
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="text-white font-bold text-lg tracking-tight group-hover:text-white transition-colors">{action.title}</h4>
-                                        </div>
-                                        <ArrowUpRight className="w-5 h-5 text-white/5 group-hover:text-[#6FBEE5] transition-all" />
                                     </button>
                                 ))}
                             </div>
@@ -137,8 +148,8 @@ export default function MindyAIPage() {
                             <div className="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
                                 {mindyMessages.map((msg, idx) => (
                                     <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
-                                            {msg.role === 'mindy' ? <MindyAILogo className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" /> : <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />}
+                                        <div className={`bg-transparent w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'mindy' ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-purple-500/20 border-purple-500/30'}`}>
+                                            {msg.role === 'mindy' ? <MindyAILogo className="w-8 h-8 sm:w-10 sm:h-10 text-[#6FBEE5]" /> : <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-300" />}
                                         </div>
                                         <div className={`px-4 sm:px-5 py-3 sm:py-4 max-w-[85%] sm:max-w-[80%] border shadow-xl ${msg.role === 'mindy'
                                             ? 'bg-white/10 rounded-2xl rounded-tl-none border-white/5 text-white/90'
@@ -164,8 +175,8 @@ export default function MindyAIPage() {
 
                                 {isMindyLoading && (
                                     <div className="flex gap-4">
-                                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0 border border-[#6FBEE5]/30">
-                                            <MindyAILogo className="w-4 h-4 sm:w-5 sm:h-5 text-[#6FBEE5]" />
+                                        <div className="bg-transparent w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/20 flex items-center justify-center flex-shrink-0">
+                                            <MindyAILogo className="w-8 h-8 sm:w-10 sm:h-10 text-[#6FBEE5]" />
                                         </div>
                                         <div className="bg-white/10 rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 border border-white/5">
                                             <div className="flex space-x-2">

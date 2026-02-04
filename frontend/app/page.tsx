@@ -26,7 +26,7 @@ export default function LandingPage() {
             <ScrollToTop />
             {/* Navbar */}
             <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-6 md:py-12 w-full mx-auto">
-                <FadeReveal direction="none" duration={800}>
+                <FadeReveal direction="none" duration={800} className="w-fit">
                     <div className="flex items-center gap-2">
                         <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20 flex-shrink-0 transition-transform hover:scale-105 duration-300">
                             <SuiMindLogo />
@@ -35,7 +35,7 @@ export default function LandingPage() {
                     </div>
                 </FadeReveal>
 
-                <FadeReveal direction="none" duration={800}>
+                <FadeReveal direction="none" duration={800} className="w-fit">
                     <Button
                         onClick={() => router.push("/login")}
                         className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md rounded-xl px-6 py-4 md:px-9 md:py-6 text-base md:text-lg font-bold transition-all hover:scale-105 active:scale-95"
@@ -89,7 +89,7 @@ export default function LandingPage() {
                                 <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-[#4385f5]/30 via-[#e94335]/20 to-[#fcbc05]/30 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-[#4385f5]/20 border border-white/10">
                                     <TrendingUp className="w-12 h-12 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                                 </div>
-                                <h3 className="text-3xl font-bold mb-4">
+                                <h3 className="text-4xl font-bold mb-4">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4385f5] via-[#e94335] to-[#fcbc05]"> Cashflow Master
                                     </span>
                                 </h3>
@@ -100,9 +100,9 @@ export default function LandingPage() {
                         <FadeReveal delay={300} direction="up" distance={60}>
                             <Card className="p-8 md:p-10 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full flex flex-col items-center text-center">
                                 <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-[#4891ee]/30 via-[#877acc]/20 to-[#cd666e]/30 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-[#877acc]/20 border border-white/10">
-                                    <MindyAILogo className="w-12 h-12 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                                    <MindyAILogo className="w-20 h-20 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                                 </div>
-                                <h3 className="text-4xl font-bold mb-4">
+                                <h3 className="text-6xl font-bold mb-4">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4891ee] via-[#877acc] to-[#cd666e]"> Mindy AI
                                     </span>
                                 </h3>
