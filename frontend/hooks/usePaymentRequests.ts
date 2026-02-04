@@ -79,7 +79,7 @@ export function usePaymentRequests() {
         isLoading,  
         rejectedRequests,
         paidNotifications,
-        hasUnread: pendingRequests.length > 0 || rejectedRequests.length > 0,
+        hasUnread: pendingRequests.length > 0 || rejectedRequests.length > 0 || paidNotifications.length > 0,
         onTransactionSuccess,
         refetch: () => { refetchRejected(); refetch(); refetchPaid(); }
     };
