@@ -101,10 +101,10 @@ export function processTx(node: any, address?: string) {
   let label = "Transaction";
   const netGasForRebateCheck = (Number(gasSummary?.computationCost || 0) + Number(gasSummary?.storageCost || 0)) - Number(gasSummary?.storageRebate || 0);
 
-  // Check 1: Is it a Storage Rebate? (Exact match between balance change and calculated negative gas)
+  // Check 1: Is it a Sui Storage Rebate? (Exact match between balance change and calculated negative gas)
   // Use a small epsilon for float safety, though usually these are integers in MIST.
   if (rawAmountMIST > 0 && Math.abs(rawAmountMIST - Math.abs(netGasForRebateCheck)) < 10 && netGasForRebateCheck < 0) {
-    label = "Storage Rebate";
+    label = "Sui Storage Rebate";
   }
   // Check 2: P2P Receive
   else if (type === "receive" && counterparty !== "Unknown") {
@@ -128,7 +128,7 @@ export function processTx(node: any, address?: string) {
   return {
     id: node.digest,
     type, // Send or Receive
-    label, // Received / Sent - P2P, Storage Rebate, Smart Contract Interaction
+    label, // Received / Sent - P2P, Sui Storage Rebate, Smart Contract Interaction
     amount: Number(mistToSui(Math.abs(rawAmountMIST))),
     usd: "$0.00", // Need real price feed
     time: formatRelativeTime(timestampMs),

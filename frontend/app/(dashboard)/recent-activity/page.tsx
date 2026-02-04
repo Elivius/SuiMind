@@ -309,7 +309,7 @@ export default function RecentActivityPage() {
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-white">
                                                     <div className="flex flex-col gap-0.5">
-                                                        {tx.label === "Storage Rebate" ? <span className="text-[#6FBEE5] font-medium">♻️ Storage Rebate</span> :
+                                                        {tx.label === "Sui Storage Rebate" ? <span className="text-[#6FBEE5] font-medium">♻️ Sui Storage Rebate</span> :
                                                             tx.label === "Smart Contract Interaction" ? <span className="text-purple-400 font-medium">⚡ Smart Contract Interaction</span> :
                                                                 (<>
                                                                     {tx.from && <span>From: {tx.from}</span>}
@@ -389,7 +389,7 @@ export default function RecentActivityPage() {
                                         <div className="flex items-center justify-between gap-2">
                                             <div className="text-[11px] text-white/70 truncate flex-1 flex flex-col gap-0.5">
                                                 <div className="truncate">
-                                                    {tx.label === "Storage Rebate" ? <span className="text-[#6FBEE5] font-medium">♻️ Storage Rebate</span> :
+                                                    {tx.label === "Sui Storage Rebate" ? <span className="text-[#6FBEE5] font-medium">♻️ Sui Storage Rebate</span> :
                                                         tx.label === "Smart Contract Interaction" ? <span className="text-purple-400 font-medium">⚡ Smart Contract Interaction</span> :
                                                             (<>
                                                                 {tx.from && `From: ${tx.from}`}
