@@ -74,8 +74,8 @@ export function Header() {
                         }}
                         className="flex items-center gap-2 sm:gap-3 flex-shrink-0 hover:opacity-80 transition-opacity"
                     >
-                        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl overflow-hidden flex-shrink-0 transition-transform active:scale-95 duration-200">
-                            <SuiMindLogo />
+                        <div className="w-14 h-14 sm:w-14 sm:h-14 rounded-2xl overflow-hidden flex-shrink-0 transition-transform active:scale-95 duration-200">
+                            <SuiMindLogo className="w-13 h-13" />
                         </div>
                         <h1 className="text-lg sm:text-2xl font-bold">SuiMind</h1>
                     </Link>

@@ -136,9 +136,9 @@ export default function InsightsPage() {
                     <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8">
                         {/* Interactive Icon Orb */}
                         <div className="relative shrink-0 animate-bounce-subtle">
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#6FBEE5] to-[#A890FE] blur-xl opacity-40 animate-pulse" />
-                            <div className="relative w-16 h-16 rounded-[22px] bg-gradient-to-br from-[#6FBEE5]/20 via-[#4A9FD8]/20 to-[#A890FE]/20 flex items-center justify-center border border-white/20 shadow-2xl">
-                                <MindyAILogo className="w-8 h-8 text-white" />
+                            <div className="absolute inset-0 blur-xl opacity-40 animate-pulse" />
+                            <div className="w-30 h-30 bg-transparent items-center justify-center">
+                                <MindyAILogo className="w-30 h-30"/>
                             </div>
                         </div>
 
