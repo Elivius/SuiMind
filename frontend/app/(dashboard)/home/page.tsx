@@ -6,7 +6,7 @@ import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
   Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus,
-  Wallet, Info
+  Wallet, Info, HelpingHand
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
@@ -703,7 +703,7 @@ export default function HomePage() {
                           <button
                             onClick={() => setShowConfirmSend(true)}
                             disabled={isSending || (parseFloat(amount) || 0) <= 0 || (parseFloat(amount) || 0) > walletBalance || !recipient.startsWith('0x')}
-                            className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+                            className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
                             <span className="relative z-10 flex items-center justify-center gap-2 text-xl text-white">
@@ -752,7 +752,7 @@ export default function HomePage() {
                           <button
                             onClick={handleSend}
                             disabled={isSending}
-                            className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+                            className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
                             <span className="relative z-10 flex items-center justify-center gap-2 text-xl text-white">
@@ -1011,7 +1011,7 @@ export default function HomePage() {
                             <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
                               {isSending ? (
                                 <>
-                                  <div className="w-5 h-5 text-white border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                                  <div className="w-5 h-5 border-3 border-black/20 border-t-black rounded-full animate-spin" />
                                   Processing...
                                 </>
                               ) : (
@@ -1210,7 +1210,9 @@ export default function HomePage() {
                             : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
                           }`}
                       >
-                        {tx.type === "receive" ? (
+                        {tx.label === "Sui Storage Rebate" ? (
+                          <HelpingHand className="w-5 h-5 text-white stroke-[2px]" />
+                        ) : tx.type === "receive" ? (
                           <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" />
                         ) : tx.type === "send" ? (
                           <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" />
@@ -1224,7 +1226,7 @@ export default function HomePage() {
                         <p className="text-xs text-white/60 mt-1">
                           {tx.label === "Sui Storage Rebate" ? (
                             <div className="flex items-center gap-1.5 group/tooltip relative">
-                              <span className="text-[#6FBEE5] cursor-help">♻️ {tx.label}</span>
+                              <span className="text-[#6FBEE5] font-bold cursor-help">♻️ {tx.label}</span>
                               <Info className="w-3.5 h-3.5 text-white/60" />
 
                               {/* Tooltip */}
@@ -1235,7 +1237,7 @@ export default function HomePage() {
                             </div>
                           ) : tx.label === "Smart Contract Interaction" ? (
                             <div className="flex items-center gap-1.5 group/tooltip relative">
-                              <span className="text-purple-400 cursor-help">⚡ {tx.label}</span>
+                              <span className="text-purple-400 font-bold cursor-help">⚡ {tx.label}</span>
                               <Info className="w-3.5 h-3.5 text-white/60" />
 
                               {/* Tooltip */}
