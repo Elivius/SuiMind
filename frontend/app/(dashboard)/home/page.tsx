@@ -1,12 +1,12 @@
 "use client"
 
-import { Button, Card, Skeleton } from "@/components/ui"
-import { processTx, mistToSui, formatSuiAmount } from "@/lib/utils"
+import { Button, Card, Skeleton, CopyAddress } from "@/components/ui"
+import { processTx, mistToSui, formatSuiAmount, truncateAddress } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
   Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus,
-  Wallet
+  Wallet, Info
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -21,6 +21,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
 import { PACKAGE_ID } from "@/lib/config";
+import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
 
 
 
@@ -830,7 +831,7 @@ export default function HomePage() {
               >
                 Recent Activity
               </Button>
-              <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2">
+              <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2 pt-12 -mt-12">
                 {isTransactionLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <div
@@ -877,12 +878,44 @@ export default function HomePage() {
                         <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                         <p className="text-xs text-white/60">{tx.time}</p>
                         <p className="text-xs text-white/60 mt-1">
-                          {tx.label === "Sui Storage Rebate" ? <span className="text-[#6FBEE5]">♻️ Sui Storage Rebate</span> :
-                            tx.label === "Smart Contract Interaction" ? <span className="text-purple-400">⚡ Smart Contract Interaction</span> :
-                              (<>
-                                {tx.from && `From: ${tx.from}`}
-                                {tx.to && `To: ${tx.to}`}
-                              </>)}
+                          {tx.label === "Sui Storage Rebate" ? (
+                            <div className="flex items-center gap-1.5 group/tooltip relative">
+                              <span className="text-[#6FBEE5] cursor-help">♻️ {tx.label}</span>
+                              <Info className="w-3.5 h-3.5 text-white/60" />
+
+                              {/* Tooltip */}
+                              <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-xs text-white invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-all z-50 pointer-events-none shadow-xl">
+                                {TX_DESC_STORAGE_REBATE}
+                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-black/80"></div>
+                              </div>
+                            </div>
+                          ) : tx.label === "Smart Contract Interaction" ? (
+                            <div className="flex items-center gap-1.5 group/tooltip relative">
+                              <span className="text-purple-400 cursor-help">⚡ {tx.label}</span>
+                              <Info className="w-3.5 h-3.5 text-white/60" />
+
+                              {/* Tooltip */}
+                              <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-xs text-white invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-all z-50 pointer-events-none shadow-xl">
+                                {TX_DESC_CONTRACT_INTERACTION}
+                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-black/80"></div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-0.5">
+                              {tx.from && (
+                                <div className="flex items-center text-white/80">
+                                  <span className="mr-1">From:</span>
+                                  <CopyAddress fullAddress={tx.from} displayAddress={truncateAddress(tx.from)} />
+                                </div>
+                              )}
+                              {tx.to && (
+                                <div className="flex items-center text-white/60">
+                                  <span className="mr-1">To:</span>
+                                  <CopyAddress fullAddress={tx.to} displayAddress={truncateAddress(tx.to)} />
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </p>
                       </div>
                       <span className="text-sm text-white">{tx.usd}</span>
