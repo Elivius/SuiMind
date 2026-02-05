@@ -1,14 +1,14 @@
 from google.adk.agents import Agent
 
 from tools import get_current_time
-from config import GEMINI_3_FLASH_PREVIEW
+from config import GEMINI_2_5_FLASH
 from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 
 # The Semantic Parser
 parser_agent = None
 parser_agent = Agent(
     name="parser_agent",
-    model=GEMINI_3_FLASH_PREVIEW,
+    model=GEMINI_2_5_FLASH,
     description="Translates raw Sui transaction JSON into human-friendly language.",
     instruction=f"""
     You are the SuiMind Parser Agent.
@@ -29,6 +29,11 @@ parser_agent = Agent(
         - Addresses: [View Account on Suiscan](https://suiscan.xyz/testnet/account/<ADDRESS>)
         - Objects: [View Object on Suiscan](https://suiscan.xyz/testnet/object/<OBJECT_ID>)
     - List all relevant links at the end of your response as a "References" section.
+
+    DELEGATION PROTOCOL (The Handoff):
+    - Your job is to make the data human-readable.
+    - Once you have generated the plain English summary and Suiscan links, STOP.
+    - After execute, pass your human-readable summary to the 'analyst_agent' for the final security, analysis and strategy check.
     
     {GLOBAL_KNOWLEDGE}
     {SUI_KNOWLEDGE}

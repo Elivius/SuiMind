@@ -8,6 +8,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit"
 import { processTx, formatSuiAmount } from "@/lib/utils"
 import { MindyAILogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 export default function RecentActivityPage() {
     const itemsPerPage = 10
@@ -514,13 +515,21 @@ export default function RecentActivityPage() {
                                                     }`}>
                                                     <div className="text-sm leading-relaxed break-words">
                                                         <ReactMarkdown
+                                                            remarkPlugins={[remarkGfm]}
                                                             components={{
                                                                 p: ({ node: _node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                                                                 strong: ({ node: _node, ...props }) => <span className="font-bold text-white" {...props} />,
                                                                 ul: ({ node: _node, ...props }) => <ul className="list-disc ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                                                 ol: ({ node: _node, ...props }) => <ol className="list-decimal ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                                                 li: ({ node: _node, ...props }) => <li {...props} />,
-                                                                a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />
+                                                                table: ({ node: _node, ...props }) => <div className="overflow-x-auto my-4"><table className="w-full border-collapse border border-white/20 text-sm" {...props} /></div>,
+                                                                thead: ({ node: _node, ...props }) => <thead className="bg-white/10" {...props} />,
+                                                                tbody: ({ node: _node, ...props }) => <tbody {...props} />,
+                                                                tr: ({ node: _node, ...props }) => <tr className="border-b border-white/10 last:border-0" {...props} />,
+                                                                th: ({ node: _node, ...props }) => <th className="px-4 py-2 text-left font-bold text-white border-r border-white/10 last:border-0" {...props} />,
+                                                                td: ({ node: _node, ...props }) => <td className="px-4 py-2 text-white/80 border-r border-white/10 last:border-0" {...props} />,
+                                                                a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                                                                hr: ({ node: _node, ...props }) => <hr className="my-4 border-t border-white/60" {...props} />
                                                             }}
                                                         >
                                                             {msg.content}
