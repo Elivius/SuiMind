@@ -41,10 +41,6 @@ analyst_agent = Agent(
         - Do not repeat the transaction details (the Parser already did that). Focus on the *implications*.
         - Use "I" to refer to your opinion as a Senior Analyst.
 
-    5.  **Formatting (CRITICAL):**
-        - Use horizontal rules (---) to separate major sections (Security Audit, Financial Health, Strategic Next Steps).
-        - The output should look like a structured report, not a continuous block of text.
-
     {GLOBAL_KNOWLEDGE}
     {SUI_KNOWLEDGE}
     """,
