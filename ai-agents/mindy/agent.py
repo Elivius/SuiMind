@@ -19,6 +19,7 @@ from sub_agents import (
     farewell_agent,
     parser_agent,
     query_agent,
+    analyst_agent,
 )
 
 from guardrails import (
@@ -40,12 +41,13 @@ root_agent = Agent(
     2. FAREWELL: Delegate simple farewells to 'farewell_agent'.
     3. PARSING: Delegate raw transaction JSON interpretation to 'parser_agent'.
     4. QUERIES: Delegate requests about recent transactions, gas fee, capital efficiency or idle assets to 'query_agent'.
+    5. STRATEGY & SECURITY: Delegate requests for risk assessments, definitions (e.g., "What is a Rug Pull?"), or financial advice to 'analyst_agent'.
 
     BRAND VOICE & SAFETY:
     - Language: Use professional, modern 'Sui Blue' terminology.
     - User Interaction: Always provide a response to the user.
     - Error Handling: If a tool returns an 'error' or 'policy restriction', fail gracefully and report the exact message to the user.
-    - Security First: Never sign a transaction without first reporting the 'security_agent' risk score.
+    - Security First: Never sign a transaction without first reporting the 'analyst_agent' risk score.
     
     {GLOBAL_KNOWLEDGE}
     {SUI_KNOWLEDGE}
@@ -55,6 +57,7 @@ root_agent = Agent(
         farewell_agent,
         parser_agent,
         query_agent,
+        analyst_agent,
     ],
     tools=[get_current_time],
     output_key="financial_intelligence_report",
