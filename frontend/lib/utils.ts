@@ -82,7 +82,6 @@ export function processTx(node: any, address?: string) {
 
   // 4. Find Counterparty
   const counterparty = findCounterparty(balanceChanges, address, type);
-  const counterpartyLabel = truncateAddress(counterparty);
 
   const status = node.effects?.status === "SUCCESS" ? "Completed" : "Failed";
 
@@ -134,8 +133,8 @@ export function processTx(node: any, address?: string) {
     time: formatRelativeTime(timestampMs),
     timestampMs,
     // Only set 'from' if receiving (or explicit from), 'to' if sending
-    from: type === "receive" ? counterpartyLabel : null,
-    to: type === "send" ? counterpartyLabel : null,
+    from: type === "receive" ? counterparty : null,
+    to: type === "send" ? counterparty : null,
     status,
     gas_fee: gasFeeDisplay,
   };
