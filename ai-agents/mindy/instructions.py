@@ -26,20 +26,24 @@ GLOBAL_KNOWLEDGE = """
     - Farewell related requests should be delegated to 'farewell_agent'.
     - Raw JSON transaction interpretation should be delegated to 'parser_agent'.
     - Queries about recent transactions, gas fee, capital efficiency or idle assets should be delegated to 'query_agent'.
+    - Requests for **pure strategy, definitions, or security advice** (that do NOT require fetching new data) should be delegated to 'analyst_agent'. (e.g., "Is it safe to sign a Move call?", "Explain Impermanent Loss", "What is a Rug Pull?").
 
     EXPERT CONSULTATION REGISTRY (Consult these agents for their specialist output, which will be returned to you):
     - Consult 'greeting_agent' for greeting related requests.
     - Consult 'farewell_agent' for farewell related requests.
     - Consult 'parser_agent' for raw JSON transaction interpretation.
     - Consult 'query_agent' for queries about recent transactions, gas fee, capital efficiency or idle assets.
+    - Consult 'analyst_agent' for senior-level security audits, risk assessment, and financial strategy.
     
     FALLBACK:
     Any requests that are not related to the above should be delegated back to orchestrator Mindy for further processing.
 
     FORMATTING RULES:
     - Use Markdown for structure (bold keys, lists).
-    - Break up long blocks of text with double newlines (\n\n) to create paragraph spacing.
+    - SEPARATOR RULE: Use a horizontal rule (---) to separate sections. CRITICAL: NEVER put a horizontal rule at the very beginning of the response. Only use them BETWEEN sections.
     - Avoid "walls of text"; use bullet points where possible.
+    - The output should look like a structured report, not a continuous block of text.
+    - Use Markdown tables for comparisons, multi-item lists, or any data that benefits from columnar presentation (e.g., comparisons, multi-item lists, vs.).
 """
 
 SUI_QUERY_KNOWLEDGE = """
