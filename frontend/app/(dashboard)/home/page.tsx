@@ -877,8 +877,12 @@ export default function HomePage() {
                         <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                         <p className="text-xs text-white/60">{tx.time}</p>
                         <p className="text-xs text-white/60 mt-1">
-                          {tx.from && `From: ${tx.from}`}
-                          {tx.to && `To: ${tx.to}`}
+                          {tx.label === "Sui Storage Rebate" ? <span className="text-[#6FBEE5]">♻️ Sui Storage Rebate</span> :
+                            tx.label === "Smart Contract Interaction" ? <span className="text-purple-400">⚡ Smart Contract Interaction</span> :
+                              (<>
+                                {tx.from && `From: ${tx.from}`}
+                                {tx.to && `To: ${tx.to}`}
+                              </>)}
                         </p>
                       </div>
                       <span className="text-sm text-white">{tx.usd}</span>

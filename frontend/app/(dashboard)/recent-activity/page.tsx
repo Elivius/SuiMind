@@ -310,8 +310,12 @@ export default function RecentActivityPage() {
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-white">
                                                     <div className="flex flex-col gap-0.5">
-                                                        {tx.from && <span>From: {tx.from}</span>}
-                                                        {tx.to && <span>To: {tx.to}</span>}
+                                                        {tx.label === "Sui Storage Rebate" ? <span className="text-[#6FBEE5] font-medium">♻️ Sui Storage Rebate</span> :
+                                                            tx.label === "Smart Contract Interaction" ? <span className="text-purple-400 font-medium">⚡ Smart Contract Interaction</span> :
+                                                                (<>
+                                                                    {tx.from && <span>From: {tx.from}</span>}
+                                                                    {tx.to && <span>To: {tx.to}</span>}
+                                                                </>)}
                                                     </div>
                                                     {tx.gas_fee && <div className="text-xs text-white/50 mt-1">Gas Fee: {tx.gas_fee}</div>}
                                                 </td>
@@ -386,8 +390,12 @@ export default function RecentActivityPage() {
                                         <div className="flex items-center justify-between gap-2">
                                             <div className="text-[11px] text-white/70 truncate flex-1 flex flex-col gap-0.5">
                                                 <div className="truncate">
-                                                    {tx.from && `From: ${tx.from}`}
-                                                    {tx.to && `To: ${tx.to}`}
+                                                    {tx.label === "Sui Storage Rebate" ? <span className="text-[#6FBEE5] font-medium">♻️ Sui Storage Rebate</span> :
+                                                        tx.label === "Smart Contract Interaction" ? <span className="text-purple-400 font-medium">⚡ Smart Contract Interaction</span> :
+                                                            (<>
+                                                                {tx.from && `From: ${tx.from}`}
+                                                                {tx.to && `To: ${tx.to}`}
+                                                            </>)}
                                                 </div>
                                                 {tx.gas_fee && <div className="text-white/50">Gas Fee: {tx.gas_fee}</div>}
                                             </div>
