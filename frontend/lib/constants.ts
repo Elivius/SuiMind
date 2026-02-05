@@ -15,3 +15,7 @@ export const MIST_PER_SUI = 1_000_000_000;
 
 // For graphQL return data matching
 export const GQL_SUI_COIN_TYPE = "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+
+// Transaction descriptions to display when user hover (Recent Activity Page and Home Page)
+export const TX_DESC_STORAGE_REBATE = "Refund of storage fees for deleting data on-chain.";
+export const TX_DESC_CONTRACT_INTERACTION = "Interaction with a smart contract on the Sui network. (Typically Gas Fee)";

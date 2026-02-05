@@ -1,13 +1,15 @@
 "use client"
 
-import { Button, Card, Skeleton } from "@/components/ui"
-import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, TrendingUp, CheckCircle2, Filter, Activity, Clock, Check, Bot, Users, Square, Trash2 } from "lucide-react"
+import { Button, Card, Skeleton, CopyAddress } from "@/components/ui"
+import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, TrendingUp, CheckCircle2, Filter, Activity, Clock, Check, Bot, Users, Square, Trash2, Info } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { useGetDetailTransactions, useMindyAgent } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
-import { processTx, formatSuiAmount } from "@/lib/utils"
+import { processTx, formatSuiAmount, truncateAddress } from "@/lib/utils"
 import { MindyAILogo } from "@/components/icons"
+import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 export default function RecentActivityPage() {
     const itemsPerPage = 10
@@ -257,7 +259,7 @@ export default function RecentActivityPage() {
                                         <th className="px-6 py-4 text-sm font-semibold text-white">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/10">
+                                <tbody className="divide-y divide-white/10 pt-12 -mt-12">
                                     {isTransactionLoading ? (
                                         // Skeleton Rows
                                         Array.from({ length: 5 }).map((_, i) => (
@@ -309,8 +311,44 @@ export default function RecentActivityPage() {
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-white">
                                                     <div className="flex flex-col gap-0.5">
-                                                        {tx.from && <span>From: {tx.from}</span>}
-                                                        {tx.to && <span>To: {tx.to}</span>}
+                                                        {tx.label === "Sui Storage Rebate" ? (
+                                                            <div className="flex items-center gap-1.5 group/tooltip relative z-50">
+                                                                <span className="text-[#6FBEE5] font-medium cursor-help">♻️ {tx.label}</span>
+                                                                <Info className="w-3.5 h-3.5 text-white/60" />
+
+                                                                {/* Tooltip */}
+                                                                <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-xs text-white invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-all z-50 pointer-events-none">
+                                                                    {TX_DESC_STORAGE_REBATE}
+                                                                    <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-black/80"></div>
+                                                                </div>
+                                                            </div>
+                                                        ) : tx.label === "Smart Contract Interaction" ? (
+                                                            <div className="flex items-center gap-1.5 group/tooltip relative z-50">
+                                                                <span className="text-purple-400 font-medium cursor-help">⚡ {tx.label}</span>
+                                                                <Info className="w-3.5 h-3.5 text-white/60" />
+
+                                                                {/* Tooltip */}
+                                                                <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-xs text-white invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-all z-50 pointer-events-none">
+                                                                    {TX_DESC_CONTRACT_INTERACTION}
+                                                                    <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-black/80"></div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                {tx.from && (
+                                                                    <div className="flex items-center">
+                                                                        <span className="mr-1">From:</span>
+                                                                        <CopyAddress fullAddress={tx.from} displayAddress={truncateAddress(tx.from)} />
+                                                                    </div>
+                                                                )}
+                                                                {tx.to && (
+                                                                    <div className="flex items-center">
+                                                                        <span className="mr-1">To:</span>
+                                                                        <CopyAddress fullAddress={tx.to} displayAddress={truncateAddress(tx.to)} />
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        )}
                                                     </div>
                                                     {tx.gas_fee && <div className="text-xs text-white/50 mt-1">Gas Fee: {tx.gas_fee}</div>}
                                                 </td>
@@ -383,10 +421,46 @@ export default function RecentActivityPage() {
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-2">
-                                            <div className="text-[11px] text-white/70 truncate flex-1 flex flex-col gap-0.5">
-                                                <div className="truncate">
-                                                    {tx.from && `From: ${tx.from}`}
-                                                    {tx.to && `To: ${tx.to}`}
+                                            <div className="text-[11px] text-white/70 flex-1 flex flex-col gap-0.5">
+                                                <div>
+                                                    {tx.label === "Sui Storage Rebate" ? (
+                                                        <div className="flex items-center gap-1.5 group/tooltip relative z-50">
+                                                            <span className="text-[#6FBEE5] font-medium cursor-help">♻️ {tx.label}</span>
+                                                            <Info className="w-3.5 h-3.5 text-white/60" />
+
+                                                            {/* Tooltip */}
+                                                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-xs text-white invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-all z-50 pointer-events-none">
+                                                                {TX_DESC_STORAGE_REBATE}
+                                                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-black/80"></div>
+                                                            </div>
+                                                        </div>
+                                                    ) : tx.label === "Smart Contract Interaction" ? (
+                                                        <div className="flex items-center gap-1.5 group/tooltip relative z-50">
+                                                            <span className="text-purple-400 font-medium cursor-help">⚡ {tx.label}</span>
+                                                            <Info className="w-3.5 h-3.5 text-white/60" />
+
+                                                            {/* Tooltip */}
+                                                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-xs text-white invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-all z-50 pointer-events-none">
+                                                                {TX_DESC_CONTRACT_INTERACTION}
+                                                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-black/80"></div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            {tx.from && (
+                                                                <div className="flex items-center gap-1 text-white">
+                                                                    <span>From:</span>
+                                                                    <CopyAddress fullAddress={tx.from} displayAddress={truncateAddress(tx.from)} />
+                                                                </div>
+                                                            )}
+                                                            {tx.to && (
+                                                                <div className="flex items-center gap-1 text-white">
+                                                                    <span>To:</span>
+                                                                    <CopyAddress fullAddress={tx.to} displayAddress={truncateAddress(tx.to)} />
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    )}
                                                 </div>
                                                 {tx.gas_fee && <div className="text-white/50">Gas Fee: {tx.gas_fee}</div>}
                                             </div>
@@ -514,13 +588,24 @@ export default function RecentActivityPage() {
                                                     }`}>
                                                     <div className="text-sm leading-relaxed break-words">
                                                         <ReactMarkdown
+                                                            remarkPlugins={[remarkGfm]}
                                                             components={{
                                                                 p: ({ node: _node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                                                h1: ({ node: _node, ...props }) => <h1 className="text-2xl font-bold text-white mt-6 mb-4" {...props} />,
+                                                                h2: ({ node: _node, ...props }) => <h2 className="text-xl font-bold text-white mt-5 mb-3" {...props} />,
+                                                                h3: ({ node: _node, ...props }) => <h3 className="text-lg font-bold text-white mt-4 mb-2" {...props} />,
                                                                 strong: ({ node: _node, ...props }) => <span className="font-bold text-white" {...props} />,
                                                                 ul: ({ node: _node, ...props }) => <ul className="list-disc ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                                                 ol: ({ node: _node, ...props }) => <ol className="list-decimal ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                                                 li: ({ node: _node, ...props }) => <li {...props} />,
-                                                                a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />
+                                                                table: ({ node: _node, ...props }) => <div className="overflow-x-auto my-4"><table className="w-full border-collapse border border-white/20 text-sm" {...props} /></div>,
+                                                                thead: ({ node: _node, ...props }) => <thead className="bg-white/10" {...props} />,
+                                                                tbody: ({ node: _node, ...props }) => <tbody {...props} />,
+                                                                tr: ({ node: _node, ...props }) => <tr className="border-b border-white/10 last:border-0" {...props} />,
+                                                                th: ({ node: _node, ...props }) => <th className="px-4 py-2 text-left font-bold text-white border-r border-white/10 last:border-0" {...props} />,
+                                                                td: ({ node: _node, ...props }) => <td className="px-4 py-2 text-white/80 border-r border-white/10 last:border-0" {...props} />,
+                                                                a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                                                                hr: ({ node: _node, ...props }) => <hr className="my-4 border-t border-white/60" {...props} />
                                                             }}
                                                         >
                                                             {msg.content}
