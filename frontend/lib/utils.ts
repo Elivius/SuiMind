@@ -40,14 +40,6 @@ function safelyParseTimestamp(input: string | number | Date | null | undefined):
 }
 
 // ---- Process Transaction Helpers ----
-
-export function calculateTxDisplay(rawAmountMist: number) {
-  const rawAmountAbs = Math.abs(rawAmountMist);
-  const amountInSui = mistToSui(rawAmountAbs).toLocaleString("en-US", { maximumFractionDigits: 4 });
-  const isNegative = rawAmountMist < 0;
-  return `${isNegative ? "-" : "+"}${amountInSui} SUI`;
-}
-
 export function getTransactionType(rawAmountMist: number) {
   if (rawAmountMist < 0) return "send";
   if (rawAmountMist > 0) return "receive";
@@ -86,12 +78,10 @@ export function processTx(node: any, address?: string) {
 
   // 3. Calculate Amount & Type
   const rawAmountMIST = Number(myChange.amount);
-  const amountDisplay = calculateTxDisplay(rawAmountMIST);
   const type = getTransactionType(rawAmountMIST);
 
   // 4. Find Counterparty
   const counterparty = findCounterparty(balanceChanges, address, type);
-  const counterpartyLabel = truncateAddress(counterparty);
 
   const status = node.effects?.status === "SUCCESS" ? "Completed" : "Failed";
 
@@ -106,18 +96,45 @@ export function processTx(node: any, address?: string) {
     gasFeeDisplay = `${mistToSui(Math.max(0, netGasFee)).toLocaleString("en-US", { maximumFractionDigits: 4 })} SUI`;
   }
 
+  // 6. Determine Precise Label
+  let label = "Transaction";
+  const netGasForRebateCheck = (Number(gasSummary?.computationCost || 0) + Number(gasSummary?.storageCost || 0)) - Number(gasSummary?.storageRebate || 0);
+
+  // Check 1: Is it a Sui Storage Rebate? (Exact match between balance change and calculated negative gas)
+  // Use a small epsilon for float safety, though usually these are integers in MIST.
+  if (rawAmountMIST > 0 && Math.abs(rawAmountMIST - Math.abs(netGasForRebateCheck)) < 10 && netGasForRebateCheck < 0) {
+    label = "Sui Storage Rebate";
+  }
+  // Check 2: P2P Receive
+  else if (type === "receive" && counterparty !== "Unknown") {
+    label = "Received";
+  }
+  // Check 3: Contract/System Interaction (Received but unknown sender)
+  else if (type === "receive" && counterparty === "Unknown") {
+    label = "Smart Contract Interaction";
+  }
+  // Check 4: Sending
+  else if (type === "send") {
+    if (counterparty === "Unknown") {
+      label = "Smart Contract Interaction";
+    } else {
+      label = "Sent";
+    }
+  }
+
   const timestampMs = safelyParseTimestamp(node.effects?.timestamp);
 
   return {
     id: node.digest,
-    type,
+    type, // Send or Receive
+    label, // Received / Sent - P2P, Sui Storage Rebate, Smart Contract Interaction
     amount: Number(mistToSui(Math.abs(rawAmountMIST))),
     usd: "$0.00", // Need real price feed
     time: formatRelativeTime(timestampMs),
     timestampMs,
     // Only set 'from' if receiving (or explicit from), 'to' if sending
-    from: type === "receive" ? counterpartyLabel : null,
-    to: type === "send" ? counterpartyLabel : null,
+    from: type === "receive" ? counterparty : null,
+    to: type === "send" ? counterparty : null,
     status,
     gas_fee: gasFeeDisplay,
   };

@@ -1,12 +1,12 @@
 "use client"
 
-import { Button, Card, Skeleton } from "@/components/ui"
-import { processTx, mistToSui, formatSuiAmount } from "@/lib/utils"
+import { Button, Card, Skeleton, CopyAddress } from "@/components/ui"
+import { processTx, mistToSui, formatSuiAmount, truncateAddress } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
   Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus,
-  Wallet
+  Wallet, Info
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
@@ -19,9 +19,11 @@ import { Transaction } from '@mysten/sui/transactions'
 import { toBase64 } from '@mysten/sui/utils'
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
 import { PACKAGE_ID } from "@/lib/config";
 import { toast } from "sonner"
+import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
 
 
 
@@ -717,17 +719,17 @@ export default function HomePage() {
                         <div className="space-y-6">
                           <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
                             <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                              <span className="text-white/50 font-bold uppercase tracking-wider text-xs">Sending</span>
+                              <span className="text-white font-bold uppercase tracking-wider text-xs">Sending</span>
                               <span className="text-2xl font-black text-white">{amount} SUI</span>
                             </div>
                             <div className="space-y-2">
-                              <span className="text-white/50 font-bold uppercase tracking-wider text-xs block">To Recipient</span>
+                              <span className="text-white font-bold uppercase tracking-wider text-xs block">To Recipient</span>
                               <span className="text-sm font-mono text-white break-all bg-black/40 p-3 rounded-xl block border border-white/5">
                                 {recipient}
                               </span>
                             </div>
                             <div className="flex justify-between items-center pt-2">
-                              <span className="text-white/50 font-bold uppercase tracking-wider text-xs">Estimated Fee</span>
+                              <span className="text-white font-bold uppercase tracking-wider text-xs">Estimated Fee</span>
                               <span className="text-sm text-[#6FBEE5] font-bold">~0.002 SUI</span>
                             </div>
                           </div>
@@ -1173,7 +1175,7 @@ export default function HomePage() {
               >
                 Recent Activity
               </Button>
-              <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2">
+              <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2 pt-12 -mt-12">
                 {isTransactionLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <div
@@ -1220,8 +1222,44 @@ export default function HomePage() {
                         <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                         <p className="text-xs text-white/60">{tx.time}</p>
                         <p className="text-xs text-white/60 mt-1">
-                          {tx.from && `From: ${tx.from}`}
-                          {tx.to && `To: ${tx.to}`}
+                          {tx.label === "Sui Storage Rebate" ? (
+                            <div className="flex items-center gap-1.5 group/tooltip relative">
+                              <span className="text-[#6FBEE5] cursor-help">♻️ {tx.label}</span>
+                              <Info className="w-3.5 h-3.5 text-white/60" />
+
+                              {/* Tooltip */}
+                              <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-xs text-white invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-all z-50 pointer-events-none shadow-xl">
+                                {TX_DESC_STORAGE_REBATE}
+                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-black/80"></div>
+                              </div>
+                            </div>
+                          ) : tx.label === "Smart Contract Interaction" ? (
+                            <div className="flex items-center gap-1.5 group/tooltip relative">
+                              <span className="text-purple-400 cursor-help">⚡ {tx.label}</span>
+                              <Info className="w-3.5 h-3.5 text-white/60" />
+
+                              {/* Tooltip */}
+                              <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] p-2 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-xs text-white invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-all z-50 pointer-events-none shadow-xl">
+                                {TX_DESC_CONTRACT_INTERACTION}
+                                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-black/80"></div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-0.5">
+                              {tx.from && (
+                                <div className="flex items-center text-white/80">
+                                  <span className="mr-1">From:</span>
+                                  <CopyAddress fullAddress={tx.from} displayAddress={truncateAddress(tx.from)} />
+                                </div>
+                              )}
+                              {tx.to && (
+                                <div className="flex items-center text-white/60">
+                                  <span className="mr-1">To:</span>
+                                  <CopyAddress fullAddress={tx.to} displayAddress={truncateAddress(tx.to)} />
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </p>
                       </div>
                       <span className="text-sm text-white">{tx.usd}</span>
@@ -1309,13 +1347,24 @@ export default function HomePage() {
                           }`}>
                           <div className="text-sm leading-relaxed break-words">
                             <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
                               components={{
                                 p: ({ node: _node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                h1: ({ node: _node, ...props }) => <h1 className="text-2xl font-bold text-white mt-6 mb-4" {...props} />,
+                                h2: ({ node: _node, ...props }) => <h2 className="text-xl font-bold text-white mt-5 mb-3" {...props} />,
+                                h3: ({ node: _node, ...props }) => <h3 className="text-lg font-bold text-white mt-4 mb-2" {...props} />,
                                 strong: ({ node: _node, ...props }) => <span className="font-bold text-white" {...props} />,
                                 ul: ({ node: _node, ...props }) => <ul className="list-disc ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                 ol: ({ node: _node, ...props }) => <ol className="list-decimal ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                 li: ({ node: _node, ...props }) => <li {...props} />,
-                                a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />
+                                table: ({ node: _node, ...props }) => <div className="overflow-x-auto my-4"><table className="w-full border-collapse border border-white/20 text-sm" {...props} /></div>,
+                                thead: ({ node: _node, ...props }) => <thead className="bg-white/10" {...props} />,
+                                tbody: ({ node: _node, ...props }) => <tbody {...props} />,
+                                tr: ({ node: _node, ...props }) => <tr className="border-b border-white/10 last:border-0" {...props} />,
+                                th: ({ node: _node, ...props }) => <th className="px-4 py-2 text-left font-bold text-white border-r border-white/10 last:border-0" {...props} />,
+                                td: ({ node: _node, ...props }) => <td className="px-4 py-2 text-white/80 border-r border-white/10 last:border-0" {...props} />,
+                                a: ({ node: _node, ...props }) => <a className="text-[#6FBEE5] hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                                hr: ({ node: _node, ...props }) => <hr className="my-4 border-t border-white/60" {...props} /> // Subtle spacer line
                               }}
                             >
                               {msg.content}
