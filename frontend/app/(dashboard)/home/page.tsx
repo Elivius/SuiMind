@@ -1163,7 +1163,7 @@ export default function HomePage() {
                     </div>
                     <div>
                       <h2 className="text-2xl font-black tracking-tight">AI Insight</h2>
-                      <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">Smart Analysis</p>
+                      <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">By Mindy AI</p>
                     </div>
                   </div>
                   <button
@@ -1301,6 +1301,7 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
       {/* Expenses Breakdown Modal */}
       {expensesModal.isOpen && (
         <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
