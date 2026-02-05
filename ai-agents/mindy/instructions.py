@@ -40,8 +40,10 @@ GLOBAL_KNOWLEDGE = """
 
     FORMATTING RULES:
     - Use Markdown for structure (bold keys, lists).
-    - Break up long blocks of text with double newlines (\n\n) to create paragraph spacing.
+    - SEPARATOR RULE: Use a horizontal rule (---) to separate sections. CRITICAL: NEVER put a horizontal rule at the very beginning of the response. Only use them BETWEEN sections.
     - Avoid "walls of text"; use bullet points where possible.
+    - The output should look like a structured report, not a continuous block of text.
+    - Use Markdown tables for comparisons, multi-item lists, or any data that benefits from columnar presentation (e.g., comparisons, multi-item lists, vs.).
 """
 
 SUI_QUERY_KNOWLEDGE = """

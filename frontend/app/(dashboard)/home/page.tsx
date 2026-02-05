@@ -1006,6 +1006,9 @@ export default function HomePage() {
                               remarkPlugins={[remarkGfm]}
                               components={{
                                 p: ({ node: _node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                h1: ({ node: _node, ...props }) => <h1 className="text-2xl font-bold text-white mt-6 mb-4" {...props} />,
+                                h2: ({ node: _node, ...props }) => <h2 className="text-xl font-bold text-white mt-5 mb-3" {...props} />,
+                                h3: ({ node: _node, ...props }) => <h3 className="text-lg font-bold text-white mt-4 mb-2" {...props} />,
                                 strong: ({ node: _node, ...props }) => <span className="font-bold text-white" {...props} />,
                                 ul: ({ node: _node, ...props }) => <ul className="list-disc ml-4 mt-2 mb-2 space-y-1" {...props} />,
                                 ol: ({ node: _node, ...props }) => <ol className="list-decimal ml-4 mt-2 mb-2 space-y-1" {...props} />,
