@@ -41,6 +41,8 @@ export default function HomePage() {
   const [requestRecipient, setRequestRecipient] = useState('');
   const [requestAmount, setRequestAmount] = useState('');
   const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
 
   // setup GraphQLClient
@@ -112,18 +114,18 @@ export default function HomePage() {
 
       if (status === 'SUCCESS' || status?.status === 'success') {
         await onTransactionSuccess();
-        setShowSendUI(false);
+        // setShowSendUI(false); 
         setShowConfirmSend(false);
         setAmount('');
         setRecipient('');
         setActiveRequestObject(null);
         refetch();
-        toast.success("Transaction Successful!", {
-          description: `Digest: ${digest.slice(0, 10)}...${digest.slice(-10)}`,
-        });
+        setSuccessMessage("Transaction Successful!");
+        setShowSuccess(true);
+        // toast.success("Transaction Successful!", {
+        //   description: `Digest: ${digest.slice(0, 10)}...${digest.slice(-10)}`,
+        // });
         playSound('success');
-
-
       } else {
         const detail = status?.error || "Check console for effects object";
         toast.error(`On-chain Failure: ${detail}`);
@@ -171,12 +173,14 @@ export default function HomePage() {
       });
 
       if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
-        toast.success("Request Object sent successfully!");
+        // toast.success("Request Object sent successfully!");
         playSound('request_success');
-        setShowRequestUI(false);
+        // setShowRequestUI(false);
         setShowConfirmRequest(false);
         setRequestAmount('');
         setRequestRecipient('');
+        setSuccessMessage("Request sent successfully!");
+        setShowSuccess(true);
       }
     } catch (e: any) {
       console.error("Request failed:", e);
@@ -233,9 +237,9 @@ export default function HomePage() {
         const execution: any = result.data?.executeTransaction;
         const statusObj = execution?.effects?.status;
 
-        const isSuccess = statusObj === 'SUCCESS' || statusObj?.status === 'success';
+        const isSuccessStatus = statusObj === 'SUCCESS' || statusObj?.status === 'success';
 
-        if (isSuccess) {
+        if (isSuccessStatus) {
           await onTransactionSuccess();
           toast.success("Request rejected successfully.");
           refetch();
@@ -254,6 +258,16 @@ export default function HomePage() {
     window.addEventListener('REJECT_REQUEST', handleRejectRequest);
     return () => window.removeEventListener('REJECT_REQUEST', handleRejectRequest);
   }, [account, signTransaction, gqlClient, refetch]);
+
+  useEffect(() => {
+    if (!showNewSendUI && !showNewRequestUI) {
+      setTimeout(() => {
+        setShowSuccess(false);
+        setShowConfirmSend(false);
+        setShowConfirmRequest(false);
+      }, 300);
+    }
+  }, [showNewSendUI, showNewRequestUI]);
 
   useEffect(() => {
     const handleClearPaid = async (event: any) => {
@@ -476,7 +490,7 @@ export default function HomePage() {
             {/* Right side: Send & Request Buttons */}
             <div className="flex flex-row lg:flex-col gap-3">
               <Button
-                onClick={() => setShowSendUI(true)} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => { setShowSendUI(true); setShowSuccess(false); }} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0">
                   <SendHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors ml-0.5" />
@@ -486,7 +500,7 @@ export default function HomePage() {
                 </div>
               </Button>
               <Button
-                onClick={() => setShowRequestUI(true)} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => { setShowRequestUI(true); setShowSuccess(false); }} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
                   <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
@@ -545,157 +559,217 @@ export default function HomePage() {
                   </button>
                 </div>
 
-                {/* Available Balance */}
-                <div className="mb-8 p-5 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between">
-                  <div>
-                    <p className="text-white text-xs font-bold uppercase tracking-widest mb-1">Available Balance</p>
-                    <p className="text-2xl font-black text-white">
-                      {walletBalance.toLocaleString("en-US", {
-                        minimumFractionDigits: 4,
-                        maximumFractionDigits: 4
-                      })}
-                      <span className="text-lg font-bold text-[#6FBEE5] ml-2">SUI</span>
-                    </p>
-                  </div>
-                  <div className="bg-[#6FBEE5]/10 p-3 rounded-xl border border-[#6FBEE5]/20">
-                    <Wallet className="w-6 h-6 text-[#6FBEE5]" />
-                  </div>
-                </div>
-
-                {!showConfirmSend ? (
-                  <>
-                    {/* Form Fields */}
-                    <div className="space-y-6">
-                      <div className="group">
-                        <label className="block text-white text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
-                          Recipient Address
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="0x..."
-                            value={recipient}
-                            onChange={(e) => setRecipient(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all font-mono text-sm"
+                {showSuccess ? (
+                  <Motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center justify-center py-12 space-y-8"
+                  >
+                    <div className="relative">
+                      <Motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                        className="w-24 h-24 bg-[#6FBEE5]/20 rounded-full flex items-center justify-center border-2 border-[#6FBEE5]/50 shadow-[0_0_40px_rgba(111,190,229,0.2)]"
+                      >
+                        <Motion.svg
+                          width="48"
+                          height="48"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-[#6FBEE5]"
+                        >
+                          <Motion.path
+                            d="M20 6L9 17L4 12"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 1 }}
+                            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
                           />
-                        </div>
-                      </div>
-
-                      <div className="group">
-                        <label className="block text-white text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
-                          Amount
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="0.00"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all text-3xl font-black"
-                          />
-                          <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
-                            <div className="flex flex-col border-r border-white/10 pr-4">
-                              <button
-                                onClick={() => setAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
-                                className="text-white/20 hover:text-[#6FBEE5] transition-colors"
-                              >
-                                <ArrowUp className="w-5 h-5" />
-                              </button>
-                              <button
-                                onClick={() => setAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
-                                className="text-white/20 hover:text-[#6FBEE5] transition-colors"
-                              >
-                                <ArrowDown className="w-5 h-5" />
-                              </button>
-                            </div>
-                            <span className="text-[#6FBEE5] font-black text-xl">SUI</span>
-                          </div>
-                        </div>
-                      </div>
+                        </Motion.svg>
+                      </Motion.div>
+                      <Motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: [1, 1.5, 1], opacity: [0, 1, 0] }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="absolute inset-0 bg-[#6FBEE5]/30 rounded-full -z-10"
+                      />
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-4 mt-10">
-                      <button
-                        onClick={() => {
-                          setShowSendUI(false);
-                          setRecipient('');
-                          setAmount('');
-                        }}
-                        className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => setShowConfirmSend(true)}
-                        disabled={isSending || (parseFloat(amount) || 0) <= 0 || (parseFloat(amount) || 0) > walletBalance || !recipient.startsWith('0x')}
-                        className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                        <span className="relative z-10 flex items-center justify-center gap-2 text-xl">
-                          Next
-                          <ArrowUpRight className="w-7 h-7" />
-                        </span>
-                      </button>
+                    <div className="text-center space-y-2">
+                      <h3 className="text-3xl font-black text-white tracking-tight">{successMessage}</h3>
+                      <p className="text-[#6FBEE5] font-medium">Transaction completed successfully</p>
                     </div>
-                  </>
+
+                    <button
+                      onClick={() => setShowSendUI(false)}
+                      className="w-full py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] group relative overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                      <span className="relative z-10 flex items-center justify-center gap-3 text-white text-2xl">
+                        Done
+                        <CheckCircle2 className="w-8 h-8 text-white" />
+                      </span>
+                    </button>
+                  </Motion.div>
                 ) : (
                   <>
-                    {/* Confirmation View */}
-                    <div className="space-y-6">
-                      <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
-                        <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                          <span className="text-white/50 font-bold uppercase tracking-wider text-xs">Sending</span>
-                          <span className="text-2xl font-black text-white">{amount} SUI</span>
-                        </div>
-                        <div className="space-y-2">
-                          <span className="text-white/50 font-bold uppercase tracking-wider text-xs block">To Recipient</span>
-                          <span className="text-sm font-mono text-white break-all bg-black/40 p-3 rounded-xl block border border-white/5">
-                            {recipient}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center pt-2">
-                          <span className="text-white/50 font-bold uppercase tracking-wider text-xs">Estimated Fee</span>
-                          <span className="text-sm text-[#6FBEE5] font-bold">~0.002 SUI</span>
-                        </div>
-                      </div>
-
-                      <div className="bg-[#6FBEE5]/10 p-4 rounded-xl border border-[#6FBEE5]/20 flex items-start gap-3">
-                        <Zap className="w-5 h-5 text-[#6FBEE5] flex-shrink-0 mt-0.5" />
-                        <p className="text-xs text-[#6FBEE5] leading-relaxed">
-                          Transactions on Sui are permanent. Please double-check the recipient address before confirming.
+                    {/* Available Balance */}
+                    <div className="mb-8 p-5 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between">
+                      <div>
+                        <p className="text-white text-xs font-bold uppercase tracking-widest mb-1">Available Balance</p>
+                        <p className="text-2xl font-black text-white">
+                          {walletBalance.toLocaleString("en-US", {
+                            minimumFractionDigits: 4,
+                            maximumFractionDigits: 4
+                          })}
+                          <span className="text-lg font-bold text-[#6FBEE5] ml-2">SUI</span>
                         </p>
                       </div>
+                      <div className="bg-[#6FBEE5]/10 p-3 rounded-xl border border-[#6FBEE5]/20">
+                        <Wallet className="w-6 h-6 text-[#6FBEE5]" />
+                      </div>
                     </div>
 
-                    <div className="flex gap-4 mt-10">
-                      <button
-                        onClick={() => setShowConfirmSend(false)}
-                        className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
-                      >
-                        Back
-                      </button>
-                      <button
-                        onClick={handleSend}
-                        disabled={isSending}
-                        className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                        <span className="relative z-10 flex items-center justify-center gap-2 text-xl">
-                          {isSending ? (
-                            <>
-                              <div className="w-7 h-7 border-3 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
-                              Sending...
-                            </>
-                          ) : (
-                            <>
-                              Confirm Send
-                              <SendHorizontal className="w-7 h-7" />
-                            </>
-                          )}
-                        </span>
-                      </button>
-                    </div>
+                    {!showConfirmSend ? (
+                      <>
+                        {/* Form Fields */}
+                        <div className="space-y-6">
+                          <div className="group">
+                            <label className="block text-white text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
+                              Recipient Address
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                placeholder="0x..."
+                                value={recipient}
+                                onChange={(e) => setRecipient(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all font-mono text-sm"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="group">
+                            <label className="block text-white text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
+                              Amount
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                placeholder="0.00"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all text-3xl font-black"
+                              />
+                              <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
+                                <div className="flex flex-col border-r border-white/10 pr-4">
+                                  <button
+                                    onClick={() => setAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
+                                    className="text-white/20 hover:text-[#6FBEE5] transition-colors"
+                                  >
+                                    <ArrowUp className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    onClick={() => setAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
+                                    className="text-white/20 hover:text-[#6FBEE5] transition-colors"
+                                  >
+                                    <ArrowDown className="w-5 h-5" />
+                                  </button>
+                                </div>
+                                <span className="text-[#6FBEE5] font-black text-xl">SUI</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-4 mt-10">
+                          <button
+                            onClick={() => {
+                              setShowSendUI(false);
+                              setRecipient('');
+                              setAmount('');
+                            }}
+                            className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => setShowConfirmSend(true)}
+                            disabled={isSending || (parseFloat(amount) || 0) <= 0 || (parseFloat(amount) || 0) > walletBalance || !recipient.startsWith('0x')}
+                            className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                            <span className="relative z-10 flex items-center justify-center gap-2 text-xl text-white">
+                              Next
+                              <ArrowUpRight className="w-7 h-7 text-white" />
+                            </span>
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Confirmation View */}
+                        <div className="space-y-6">
+                          <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
+                            <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                              <span className="text-white/50 font-bold uppercase tracking-wider text-xs">Sending</span>
+                              <span className="text-2xl font-black text-white">{amount} SUI</span>
+                            </div>
+                            <div className="space-y-2">
+                              <span className="text-white/50 font-bold uppercase tracking-wider text-xs block">To Recipient</span>
+                              <span className="text-sm font-mono text-white break-all bg-black/40 p-3 rounded-xl block border border-white/5">
+                                {recipient}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center pt-2">
+                              <span className="text-white/50 font-bold uppercase tracking-wider text-xs">Estimated Fee</span>
+                              <span className="text-sm text-[#6FBEE5] font-bold">~0.002 SUI</span>
+                            </div>
+                          </div>
+
+                          <div className="bg-[#6FBEE5]/10 p-4 rounded-xl border border-[#6FBEE5]/20 flex items-start gap-3">
+                            <Zap className="w-5 h-5 text-[#6FBEE5] flex-shrink-0 mt-0.5" />
+                            <p className="text-xs text-[#6FBEE5] leading-relaxed">
+                              Transactions on Sui are permanent. Please double-check the recipient address before confirming.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-4 mt-10">
+                          <button
+                            onClick={() => setShowConfirmSend(false)}
+                            className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
+                          >
+                            Back
+                          </button>
+                          <button
+                            onClick={handleSend}
+                            disabled={isSending}
+                            className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                            <span className="relative z-10 flex items-center justify-center gap-2 text-xl text-white">
+                              {isSending ? (
+                                <>
+                                  <div className="w-7 h-7 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                                  Sending...
+                                </>
+                              ) : (
+                                <>
+                                  Confirm Send
+                                  <SendHorizontal className="w-7 h-7 text-white" />
+                                </>
+                              )}
+                            </span>
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>
@@ -728,12 +802,12 @@ export default function HomePage() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center border border-emerald-500/30">
-                      <ArrowDown className="w-6 h-6 text-emerald-500" />
+                    <div className="w-12 h-12 bg-emerald-400/20 rounded-2xl flex items-center justify-center border border-emerald-400/30">
+                      <ArrowDown className="w-6 h-6 text-emerald-300" />
                     </div>
                     <div>
                       <h2 className="text-2xl font-black text-white tracking-tight">Request SUI</h2>
-                      <p className="text-emerald-500/60 text-sm font-medium">Create a payment link</p>
+                      <p className="text-emerald-300/80 text-sm font-medium">Create a payment link</p>
                     </div>
                   </div>
                   <button
@@ -749,146 +823,206 @@ export default function HomePage() {
                   </button>
                 </div>
 
-                {/* Info Box */}
-                <div className="mb-8 p-5 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="w-5 h-5 text-emerald-400" />
-                  </div>
-                  <p className="text-emerald-500/80 text-sm font-medium">
-                    Requested assets will appear in your wallet once the recipient approves.
-                  </p>
-                </div>
-
-                {!showConfirmRequest ? (
-                  <>
-                    {/* Form Fields */}
-                    <div className="space-y-6">
-                      <div className="group">
-                        <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
-                          Request From Address
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="0x..."
-                            value={requestRecipient}
-                            onChange={(e) => setRequestRecipient(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all font-mono text-sm"
+                {showSuccess ? (
+                  <Motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center justify-center py-12 space-y-8"
+                  >
+                    <div className="relative">
+                      <Motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                        className="w-24 h-24 bg-emerald-400/20 rounded-full flex items-center justify-center border-2 border-emerald-400/50 shadow-[0_0_40px_rgba(52,211,153,0.2)]"
+                      >
+                        <Motion.svg
+                          width="48"
+                          height="48"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-emerald-400"
+                        >
+                          <Motion.path
+                            d="M20 6L9 17L4 12"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 1 }}
+                            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
                           />
-                        </div>
-                      </div>
-
-                      <div className="group">
-                        <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
-                          Amount to Request
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            value={requestAmount}
-                            onChange={(e) => setRequestAmount(e.target.value)}
-                            placeholder="0.00"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all text-3xl font-black"
-                          />
-                          <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
-                            <div className="flex flex-col border-r border-white/10 pr-4">
-                              <button
-                                onClick={() => setRequestAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
-                                className="text-white/20 hover:text-emerald-500 transition-colors"
-                              >
-                                <ArrowUp className="w-5 h-5" />
-                              </button>
-                              <button
-                                onClick={() => setRequestAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
-                                className="text-white/20 hover:text-emerald-500 transition-colors"
-                              >
-                                <ArrowDown className="w-5 h-5" />
-                              </button>
-                            </div>
-                            <span className="text-emerald-500 font-black text-xl">SUI</span>
-                          </div>
-                        </div>
-                      </div>
+                        </Motion.svg>
+                      </Motion.div>
+                      <Motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: [1, 1.5, 1], opacity: [0, 1, 0] }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="absolute inset-0 bg-emerald-400/30 rounded-full -z-10"
+                      />
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-4 mt-10">
-                      <button
-                        onClick={() => {
-                          setShowRequestUI(false);
-                          setRequestRecipient('');
-                          setRequestAmount('');
-                        }}
-                        className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => setShowConfirmRequest(true)}
-                        disabled={isSending || (parseFloat(requestAmount) || 0) <= 0 || !requestRecipient.startsWith('0x')}
-                        className="flex-[2] py-4 px-6 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                        <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
-                          Next
-                          <ArrowUpRight className="w-5 h-5" />
-                        </span>
-                      </button>
+                    <div className="text-center space-y-2">
+                      <h3 className="text-3xl font-black text-white tracking-tight">{successMessage}</h3>
+                      <p className="text-emerald-400 font-medium">Request sent successfully</p>
                     </div>
-                  </>
+
+                    <button
+                      onClick={() => setShowRequestUI(false)}
+                      className="w-full py-4 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] group relative overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                      <span className="relative z-10 flex items-center justify-center gap-3 text-2xl">
+                        Done
+                        <CheckCircle2 className="w-8 h-8" />
+                      </span>
+                    </button>
+                  </Motion.div>
                 ) : (
                   <>
-                    {/* Confirmation View */}
-                    <div className="space-y-6">
-                      <div className="p-6 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 space-y-4">
-                        <div className="flex justify-between items-center border-b border-emerald-500/10 pb-4">
-                          <span className="text-emerald-500/60 font-bold uppercase tracking-wider text-xs">Requesting</span>
-                          <span className="text-2xl font-black text-white">{requestAmount} SUI</span>
-                        </div>
-                        <div className="space-y-2">
-                          <span className="text-emerald-500/60 font-bold uppercase tracking-wider text-xs block">From Address</span>
-                          <span className="text-sm font-mono text-white break-all bg-black/40 p-3 rounded-xl block border border-white/5">
-                            {requestRecipient}
-                          </span>
-                        </div>
+                    {/* Info Box */}
+                    <div className="mb-8 p-5 bg-emerald-400/5 rounded-2xl border border-emerald-400/10 flex items-center gap-4">
+                      <div className="w-10 h-10 bg-emerald-400/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Sparkles className="w-5 h-5 text-emerald-300" />
                       </div>
-
-                      <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20 flex items-start gap-3">
-                        <Sparkles className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <p className="text-xs text-emerald-500/80 leading-relaxed">
-                          Once confirmed, a payment request will be sent to this address. You will receive the funds after they approve the transaction.
-                        </p>
-                      </div>
+                      <p className="text-emerald-300/80 text-sm font-medium">
+                        Requested assets will appear in your wallet once the recipient approves.
+                      </p>
                     </div>
 
-                    <div className="flex gap-4 mt-10">
-                      <button
-                        onClick={() => setShowConfirmRequest(false)}
-                        className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
-                      >
-                        Back
-                      </button>
-                      <button
-                        onClick={handleRequest}
-                        disabled={isSending}
-                        className="flex-[2] py-4 px-6 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                        <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
-                          {isSending ? (
-                            <>
-                              <div className="w-5 h-5 border-3 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
-                              Processing...
-                            </>
-                          ) : (
-                            <>
-                              Confirm Request
-                              <ArrowDown className="w-5 h-5" />
-                            </>
-                          )}
-                        </span>
-                      </button>
-                    </div>
+                    {!showConfirmRequest ? (
+                      <>
+                        {/* Form Fields */}
+                        <div className="space-y-6">
+                          <div className="group">
+                            <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
+                              Request From Address
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                placeholder="0x..."
+                                value={requestRecipient}
+                                onChange={(e) => setRequestRecipient(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 transition-all font-mono text-sm"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="group">
+                            <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
+                              Amount to Request
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                value={requestAmount}
+                                onChange={(e) => setRequestAmount(e.target.value)}
+                                placeholder="0.00"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 transition-all text-3xl font-black"
+                              />
+                              <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
+                                <div className="flex flex-col border-r border-white/10 pr-4">
+                                  <button
+                                    onClick={() => setRequestAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
+                                    className="text-white/20 hover:text-emerald-400 transition-colors"
+                                  >
+                                    <ArrowUp className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    onClick={() => setRequestAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
+                                    className="text-white/20 hover:text-emerald-500 transition-colors"
+                                  >
+                                    <ArrowDown className="w-5 h-5" />
+                                  </button>
+                                </div>
+                                <span className="text-emerald-400 font-black text-xl">SUI</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-4 mt-10">
+                          <button
+                            onClick={() => {
+                              setShowRequestUI(false);
+                              setRequestRecipient('');
+                              setRequestAmount('');
+                            }}
+                            className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => setShowConfirmRequest(true)}
+                            disabled={isSending || (parseFloat(requestAmount) || 0) <= 0 || !requestRecipient.startsWith('0x')}
+                            className="flex-[2] py-4 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                            <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
+                              Next
+                              <ArrowUpRight className="w-5 h-5" />
+                            </span>
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Confirmation View */}
+                        <div className="space-y-6">
+                          <div className="p-6 bg-emerald-400/5 rounded-2xl border border-emerald-400/10 space-y-4">
+                            <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                              <span className="text-emerald-300/80 font-bold uppercase tracking-wider text-xs">Requesting</span>
+                              <span className="text-2xl font-black text-white">{requestAmount} SUI</span>
+                            </div>
+                            <div className="space-y-2">
+                              <span className="text-emerald-300/80 font-bold uppercase tracking-wider text-xs block">From Address</span>
+                              <span className="text-sm font-mono text-white break-all bg-black/40 p-3 rounded-xl block border border-white/5">
+                                {requestRecipient}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="bg-emerald-400/10 p-4 rounded-xl border border-emerald-400/20 flex items-start gap-3">
+                            <Sparkles className="w-5 h-5 text-emerald-300 flex-shrink-0 mt-0.5" />
+                            <p className="text-xs text-emerald-300/80 leading-relaxed">
+                              Once confirmed, a payment request will be sent to this address. You will receive the funds after they approve the transaction.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-4 mt-10">
+                          <button
+                            onClick={() => setShowConfirmRequest(false)}
+                            className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
+                          >
+                            Back
+                          </button>
+                          <button
+                            onClick={handleRequest}
+                            disabled={isSending}
+                            className="flex-[2] py-4 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                            <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
+                              {isSending ? (
+                                <>
+                                  <div className="w-5 h-5 text-white border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                                  Processing...
+                                </>
+                              ) : (
+                                <>
+                                  Confirm Request
+                                  <ArrowDown className="w-5 h-5" />
+                                </>
+                              )}
+                            </span>
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>
