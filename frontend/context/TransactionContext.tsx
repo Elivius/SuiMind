@@ -143,27 +143,10 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
                 arguments: [tx.object(requestId)],
                 });
 
-                const { bytes, signature } = await signTransaction({ transaction: tx });
-
-                const result = await gqlClient.query({
-                query: EXECUTE_TRANSACTION,
-                variables: {
-                    transactionDataBcs: bytes,
-                    signatures: [signature],
-                },
-                });
-
-                const execution: any = result.data?.executeTransaction;
-                const statusObj = execution?.effects?.status;
-                const isSuccess = statusObj === 'SUCCESS' || statusObj?.status === 'success';
-
-                if (isSuccess) {
-                await onTransactionSuccess();
-                alert("Request rejected successfully.");
-                refetch();
-                } else {
-                const detail = statusObj?.error || "Check console for details";
-                alert(`Rejection failed: ${detail}`);
+                const execution = await runTransaction(tx);
+                if (execution?.effects?.status === 'SUCCESS') {
+                    await onTransactionSuccess();
+                    refetch();
                 }
             } catch (e: any) {
                 console.error("Rejection Error:", e);
