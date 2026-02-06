@@ -70,7 +70,7 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
         if (status === 'SUCCESS' ) {
             alert(`Success! Digest: ${digest}`);
             await onTransactionSuccess();
-            return true;
+            return {success: true};
         }
         } catch (e) {
             console.error(e);
@@ -205,4 +205,4 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
     );
 }
 
-export const useTransactions = () => useContext(TransactionContext);
+export const useTransactions = () => useContext(TransactionContext); 
