@@ -123,7 +123,7 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
 
         useEffect(() => {
             const handlePayFromHeader = (e: any) => {
-            setActiveRequest(e.detial);
+            setActiveRequest(e.detail);
             setShowSendUI(true);
             };
         
