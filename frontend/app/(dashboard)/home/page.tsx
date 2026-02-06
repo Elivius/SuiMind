@@ -304,22 +304,6 @@ export default function HomePage() {
                   </button>
                 </div>
 
-            {/* Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowSendUI(false)}
-                className="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={onSendClick}
-                disabled={isSending}
-                className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
-              >
-                {isSending ? 'Sending...' : 'Send'}
-              </button>
-            </div>
                 {showSuccess ? (
                   <Motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -509,7 +493,7 @@ export default function HomePage() {
                             Back
                           </button>
                           <button
-                            onClick={handleSend}
+                            onClick={onSendClick}
                             disabled={isSending}
                             className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
                           >
@@ -584,22 +568,6 @@ export default function HomePage() {
                   </button>
                 </div>
 
-            {/* Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowRequestUI(false)}
-                className="flex-1 py-3 px-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={onInternalRequestClick}
-                disabled={isSending}
-                className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors"
-              >
-                Request
-              </button>
-            </div>
                 {showSuccess ? (
                   <Motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -778,7 +746,7 @@ export default function HomePage() {
                             Back
                           </button>
                           <button
-                            onClick={handleRequest}
+                            onClick={onInternalRequestClick}
                             disabled={isSending}
                             className="flex-[2] py-4 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
                           >
