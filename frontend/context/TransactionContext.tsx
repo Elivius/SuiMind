@@ -37,7 +37,14 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
         }
     }`);
 
-    
+    const runTransaction = async (tx: Transaction) => {
+        const { bytes, signature } = await signTransaction({ transaction: tx });
+        const result = await gqlClient.query({
+        query: EXECUTE_TRANSACTION,
+        variables: { transactionDataBcs: bytes, signatures: [signature] },
+        });
+        return result.data?.executeTransaction;
+    };
 
     const handleSend = async (recipient: string, amount: string, requestId?: string) => {
         if (!account) { alert("Please connect your wallet."); return; }
