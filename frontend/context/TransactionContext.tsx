@@ -70,11 +70,13 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
         if (status === 'SUCCESS' ) {
             alert(`Success! Digest: ${digest}`);
             await onTransactionSuccess();
-            return {success: true};
+            return {success: true, digest: execution?.effects?.transaction?.digest};
         }
+        return { success: false };
         } catch (e) {
             console.error(e);
             alert("handleSend error");
+            return { success: false };
         } finally {
             setIsSending(false);
         }

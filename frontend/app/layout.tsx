@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { DarkVeil, FloatingOrbs } from "@/components/ui"
 import "./globals.css"
+import { TransactionProvider } from "@/context/TransactionContext"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
@@ -40,7 +41,9 @@ export default function RootLayout({
         <FloatingOrbs />
         <div className="relative z-10">
           <Providers>
-            {children}
+            <TransactionProvider>
+              {children}
+            </TransactionProvider>
           </Providers>
         </div>
         <Analytics />
