@@ -34,11 +34,11 @@ export default function InsightsPage() {
                                     ) : (
                                         <>
                                             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
-                                                {totals.thisMonthNetFlow.toFixed(2)} SUI
+                                                {totals.thisMonthNetFlow.toFixed(4)} SUI
                                             </h2>
                                             <div className={`flex items-center gap-1 ${totals.monthOverMonthChange >= 0 ? 'text-sky-400' : 'text-red-400'}`}>
                                                 {totals.monthOverMonthChange >= 0 ? <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5" /> : <ArrowDownLeft className="w-4 h-4 sm:w-5 sm:h-5" />}
-                                                <span className="text-base sm:text-lg font-semibold">{totals.monthOverMonthChange >= 0 ? '+' : ''}{totals.monthOverMonthChange.toFixed(1)}% this month</span>
+                                                <span className="text-base sm:text-lg font-semibold">{totals.monthOverMonthChange >= 0 ? '+' : ''}{totals.monthOverMonthChange.toFixed(2)}% this month</span>
                                             </div>
                                         </>
                                     )}
@@ -65,7 +65,7 @@ export default function InsightsPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <p className="text-2xl font-bold text-white">{totals.totalNetFlow.toFixed(2)} SUI</p>
+                                        <p className="text-2xl font-bold text-white">{totals.totalNetFlow.toFixed(4)} SUI</p>
                                         <p className="flex items-center gap-1 text-[xs] uppercase font-bold tracking-wider text-blue-400">{totals.inFlowTransactionCount + totals.outFlowTransactionCount} transactions</p>
                                     </>
                                 )}
@@ -87,7 +87,7 @@ export default function InsightsPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <p className="text-2xl font-bold text-white">{totals.totalInFlow.toFixed(2)} SUI</p>
+                                        <p className="text-2xl font-bold text-white">{totals.totalInFlow.toFixed(4)} SUI</p>
                                         <div className="flex items-center gap-1 text-[xs] uppercase font-bold tracking-wider text-green-400">
                                             <span>{totals.inFlowTransactionCount} transactions</span>
                                         </div>
@@ -111,7 +111,7 @@ export default function InsightsPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <p className="text-2xl font-bold text-white">{totals.totalOutFlow.toFixed(2)} SUI</p>
+                                        <p className="text-2xl font-bold text-white">{totals.totalOutFlow.toFixed(4)} SUI</p>
                                         <p className="flex items-center gap-1 text-[xs] uppercase font-bold tracking-wider text-red-400">{totals.outFlowTransactionCount} Transactions</p>
                                     </>
                                 )}

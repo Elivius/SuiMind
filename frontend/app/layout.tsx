@@ -4,6 +4,7 @@ import { Providers } from "@/app/providers"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { DarkVeil, FloatingOrbs } from "@/components/ui"
+import { Toaster } from "sonner"
 import "./globals.css"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
@@ -41,6 +42,7 @@ export default function RootLayout({
         <div className="relative z-10">
           <Providers>
             {children}
+            <Toaster position="top-right" theme="dark" closeButton richColors expand={true} />
           </Providers>
         </div>
         <Analytics />
