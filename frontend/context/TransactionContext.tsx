@@ -24,19 +24,20 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
         url: 'https://graphql.testnet.sui.io/graphql', // Testnet
         });
 
-        const EXECUTE_TRANSACTION = graphql(`
-        mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
-            executeTransaction(transactionDataBcs: $transactionDataBcs, signatures: $signatures) {
-            errors
-            effects {
-                status
-                transaction {    # Digest lives here now
-                digest
-                }
-            }
+    const EXECUTE_TRANSACTION = graphql(`
+    mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
+        executeTransaction(transactionDataBcs: $transactionDataBcs, signatures: $signatures) {
+        errors
+        effects {
+            status
+            transaction {    # Digest lives here now
+            digest
             }
         }
-        `);
+        }
+    }`);
+
+    
 
     const handleSend = async (recipient: string, amount: string, requestId?: string) => {
         if (!account) { alert("Please connect your wallet."); return; }
@@ -184,66 +185,35 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
         }, [account, signTransaction, gqlClient, refetch]);
 
         useEffect(() => {
-            const handleClearPaid = async (event: any) => {
-            const objectId = event.detail;
+            const handleClearNotification = async (event: any, type: 'paid' | 'reject') => {
             if (!account) return;
-
             setIsSending(true);
             try {
                 const tx = new Transaction();
+                const targetFunction = type === 'paid' ? 'delete_paid' : 'delete_reject';
                 tx.moveCall({
-                target: `${PACKAGE_ID}::request::delete_paid`,
-                arguments: [tx.object(objectId)],
+                    target: `${PACKAGE_ID}::request::${targetFunction}`,
+                    arguments: [tx.object(event.detail)],
                 });
-
-                const { bytes, signature } = await signTransaction({ transaction: tx });
-                await gqlClient.query({
-                query: EXECUTE_TRANSACTION,
-                variables: { transactionDataBcs: bytes, signatures: [signature] },
-                });
-
+                await runTransaction(tx);
                 await onTransactionSuccess();
-            } catch (e) {
-                console.error("Failed to clear notification:", e);
-            } finally {
-                setIsSending(false);
-            }
+                refetch();
+            } catch (e) { console.error(`Clear ${type} failed:`, e); }
+            finally { setIsSending(false); }
             };
 
-            window.addEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
-            return () => window.removeEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
-        }, [account, signTransaction, onTransactionSuccess]);
+            const onClearPaid = (e: any) => handleClearNotification(e, 'paid');
+            const onClearReject = (e: any) => handleClearNotification(e, 'reject');
 
-        useEffect(() => {
-            const handleClearReject = async (event: any) => {
-              const objectId = event.detail;
-              if (!account) return;
-        
-              setIsSending(true);
-              try {
-                const tx = new Transaction();
-                tx.moveCall({
-                  target: `${PACKAGE_ID}::request::delete_reject`,
-                  arguments: [tx.object(objectId)],
-                });
-        
-                const { bytes, signature } = await signTransaction({ transaction: tx });
-                await gqlClient.query({
-                  query: EXECUTE_TRANSACTION,
-                  variables: { transactionDataBcs: bytes, signatures: [signature] },
-                });
-        
-                await onTransactionSuccess();
-              } catch (e) {
-                console.error("Failed to clear rejection:", e);
-              } finally {
-                setIsSending(false);
-              }
+            window.addEventListener('CLEAR_PAID_NOTIFICATION', onClearPaid);
+            window.addEventListener('CLEAR_REJECT_NOTIFICATION', onClearReject);
+
+            return () => {
+                window.removeEventListener('CLEAR_PAID_NOTIFICATION', onClearPaid);
+                window.removeEventListener('CLEAR_REJECT_NOTIFICATION', onClearReject);
             };
-        
-            window.addEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
-            return () => window.removeEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
-          }, [account, signTransaction, onTransactionSuccess]);
+        }, [account, client, signTransaction]);
+
         
 
     return (
