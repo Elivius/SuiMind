@@ -37,15 +37,16 @@ export default function HomePage() {
   // const [showNewRequestUI, setShowRequestUI] = useState(false);
   const [showConfirmSend, setShowConfirmSend] = useState(false);
   const [showConfirmRequest, setShowConfirmRequest] = useState(false);
-  const [recipient, setRecipient] = useState('');
-  const [amount, setAmount] = useState('');
+  // const [recipient, setRecipient] = useState('');
+  // const [amount, setAmount] = useState('');
   const [requestRecipient, setRequestRecipient] = useState('');
   const [requestAmount, setRequestAmount] = useState('0.00');
   // const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
-  const { handleSend, handleRequest, isSending, activeRequest,setActiveRequest, showNewSendUI,setShowSendUI, showNewRequestUI,setShowRequestUI } = useTransactions();
+  const { handleSend, handleRequest, isSending, activeRequest,setActiveRequest, showNewSendUI,setShowSendUI, showNewRequestUI,setShowRequestUI
+  ,recipient, setRecipient, amount, setAmount } = useTransactions();
 
   // const onSendClick = async () => {
   // // Pass the activeRequestObject.id if it exists to settle the payment
