@@ -37,19 +37,19 @@ export default function HomePage() {
   const [amount, setAmount] = useState('0.00');
   const [requestRecipient, setRequestRecipient] = useState('');
   const [requestAmount, setRequestAmount] = useState('0.00');
-  const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
+  // const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
   const { handleSend, handleRequest, isSending, activeRequest,setActiveRequest, showNewSendUI,setShowSendUI } = useTransactions();
 
   const onSendClick = async () => {
   // Pass the activeRequestObject.id if it exists to settle the payment
-    const result = await handleSend(recipient, amount, activeRequestObject?.id);
+    const result = await handleSend(recipient, amount, activeRequest?.id);
     
     if (result?.success) {
       setShowSendUI(false);
       setAmount('0.00');
       setRecipient('');
-      setActiveRequestObject(null);
+      setActiveRequest(null);
       playSound('success');
     }
   };
@@ -68,7 +68,7 @@ export default function HomePage() {
     if (activeRequest) {
       setRecipient(activeRequest.requester || "");
       setAmount(activeRequest.amountSui?.toString() || "0.00");
-      setActiveRequestObject(activeRequest); // Sync local ID tracking if needed
+      setActiveRequest(activeRequest); // Sync local ID tracking if needed
     }
   }, [activeRequest]);
 
