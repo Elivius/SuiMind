@@ -31,7 +31,7 @@ export default function HomePage() {
   const account = useCurrentAccount()
 
   // signTransaction
-  const [showNewSendUI, setShowSendUI] = useState(false);
+  // const [showNewSendUI, setShowSendUI] = useState(false);
   const [showNewRequestUI, setShowRequestUI] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('0.00');
@@ -39,7 +39,7 @@ export default function HomePage() {
   const [requestAmount, setRequestAmount] = useState('0.00');
   const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
-  const { handleSend, handleRequest, isSending } = useTransactions();
+  const { handleSend, handleRequest, isSending, activeRequest,setActiveRequest, showNewSendUI,setShowSendUI } = useTransactions();
 
   const onSendClick = async () => {
   // Pass the activeRequestObject.id if it exists to settle the payment
@@ -64,7 +64,13 @@ export default function HomePage() {
     }
   };
   
-
+  useEffect(() => {
+    if (activeRequest) {
+      setRecipient(activeRequest.requester || "");
+      setAmount(activeRequest.amountSui?.toString() || "0.00");
+      setActiveRequestObject(activeRequest); // Sync local ID tracking if needed
+    }
+  }, [activeRequest]);
 
 
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()

@@ -17,7 +17,7 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
     const client = useSuiClient();
     const account = useCurrentAccount();
     const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
-    const [showSendModal, setShowSendModal] = useState(false);
+    const [showNewSendUI, setShowSendUI] = useState(false);
     const [activeRequest, setActiveRequest] = useState<any>(null);
 
     const gqlClient = new SuiGraphQLClient({
@@ -123,8 +123,8 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
 
         useEffect(() => {
             const handlePayFromHeader = (e: any) => {
-            setActiveRequest(e.detials);
-            setShowSendModal(true);
+            setActiveRequest(e.detial);
+            setShowSendUI(true);
             };
         
             window.addEventListener('PAY_REQUEST', handlePayFromHeader);
@@ -200,8 +200,8 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
         
 
     return (
-        <TransactionContext.Provider value={{ handleSend, isSending, handleRequest, activeRequest,setActiveRequest, showSendModal,setShowSendModal }}>
-        {children}
+        <TransactionContext.Provider value={{ handleSend, isSending, handleRequest,activeRequest, setActiveRequest, showNewSendUI,setShowSendUI }}>
+            {children}
         </TransactionContext.Provider>
     );
 }
