@@ -99,17 +99,9 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
             });
 
 
-            const { bytes, signature } = await signTransaction({ transaction: tx });
+            const execution = await runTransaction(tx);
 
-            const result = await gqlClient.query({
-            query: EXECUTE_TRANSACTION,
-            variables: {
-                transactionDataBcs: bytes,
-                signatures: [signature],
-            },
-            });
-
-            if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
+            if (execution?.effects?.status === 'SUCCESS') {
             return { success: true };
             }
         } catch (e: any) {
