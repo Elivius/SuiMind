@@ -65,15 +65,18 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
 
         const execution = await runTransaction(tx);
         const status = execution?.effects?.status;
+        const digest = execution?.effects?.transaction?.digest;
 
         if (status === 'SUCCESS' ) {
+            alert(`Success! Digest: ${digest}`);
             await onTransactionSuccess();
             return true;
         }
         } catch (e) {
-        console.error(e);
+            console.error(e);
+            alert("handleSend error");
         } finally {
-        setIsSending(false);
+            setIsSending(false);
         }
     };
 
@@ -103,7 +106,8 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
             const execution = await runTransaction(tx);
 
             if (execution?.effects?.status === 'SUCCESS') {
-            return { success: true };
+                alert("Request Object sent successfully!");
+                return { success: true };
             }
         } catch (e: any) {
             console.error("Request failed:", e);
@@ -147,6 +151,7 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
                 const execution = await runTransaction(tx);
                 if (execution?.effects?.status === 'SUCCESS') {
                     await onTransactionSuccess();
+                    alert("Request rejected successfully.");
                     refetch();
                 }
             } catch (e: any) {
