@@ -61,7 +61,7 @@ export function WalletConnectButton() {
     if (isDisconnecting) {
         return (
             <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-800/80 backdrop-blur-sm text-gray-400 font-medium rounded-lg border border-gray-700">
-                <div className="w-4 h-4 border-2 border-gray-600 border-t-gray-300 rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 <span className="text-sm">Disconnecting...</span>
             </div>
         );
