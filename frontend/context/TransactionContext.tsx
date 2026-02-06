@@ -63,15 +63,9 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
             });
         }
 
-        const { bytes, signature } = await signTransaction({ transaction: tx });
-        
-        // Ensure gqlClient and EXECUTE_TRANSACTION are defined in this file!
-        const result = await gqlClient.query({
-            query: EXECUTE_TRANSACTION,
-            variables: { transactionDataBcs: bytes, signatures: [signature] },
-        });
+        const execution = await runTransaction(tx);
 
-        if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
+        if (execution?.effects?.status === 'SUCCESS') {
             await onTransactionSuccess(); // From usePaymentRequests hook
             return true;
         }
