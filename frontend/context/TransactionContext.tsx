@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useSignTransaction, useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from '@mysten/sui/transactions';
 import { PACKAGE_ID } from "@/lib/config";
@@ -17,6 +17,8 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
   const client = useSuiClient();
   const account = useCurrentAccount();
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [activeRequest, setActiveRequest] = useState<any>(null);
 
   const gqlClient = new SuiGraphQLClient({
       url: 'https://graphql.testnet.sui.io/graphql', // Testnet
@@ -111,10 +113,26 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
       } catch (e: any) {
         console.error("Request failed:", e);
         alert(`Error: ${e.message}`);
+        return { success: false };
       } finally {
         setIsSending(false);
       }
     };
+
+    const triggerPayUI = (request: any) => {
+        setActiveRequest(request);
+        setShowSendModal(true);
+    };
+
+    useEffect(() => {
+        const handlePayFromHeader = (e: any) => {
+          triggerPayUI(e.detail);
+          window.addEventListener('PAY_REQUEST', handlePayFromHeader);
+        };
+    
+        window.addEventListener('PAY_REQUEST', handlePayFromHeader);
+        return () => window.removeEventListener('PAY_REQUEST', handlePayFromHeader);
+      }, []);
   
 
   return (
