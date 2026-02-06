@@ -123,9 +123,8 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
 
         useEffect(() => {
             const handlePayFromHeader = (e: any) => {
-            setActiveRequest(e.deatials);
+            setActiveRequest(e.detials);
             setShowSendModal(true);
-            window.addEventListener('PAY_REQUEST', handlePayFromHeader);
             };
         
             window.addEventListener('PAY_REQUEST', handlePayFromHeader);
