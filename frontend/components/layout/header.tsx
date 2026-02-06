@@ -11,13 +11,15 @@ import { SuiMindLogo, MindyAILogo } from "@/components/icons"
 import { usePaymentRequests } from "@/hooks";
 import { useState, useEffect, useRef } from "react";
 import { playSound } from "@/lib/sound-effects";
+import { motion, AnimatePresence } from "motion/react";
+import { formatSuiAmount } from "@/lib/utils";
 
 
 export function Header() {
     const pathname = usePathname()
 
     // Determine active nav index based on current path
-    const { pendingRequests, isLoading, hasUnread, onTransactionSuccess, rejectedRequests, paidNotifications } = usePaymentRequests();    
+    const { pendingRequests, isLoading, hasUnread, onTransactionSuccess, rejectedRequests, paidNotifications } = usePaymentRequests();
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
     const activeIndex = navigation.findIndex(item => pathname === item.href)
@@ -97,154 +99,225 @@ export function Header() {
                     {/* Right side actions */}
                     <div className="flex items-center gap-1 sm:gap-2">
                         <div ref={dropdownRef} className="relative">
-                            <Button variant="ghost" size="icon" className=" relative text-white/70 hover:text-white hover:bg-white/10 w-9 h-9 sm:w-10 sm:h-10" onClick={() => setShowDropdown(!showDropdown)}>
-                                <Bell className="w-5 h-5" />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className={`relative w-9 h-9 sm:w-10 sm:h-10 transition-colors ${showDropdown ? 'text-white bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+                                onClick={() => setShowDropdown(!showDropdown)}
+                            >
+                                <Bell className={`w-5 h-5 transition-transform duration-300 ${showDropdown ? 'scale-110' : ''}`} />
                                 {hasUnread && (
                                     <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
                                 )}
                             </Button>
 
-                            {showDropdown && (
-                                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden">
-                                    {/* Header */}
-                                    <div className="px-4 py-3 border-b border-white/10">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="text-sm font-semibold text-white">Payment Requests</h3>
-                                            {pendingRequests.length > 0 && (
-                                                <span className="px-2 py-0.5 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">
-                                                    {pendingRequests.length} pending
-                                                </span>
-                                            )}
+                            <AnimatePresence>
+                                {showDropdown && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                                        transition={{ type: "spring", damping: 25, stiffness: 400 }}
+                                        className="absolute right-0 mt-3 w-80 sm:w-[420px] bg-[#0A111F] border border-white/10 rounded-[2.5rem] shadow-[0_30px_90px_-15px_rgba(0,0,0,0.9)] z-[100] overflow-hidden"
+                                    >
+                                        {/* Header */}
+                                        <div className="px-6 py-5 border-b border-white/5 bg-white/5">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Bell className="w-4 h-4 text-[#6FBEE5]" />
+                                                    <h3 className="text-base font-bold text-white tracking-tight">Notifications</h3>
+                                                </div>
+                                                {(pendingRequests.length > 0 || paidNotifications.length > 0 || rejectedRequests.length > 0) && (
+                                                    <span className="px-2.5 py-1 text-[10px] font-black bg-white/10 text-white/50 rounded-full uppercase tracking-widest">
+                                                        {pendingRequests.length + paidNotifications.length + rejectedRequests.length} Total
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
 
-                                {/* Request List */}
-                                <div className="max-h-80 overflow-y-auto">
-                                    {pendingRequests.length === 0 ? (
-                                        <div className="px-4 py-8 text-center">
-                                            <Bell className="w-8 h-8 text-white/20 mx-auto mb-2" />
-                                            <p className="text-sm text-white/50">No pending requests</p>
-                                        </div>
-                                    ) : (
-                                        <div className="divide-y divide-white/5">
-                                            {pendingRequests.map((req) => {
-                                                const isSelected = selectedRequestId === req.id
-                                                return (
-                                                <div key={req.id}>
-                                                    <button
-                                                    type="button"
-                                                    className="w-full px-4 py-3 hover:bg-white/5 transition-colors text-left cursor-pointer"
-                                                    onClick={() => setSelectedRequestId(isSelected ? null : req.id)}
-                                                    >
-                                                    <div className="flex items-center justify-between gap-3">
-                                                        <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-medium text-[#6FBEE5] font-mono truncate">
-                                                            {req.requester.slice(0, 6)}...{req.requester.slice(-4)}
-                                                        </p>
-                                                        <div className="flex items-center gap-2 mt-0.5">
-                                                            <p className="text-lg font-semibold text-emerald-400">
-                                                            {req.amountSui} SUI
-                                                            </p>
-                                                        </div>
-                                                        </div>
-                                                        <div className="shrink-0">
-                                                        <svg
-                                                            className={`w-4 h-4 text-white/40 transition-transform ${isSelected ? "rotate-180" : ""}`}
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                        >
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                        </svg>
-                                                        </div>
+                                        {/* Request List */}
+                                        <div className="max-h-[480px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
+                                            {pendingRequests.length === 0 && paidNotifications.length === 0 && rejectedRequests.length === 0 ? (
+                                                <div className="px-6 py-16 text-center">
+                                                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
+                                                        <Bell className="w-8 h-8 text-white/10" />
                                                     </div>
-                                                    </button>
-                                                    
-                                                    {isSelected && (
-                                                        <div className="px-4 pb-3 flex items-center gap-2 bg-white/5">
-                                                            <Button
-                                                            size="sm"
-                                                            className="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium"
-                                                            onClick={() => {
-                                                                window.dispatchEvent(new CustomEvent('PAY_REQUEST', { detail: req }));
-                                                                setShowDropdown(false);
-                                                            }}
+                                                    <p className="text-sm text-white/40 font-medium">No new activity</p>
+                                                </div>
+                                            ) : (
+                                                <div className="divide-y divide-white/5">
+                                                    {/* Pending Requests Section */}
+                                                    {pendingRequests.map((req) => {
+                                                        const isSelected = selectedRequestId === req.id
+                                                        return (
+                                                            <motion.div
+                                                                layout
+                                                                key={req.id}
+                                                                className={`transition-colors duration-300 ${isSelected ? 'bg-white/[0.05]' : 'hover:bg-white/[0.02]'}`}
                                                             >
-                                                            <Check className="w-4 h-4 mr-1.5" />
-                                                            Pay
-                                                            </Button>
-                                                            <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            className="flex-1 h-9 border-red-500/50 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm font-medium bg-transparent"
-                                                            onClick={() => {
-                                                                setSelectedRequestId(null);
-                                                                window.dispatchEvent(new CustomEvent('REJECT_REQUEST', {detail: req.id}));
-                                                            }}
-                                                            >
-                                                            <X className="w-4 h-4 mr-1.5" />
-                                                            Reject
-                                                            </Button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="w-full px-6 py-5 text-left cursor-pointer group"
+                                                                    onClick={() => setSelectedRequestId(isSelected ? null : req.id)}
+                                                                >
+                                                                    <div className="flex items-start justify-between gap-4">
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <div className="flex items-center gap-2 mb-1">
+                                                                                <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                                                                                    <Check className="w-3 h-3 text-emerald-400" />
+                                                                                </div>
+                                                                                <p className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Payment Request</p>
+                                                                            </div>
+                                                                            <p className="text-sm font-bold text-white mb-0.5">
+                                                                                Request from {req.requester.slice(0, 6)}...{req.requester.slice(-4)}
+                                                                            </p>
+                                                                            <p className="text-xl font-black text-white tracking-tight">
+                                                                                {req.amountSui} <span className="text-xs text-[#6FBEE5] font-bold ml-1 uppercase">SUI</span>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div className={`mt-2 p-1.5 rounded-lg border border-white/5 ${isSelected ? 'bg-[#6FBEE5]/20 border-[#6FBEE5]/30' : 'bg-white/5'}`}>
+                                                                            <svg
+                                                                                className={`w-4 h-4 ${isSelected ? "text-[#6FBEE5]" : "text-white/20"} ${isSelected ? "rotate-180" : ""}`}
+                                                                                fill="none"
+                                                                                viewBox="0 0 24 24"
+                                                                                stroke="currentColor"
+                                                                            >
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                                                                            </svg>
+                                                                        </div>
+                                                                    </div>
+                                                                </button>
+
+                                                                <AnimatePresence initial={false}>
+                                                                    {isSelected && (
+                                                                        <motion.div
+                                                                            initial={{ height: 0, opacity: 0 }}
+                                                                            animate={{ height: 'auto', opacity: 1 }}
+                                                                            exit={{ height: 0, opacity: 0 }}
+                                                                            transition={{
+                                                                                height: { duration: 0.35, ease: [0.23, 1, 0.32, 1] },
+                                                                                opacity: { duration: 0.2, delay: 0.1 }
+                                                                            }}
+                                                                            className="overflow-hidden"
+                                                                        >
+                                                                            <div className="px-6 pb-6 pt-2">
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <Button
+                                                                                        size="sm"
+                                                                                        className="flex-1 h-11 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white text-sm font-black rounded-xl shadow-lg shadow-[#6FBEE5]/20 group relative overflow-hidden"
+                                                                                        onClick={() => {
+                                                                                            window.dispatchEvent(new CustomEvent('PAY_REQUEST', { detail: req }));
+                                                                                            setShowDropdown(false);
+                                                                                        }}
+                                                                                    >
+                                                                                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                                                                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                                                                            <Check className="w-4 h-4" />
+                                                                                            PAY NOW
+                                                                                        </span>
+                                                                                    </Button>
+                                                                                    <Button
+                                                                                        size="sm"
+                                                                                        variant="ghost"
+                                                                                        className="flex-1 h-11 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm font-black rounded-xl border border-red-500/20"
+                                                                                        onClick={() => {
+                                                                                            setSelectedRequestId(null);
+                                                                                            window.dispatchEvent(new CustomEvent('REJECT_REQUEST', { detail: req.id }));
+                                                                                        }}
+                                                                                    >
+                                                                                        <X className="w-4 h-4 mr-1.5" />
+                                                                                        REJECT
+                                                                                    </Button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </motion.div>
+                                                                    )}
+                                                                </AnimatePresence>
+                                                            </motion.div>
+                                                        )
+                                                    })}
+
+                                                    {/* Received Payments Section */}
+                                                    {paidNotifications.length > 0 && (
+                                                        <div className="bg-emerald-500/5 px-6 py-2 border-y border-emerald-500/10">
+                                                            <p className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Received Payments</p>
                                                         </div>
                                                     )}
-                                                </div>
-                                                )
-                                            })}
-                                        </div>
-                                    )}
+                                                    {paidNotifications.map((noti) => (
+                                                        <motion.div
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            key={noti.id}
+                                                            className="px-6 py-4 hover:bg-emerald-500/[0.02] flex items-center justify-between group"
+                                                        >
+                                                            <div className="flex-1">
+                                                                <p className="text-xs text-white/50 font-medium mb-1">
+                                                                    {noti.paid_by.slice(0, 6)}... paid you
+                                                                </p>
+                                                                <p className="text-lg font-black text-emerald-400">
+                                                                    +{noti.amountSui} <span className="text-[10px] text-emerald-400/50 ml-1">SUI</span>
+                                                                </p>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_PAID_NOTIFICATION', { detail: noti.id }))}
+                                                                className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/20 hover:text-white transition-all"
+                                                                title="Dismiss"
+                                                            >
+                                                                <X className="w-4 h-4" />
+                                                            </button>
+                                                        </motion.div>
+                                                    ))}
 
-                                    {paidNotifications.length > 0 && (
-                                        <div className="px-4 py-2 bg-emerald-500/10 border-y border-white/10 mt-2">
-                                            <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Received Payments</p>
-                                        </div>
-                                    )}
-                                    {paidNotifications.map((noti) => (
-                                        <div key={noti.id} className="px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex-1">
-                                                    <p className="text-xs text-white/50">{noti.paid_by.slice(0,6)}... paid you</p>
-                                                    <p className="text-sm font-bold text-emerald-400">+{noti.amountSui} SUI</p>
+                                                    {/* Rejected Requests Section */}
+                                                    {rejectedRequests.length > 0 && (
+                                                        <div className="bg-red-500/5 px-6 py-2 border-y border-red-500/10">
+                                                            <p className="text-[10px] font-black text-red-400 uppercase tracking-[0.2em]">Declined Requests</p>
+                                                        </div>
+                                                    )}
+                                                    {rejectedRequests.map((rej) => (
+                                                        <motion.div
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            key={rej.id}
+                                                            className="px-6 py-4 hover:bg-red-500/[0.02] flex items-center justify-between group"
+                                                        >
+                                                            <div className="flex-1">
+                                                                <p className="text-xs text-white/50 font-medium mb-1">
+                                                                    Request to {rej.rejected_by.slice(0, 6)}... was declined
+                                                                </p>
+                                                                <div className="flex items-center gap-3">
+                                                                    <p className="text-lg font-black text-white/20 line-through tracking-tight">
+                                                                        {rej.amountSui} SUI
+                                                                    </p>
+                                                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-red-500/10 text-red-400 uppercase tracking-widest border border-red-500/20">
+                                                                        Declined
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_REJECT_NOTIFICATION', { detail: rej.id }))}
+                                                                className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/20 hover:text-white transition-all"
+                                                                title="Dismiss"
+                                                            >
+                                                                <X className="w-4 h-4" />
+                                                            </button>
+                                                        </motion.div>
+                                                    ))}
                                                 </div>
-                                                <button 
-                                                    onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_PAID_NOTIFICATION', { detail: noti.id }))}
-                                                    className="ml-2 p-1 hover:bg-white/10 rounded-full text-white/20"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            </div>
+                                            )}
                                         </div>
-                                    ))}
 
-                                    {rejectedRequests.length > 0 && (
-                                        <div className="px-4 py-2 bg-red-500/10 border-b border-white/10 mt-2">
-                                            <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Sent Requests (Rejected)</p>
+                                        {/* Footer - Branding or Actions */}
+                                        <div className="px-6 py-4 bg-white/[0.02] border-t border-white/5">
+                                            <p className="text-[10px] text-center text-white font-bold uppercase tracking-[0.3em]">
+                                                SuiMind Notifications
+                                            </p>
                                         </div>
-                                    )}
-                                    {rejectedRequests.map((rej) => (
-                                        <div key={rej.id} className="px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex-1">
-                                            <p className="text-xs text-white/50">Your request to {rej.rejected_by.slice(0,6)}... was declined</p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <p className="text-sm font-bold text-white/30 line-through">{rej.amountSui} SUI</p>
-                                                <span className="px-1.5 py-0.5 rounded text-[9px] bg-red-500/20 text-red-400 font-bold uppercase">Rejected</span>
-                                            </div>
-                                            </div>
-                                            {/* Dismiss Button */}
-                                            <button 
-                                            onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_REJECT_NOTIFICATION', { detail: rej.id }))}
-                                            className="ml-2 p-1 hover:bg-white/10 rounded-full text-white/20"
-                                            >
-                                            <X className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                        
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
 
                         <WalletConnectButton />
                     </div>

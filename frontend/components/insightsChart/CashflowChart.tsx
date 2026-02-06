@@ -80,7 +80,7 @@ export function CashflowChart({ data, isLoading }: CashflowChartProps) {
                             tick={{ fill: '#FFFFFF', fontSize: isDesktop ? 11 : 10, fontWeight: 700 }}
                             tickFormatter={(value) => {
                                 const absValue = Math.abs(value)
-                                const formatted = absValue >= 1000 ? (absValue / 1000).toFixed(1) + 'k' : absValue.toFixed(2)
+                                const formatted = absValue >= 1000 ? (absValue / 1000).toFixed(1) + 'k' : absValue.toFixed(4)
                                 return value < 0 ? `-${formatted}` : `${formatted}`
                             }}
                             width={45}
@@ -105,17 +105,17 @@ export function CashflowChart({ data, isLoading }: CashflowChartProps) {
                                             <div className="space-y-3">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[12px] font-black uppercase" style={{ color: '#00FAFF' }}>Inflow</span>
-                                                    <span className="text-white font-black">{payload[0].payload.inFlow.toFixed(2)} SUI</span>
+                                                    <span className="text-white font-black">{payload[0].payload.inFlow.toFixed(4)} SUI</span>
                                                 </div>
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[12px] font-black uppercase" style={{ color: '#FF3DBC' }}>Outflow</span>
-                                                    <span className="text-white font-black">{payload[0].payload.outFlow.toFixed(2)} SUI</span>
+                                                    <span className="text-white font-black">{payload[0].payload.outFlow.toFixed(4)} SUI</span>
                                                 </div>
                                                 <div className="h-[1px] bg-white/5 my-2" />
                                                 <div className="flex items-center justify-between">
                                                     <span className={`${netLabelColor} text-[10px] font-black uppercase`}>Net Flow</span>
                                                     <span className={`${netValueColor} text-lg font-black`}>
-                                                        {isZero ? '' : isNegative ? '-' : ''}{Math.abs(netFlow).toFixed(2)} SUI
+                                                        {isZero ? '' : isNegative ? '-' : ''}{Math.abs(netFlow).toFixed(4)} SUI
                                                     </span>
                                                 </div>
                                             </div>

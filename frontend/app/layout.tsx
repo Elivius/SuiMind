@@ -4,6 +4,7 @@ import { Providers } from "@/app/providers"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { DarkVeil, FloatingOrbs } from "@/components/ui"
+import { Toaster } from "sonner"
 import "./globals.css"
 import { TransactionProvider } from "@/context/TransactionContext"
 
@@ -44,6 +45,7 @@ export default function RootLayout({
             <TransactionProvider>
               {children}
             </TransactionProvider>
+            <Toaster position="top-right" theme="dark" closeButton richColors expand={true} />
           </Providers>
         </div>
         <Analytics />

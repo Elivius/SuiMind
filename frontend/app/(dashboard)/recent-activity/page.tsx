@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, Card, Skeleton, CopyAddress } from "@/components/ui"
-import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, TrendingUp, CheckCircle2, Filter, Activity, Clock, Check, Bot, Users, Square, Trash2, Info } from "lucide-react"
+import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, TrendingUp, CheckCircle2, Filter, Clock, Check, Bot, Users, Square, Trash2, Info, HelpingHand } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { useGetDetailTransactions, useMindyAgent } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
@@ -22,7 +22,6 @@ export default function RecentActivityPage() {
     const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(fetchLimit, cursor || undefined)
 
     const [typeFilter, setTypeFilter] = useState("all")
-    const [statusFilter, setStatusFilter] = useState("all")
     const [timeFilter, setTimeFilter] = useState("all")
     const [mindyInput, setMindyInput] = useState("")
     const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
@@ -43,17 +42,14 @@ export default function RecentActivityPage() {
 
     // Dropdown States
     const [isTypeOpen, setIsTypeOpen] = useState(false)
-    const [isStatusOpen, setIsStatusOpen] = useState(false)
     const [isTimeOpen, setIsTimeOpen] = useState(false)
 
     const typeRef = useRef<HTMLDivElement>(null)
-    const statusRef = useRef<HTMLDivElement>(null)
     const timeRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (typeRef.current && !typeRef.current.contains(event.target as Node)) setIsTypeOpen(false)
-            if (statusRef.current && !statusRef.current.contains(event.target as Node)) setIsStatusOpen(false)
             if (timeRef.current && !timeRef.current.contains(event.target as Node)) setIsTimeOpen(false)
         }
         document.addEventListener("mousedown", handleClickOutside)
@@ -74,7 +70,6 @@ export default function RecentActivityPage() {
 
     const filteredTransactionsWithCursor = recentTransactionsWithCursor.filter((tx: any) => {
         const matchesType = typeFilter === "all" || tx.type === typeFilter
-        const matchesStatus = statusFilter === "all" || tx.status === statusFilter
 
         // Time filter logic using raw timestamp
         let matchesTime = true
@@ -96,7 +91,7 @@ export default function RecentActivityPage() {
             }
         }
 
-        return matchesType && matchesStatus && matchesTime
+        return matchesType && matchesTime
     })
 
     // Alias for compatibility with existing render code
@@ -158,8 +153,7 @@ export default function RecentActivityPage() {
                                         {[
                                             { label: 'All Types', value: 'all' },
                                             { label: 'Send', value: 'send' },
-                                            { label: 'Receive', value: 'receive' },
-                                            { label: 'Swap', value: 'swap' }
+                                            { label: 'Receive', value: 'receive' }
                                         ].map((opt) => (
                                             <button
                                                 key={opt.value}
@@ -168,40 +162,6 @@ export default function RecentActivityPage() {
                                             >
                                                 {opt.label}
                                                 {typeFilter === opt.value && <Check className="w-3 h-3" />}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Status Filter */}
-                            <div className="relative" ref={statusRef}>
-                                <button
-                                    onClick={() => setIsStatusOpen(!isStatusOpen)}
-                                    className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl pl-4 pr-10 h-11 hover:border-white/20 hover:bg-white/10 transition-all w-[180px]"
-                                >
-                                    <Activity className="w-3.5 h-3.5 text-purple-400 mr-3" />
-                                    <span className="text-white text-[11px] font-bold uppercase tracking-widest truncate">
-                                        {statusFilter === 'all' ? 'All Status' : statusFilter}
-                                    </span>
-                                    <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 transition-transform duration-300 ${isStatusOpen ? 'rotate-180 text-purple-400' : ''}`} />
-                                </button>
-
-                                {isStatusOpen && (
-                                    <div className="absolute top-[calc(100%+8px)] right-0 w-full bg-[#050B15]/95 backdrop-blur-3xl border border-white/10 rounded-2xl p-2 z-50 shadow-2xl animate-in fade-in zoom-in duration-200 origin-top">
-                                        {[
-                                            { label: 'All Status', value: 'all' },
-                                            { label: 'Completed', value: 'Completed' },
-                                            { label: 'Pending', value: 'Pending' },
-                                            { label: 'Cancelled', value: 'Cancelled' }
-                                        ].map((opt) => (
-                                            <button
-                                                key={opt.value}
-                                                onClick={() => { setStatusFilter(opt.value); setIsStatusOpen(false); handleFilterChange(); }}
-                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${statusFilter === opt.value ? 'bg-purple-500/20 text-purple-400' : 'text-white hover:bg-white/5'}`}
-                                            >
-                                                {opt.label}
-                                                {statusFilter === opt.value && <Check className="w-3 h-3" />}
                                             </button>
                                         ))}
                                     </div>
@@ -296,9 +256,10 @@ export default function RecentActivityPage() {
                                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${tx.type === "receive" ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/20" :
                                                             tx.type === "send" ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/20" : "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/20"
                                                             }`}>
-                                                            {tx.type === "receive" ? <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" /> :
-                                                                tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" /> :
-                                                                    <Repeat className="w-5 h-5 text-white stroke-[3px]" />}
+                                                            {tx.label === "Sui Storage Rebate" ? <HelpingHand className="w-5 h-5 text-white stroke-[2px]" /> :
+                                                                tx.type === "receive" ? <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" /> :
+                                                                    tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" /> :
+                                                                        <Repeat className="w-5 h-5 text-white stroke-[3px]" />}
                                                         </div>
                                                         <span className="capitalize font-medium text-white">{tx.type}</span>
                                                     </div>
@@ -313,7 +274,7 @@ export default function RecentActivityPage() {
                                                     <div className="flex flex-col gap-0.5">
                                                         {tx.label === "Sui Storage Rebate" ? (
                                                             <div className="flex items-center gap-1.5 group/tooltip relative z-50">
-                                                                <span className="text-[#6FBEE5] font-medium cursor-help">♻️ {tx.label}</span>
+                                                                <span className="text-[#6FBEE5] font-bold cursor-help">♻️ {tx.label}</span>
                                                                 <Info className="w-3.5 h-3.5 text-white/60" />
 
                                                                 {/* Tooltip */}
@@ -324,7 +285,7 @@ export default function RecentActivityPage() {
                                                             </div>
                                                         ) : tx.label === "Smart Contract Interaction" ? (
                                                             <div className="flex items-center gap-1.5 group/tooltip relative z-50">
-                                                                <span className="text-purple-400 font-medium cursor-help">⚡ {tx.label}</span>
+                                                                <span className="text-purple-400 font-bold cursor-help">⚡ {tx.label}</span>
                                                                 <Info className="w-3.5 h-3.5 text-white/60" />
 
                                                                 {/* Tooltip */}
@@ -404,9 +365,10 @@ export default function RecentActivityPage() {
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md ${tx.type === "receive" ? "bg-gradient-to-br from-green-400 to-green-600" :
                                                     tx.type === "send" ? "bg-gradient-to-br from-red-400 to-red-600" : "bg-gradient-to-br from-blue-400 to-blue-600"
                                                     }`}>
-                                                    {tx.type === "receive" ? <ArrowDownLeft className="w-4 h-4 text-white stroke-[3px]" /> :
-                                                        tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-white stroke-[3px]" /> :
-                                                            <Repeat className="w-4 h-4 text-white stroke-[3px]" />}
+                                                    {tx.label === "Sui Storage Rebate" ? <HelpingHand className="w-4 h-4 text-white stroke-[2px]" /> :
+                                                        tx.type === "receive" ? <ArrowDownLeft className="w-4 h-4 text-white stroke-[3px]" /> :
+                                                            tx.type === "send" ? <ArrowUpRight className="w-4 h-4 text-white stroke-[3px]" /> :
+                                                                <Repeat className="w-4 h-4 text-white stroke-[3px]" />}
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
@@ -425,7 +387,7 @@ export default function RecentActivityPage() {
                                                 <div>
                                                     {tx.label === "Sui Storage Rebate" ? (
                                                         <div className="flex items-center gap-1.5 group/tooltip relative z-50">
-                                                            <span className="text-[#6FBEE5] font-medium cursor-help">♻️ {tx.label}</span>
+                                                            <span className="text-[#6FBEE5] font-bold cursor-help">♻️ {tx.label}</span>
                                                             <Info className="w-3.5 h-3.5 text-white/60" />
 
                                                             {/* Tooltip */}
