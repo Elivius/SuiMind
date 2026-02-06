@@ -1,0 +1,127 @@
+"use client";
+import { createContext, useContext, useState } from 'react';
+import { useSignTransaction, useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
+import { Transaction } from '@mysten/sui/transactions';
+import { PACKAGE_ID } from "@/lib/config";
+import { SuiGraphQLClient } from '@mysten/sui/graphql'
+import { graphql } from '@mysten/sui/graphql/schemas/latest'
+import { usePaymentRequests } from '@/hooks';
+
+
+
+const TransactionContext = createContext<any>(null);
+
+export function TransactionProvider({ children }: { children: React.ReactNode }) {
+  const [isSending, setIsSending] = useState(false);
+  const { mutateAsync: signTransaction } = useSignTransaction();
+  const client = useSuiClient();
+  const account = useCurrentAccount();
+  const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
+
+  const gqlClient = new SuiGraphQLClient({
+      url: 'https://graphql.testnet.sui.io/graphql', // Testnet
+    });
+  
+    const EXECUTE_TRANSACTION = graphql(`
+      mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
+        executeTransaction(transactionDataBcs: $transactionDataBcs, signatures: $signatures) {
+          errors
+          effects {
+            status
+            transaction {    # Digest lives here now
+              digest
+            }
+          }
+        }
+      }
+    `);
+
+  const handleSend = async (recipient: string, amount: string, requestId?: string) => {
+    if (!account) { alert("Please connect your wallet."); return; }
+    
+    setIsSending(true);
+    try {
+      const tx = new Transaction();
+      const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
+      const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
+      tx.transferObjects([coin], recipient);
+
+      if (requestId) {
+        tx.moveCall({
+          target: `${PACKAGE_ID}::request::settle_payment_request`,
+          arguments: [tx.object(requestId)],
+        });
+      }
+
+      const { bytes, signature } = await signTransaction({ transaction: tx });
+      
+      // Ensure gqlClient and EXECUTE_TRANSACTION are defined in this file!
+      const result = await gqlClient.query({
+          query: EXECUTE_TRANSACTION,
+          variables: { transactionDataBcs: bytes, signatures: [signature] },
+      });
+
+      if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
+          await onTransactionSuccess(); // From usePaymentRequests hook
+          return true;
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleRequest = async (requestRecipient: string, requestAmount: string) => {
+      if (!account) return;
+      if (!requestRecipient.startsWith('0x')) { alert("Invalid address"); return; }
+  
+      setIsSending(true);
+      try {
+        const tx = new Transaction();
+        const MODULE_NAME = "request";
+        const FUNCTION_NAME = "create_payment_request";
+        const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
+        const expirationTimestamp = Date.now() + (24 * 60 * 60 * 1000);
+  
+        tx.moveCall({
+          target: `${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}`,
+          arguments: [
+            tx.pure.address(requestRecipient),
+            tx.pure.u64(amountInMist),
+            tx.pure.string("REQ-ABCD-" + Date.now()),
+            tx.pure.u64(expirationTimestamp),
+          ],
+        });
+  
+  
+        const { bytes, signature } = await signTransaction({ transaction: tx });
+  
+        const result = await gqlClient.query({
+          query: EXECUTE_TRANSACTION,
+          variables: {
+            transactionDataBcs: bytes,
+            signatures: [signature],
+          },
+        });
+  
+        if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
+          return { success: true };
+        }
+      } catch (e: any) {
+        console.error("Request failed:", e);
+        alert(`Error: ${e.message}`);
+      } finally {
+        setIsSending(false);
+      }
+    };
+  
+
+  return (
+    <TransactionContext.Provider value={{ handleSend, isSending, handleRequest }}>
+      {children}
+    </TransactionContext.Provider>
+  );
+}
+
+export const useTransactions = () => useContext(TransactionContext);
