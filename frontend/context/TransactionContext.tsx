@@ -200,7 +200,7 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
         
 
     return (
-        <TransactionContext.Provider value={{ handleSend, isSending, handleRequest }}>
+        <TransactionContext.Provider value={{ handleSend, isSending, handleRequest, activeRequest,setActiveRequest, showSendModal,setShowSendModal }}>
         {children}
         </TransactionContext.Provider>
     );
