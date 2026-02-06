@@ -64,9 +64,10 @@ export function TransactionProvider({ children }: { children: React.ReactNode })
         }
 
         const execution = await runTransaction(tx);
+        const status = execution?.effects?.status;
 
-        if (execution?.effects?.status === 'SUCCESS') {
-            await onTransactionSuccess(); // From usePaymentRequests hook
+        if (status === 'SUCCESS' ) {
+            await onTransactionSuccess();
             return true;
         }
         } catch (e) {
