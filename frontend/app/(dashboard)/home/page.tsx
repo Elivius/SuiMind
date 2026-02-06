@@ -43,16 +43,26 @@ export default function HomePage() {
 
   const onSendClick = async () => {
   // Pass the activeRequestObject.id if it exists to settle the payment
-  const result = await handleSend(recipient, amount, activeRequestObject?.id);
-  
-  if (result?.success) {
-    setShowSendUI(false);
-    setAmount('0.00');
-    setRecipient('');
-    setActiveRequestObject(null);
-    playSound('success');
-  }
-};
+    const result = await handleSend(recipient, amount, activeRequestObject?.id);
+    
+    if (result?.success) {
+      setShowSendUI(false);
+      setAmount('0.00');
+      setRecipient('');
+      setActiveRequestObject(null);
+      playSound('success');
+    }
+  };
+
+  const onInternalRequestClick = async () => {
+    const result = await handleRequest(requestRecipient, requestAmount);
+    if (result?.success) {
+      setShowRequestUI(false);
+      setRequestAmount('0.00');
+      setRequestRecipient('');
+      playSound('request_success');
+    }
+  };
   
 
 
@@ -331,7 +341,7 @@ export default function HomePage() {
                 Cancel
               </button>
               <button
-                onClick={handleSend}
+                onClick={onSendClick}
                 disabled={isSending}
                 className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
               >
@@ -422,7 +432,7 @@ export default function HomePage() {
                 Cancel
               </button>
               <button
-                onClick={handleRequest}
+                onClick={onInternalRequestClick}
                 disabled={isSending}
                 className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors"
               >
