@@ -6,7 +6,7 @@ import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
   Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus,
-  Wallet, Info, HelpingHand
+  Wallet, Info, HelpingHand, ChevronDown, ChevronUp, Utensils, Home, ShoppingCart, ShoppingBag, MessageSquare
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
@@ -46,6 +46,8 @@ export default function HomePage() {
   const [recentRecipients, setRecentRecipients] = useState<string[]>([]);
   const [showRecentsDropdown, setShowRecentsDropdown] = useState(false);
   const [remark, setRemark] = useState('');
+  const [isRemarkOpen, setIsRemarkOpen] = useState(false);
+  const [remarkCategory, setRemarkCategory] = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('recent_recipients');
@@ -65,7 +67,7 @@ export default function HomePage() {
       paymentRequestId: activeRequestObject?.id,
       walletBalance,
     });
-    
+
     if (execution) {
       const digest = execution?.effects?.transaction?.digest;
       if (digest) {
@@ -74,7 +76,7 @@ export default function HomePage() {
             sender: account?.address,
             recipient: recipient,
             amountSui: amount,
-            remark: remark || "No remark", 
+            remark: remark || "No remark",
             timestamp: serverTimestamp(),
           });
 
@@ -552,6 +554,89 @@ export default function HomePage() {
                           </div>
                         </div>
 
+                        {/* Collapsible Remark Section */}
+                        <div className="mb-6 mt-6 border border-white/10 rounded-2xl overflow-hidden transition-all bg-white/5">
+                          <button
+                            onClick={() => setIsRemarkOpen(!isRemarkOpen)}
+                            className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 text-white font-bold text-sm">
+                              <MessageSquare className="w-4 h-4 text-[#6FBEE5]" />
+                              <span>Add a remark</span>
+                              {remark && (
+                                <span className="bg-[#6FBEE5]/20 text-[#6FBEE5] text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  Added
+                                </span>
+                              )}
+                            </div>
+                            {isRemarkOpen ? (
+                              <ChevronUp className="w-4 h-4 text-white/40" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-white/40" />
+                            )}
+                          </button>
+
+                          <AnimatePresence>
+                            {isRemarkOpen && (
+                              <Motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="p-4 pt-0 space-y-4">
+                                  <div className="flex flex-wrap gap-2">
+                                    {[
+                                      { id: 'Food & Drink', icon: <Utensils className="w-3 h-3" /> },
+                                      { id: 'Accommodation', icon: <Home className="w-3 h-3" /> },
+                                      { id: 'Grocery', icon: <ShoppingCart className="w-3 h-3" /> },
+                                      { id: 'Shop', icon: <ShoppingBag className="w-3 h-3" /> },
+                                      { id: 'Other', icon: <Pencil className="w-3 h-3" /> }
+                                    ].map((cat) => (
+                                      <button
+                                        key={cat.id}
+                                        onClick={() => {
+                                          setRemarkCategory(cat.id);
+                                          if (cat.id !== 'Other') {
+                                            setRemark(cat.id);
+                                          } else {
+                                            setRemark('');
+                                          }
+                                        }}
+                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${remarkCategory === cat.id
+                                          ? 'bg-[#6FBEE5] border-[#6FBEE5] text-white shadow-[0_0_15px_rgba(111,190,229,0.3)]'
+                                          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white'
+                                          }`}
+                                      >
+                                        {cat.icon}
+                                        {cat.id}
+                                      </button>
+                                    ))}
+                                  </div>
+
+                                  {remarkCategory === 'Other' && (
+                                    <div className="relative">
+                                      <textarea
+                                        value={remark}
+                                        onChange={(e) => {
+                                          if (e.target.value.length <= 50) {
+                                            setRemark(e.target.value);
+                                          }
+                                        }}
+                                        placeholder="Type your remark..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all resize-none h-20"
+                                      />
+                                      <div className="absolute bottom-2 right-2 text-[10px] text-white/40 font-mono">
+                                        {remark.length}/50
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </Motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
                         {/* Action Buttons */}
                         <div className="flex gap-4 mt-10">
                           <button
@@ -576,6 +661,23 @@ export default function HomePage() {
                             </span>
                           </button>
                         </div>
+                        {/* Remark Preview Badge */}
+                        {remark && (
+                          <Motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 flex justify-center"
+                          >
+                            <div className="bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 rounded-full px-4 py-1.5 flex items-center gap-2">
+                              {remarkCategory === 'Food & Drink' && <Utensils className="w-3 h-3 text-[#6FBEE5]" />}
+                              {remarkCategory === 'Accommodation' && <Home className="w-3 h-3 text-[#6FBEE5]" />}
+                              {remarkCategory === 'Grocery' && <ShoppingCart className="w-3 h-3 text-[#6FBEE5]" />}
+                              {remarkCategory === 'Shop' && <ShoppingBag className="w-3 h-3 text-[#6FBEE5]" />}
+                              {(remarkCategory === 'Other' || !remarkCategory) && <MessageSquare className="w-3 h-3 text-[#6FBEE5]" />}
+                              <span className="text-xs font-medium text-[#6FBEE5]">{remark}</span>
+                            </div>
+                          </Motion.div>
+                        )}
                       </>
                     ) : (
                       <>
