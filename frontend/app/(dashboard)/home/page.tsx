@@ -369,6 +369,7 @@ export default function HomePage() {
 
 
   // ==============  Mindy Chat  ==============  
+  const [mindyInput, setMindyInput] = useState("")
   const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
   const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -394,7 +395,6 @@ export default function HomePage() {
   const insightModal = useModal()
   const salaryModal = useModal()
   const expensesModal = useModal()
-  const [mindyInput, setMindyInput] = useState("")
 
   const [expenseCategories] = useState([
     { id: 1, name: "Rent & Utilities", amount: "1200", icon: "🏠" },
