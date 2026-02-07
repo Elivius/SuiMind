@@ -1223,7 +1223,7 @@ export default function HomePage() {
                       <div className="flex-1 min-w-0">
                         <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                         <p className="text-xs text-white/60">{tx.time}</p>
-                        <p className="text-xs text-white/60 mt-1">
+                        <div className="text-xs text-white/60 mt-1">
                           {tx.label === "Sui Storage Rebate" ? (
                             <div className="flex items-center gap-1.5 group/tooltip relative">
                               <span className="text-[#6FBEE5] font-bold cursor-help">♻️ {tx.label}</span>
@@ -1262,7 +1262,7 @@ export default function HomePage() {
                               )}
                             </div>
                           )}
-                        </p>
+                        </div>
                       </div>
                       <span className="text-sm text-white">{tx.usd}</span>
                     </div>
