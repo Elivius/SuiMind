@@ -45,6 +45,7 @@ export default function HomePage() {
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
   const [recentRecipients, setRecentRecipients] = useState<string[]>([]);
   const [showRecentsDropdown, setShowRecentsDropdown] = useState(false);
+  const [remark, setRemark] = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('recent_recipients');
@@ -73,7 +74,7 @@ export default function HomePage() {
             sender: account?.address,
             recipient: recipient,
             amountSui: amount,
-            // remark: remark || "No remark", 
+            remark: remark || "No remark", 
             timestamp: serverTimestamp(),
           });
 
