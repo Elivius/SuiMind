@@ -41,13 +41,26 @@ export default function HomePage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
+  const [recentRecipients, setRecentRecipients] = useState<string[]>([]);
+  const [showRecentsDropdown, setShowRecentsDropdown] = useState(false);
+
+  useEffect(() => {
+  const saved = localStorage.getItem('recent_recipients');
+  if (saved) setRecentRecipients(JSON.parse(saved));
+}, []);
+
+  const saveRecipient = (address: string) => {
+    const updated = [address, ...recentRecipients.filter(a => a !== address)].slice(0, 5);
+    setRecentRecipients(updated);
+    localStorage.setItem('recent_recipients', JSON.stringify(updated));
+  };
 
   const handleSend = async () => {
     const success = await transferSui({
       amount,
       recipient,
       paymentRequestId: activeRequestObject?.id,
-      walletBalance
+      walletBalance,
     });
 
     if (success) {
@@ -59,6 +72,7 @@ export default function HomePage() {
       refetch();
       setSuccessMessage("Transaction Successful!");
       setShowSuccess(true);
+      saveRecipient(recipient);
     }
   };
 
