@@ -6,7 +6,6 @@ import { Analytics } from "@vercel/analytics/next"
 import { DarkVeil, FloatingOrbs } from "@/components/ui"
 import { Toaster } from "sonner"
 import "./globals.css"
-import { TransactionProvider } from "@/context/TransactionContext"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
@@ -42,9 +41,7 @@ export default function RootLayout({
         <FloatingOrbs />
         <div className="relative z-10">
           <Providers>
-            <TransactionProvider>
               {children}
-            </TransactionProvider>
             <Toaster position="top-right" theme="dark" closeButton richColors expand={true} />
           </Providers>
         </div>
