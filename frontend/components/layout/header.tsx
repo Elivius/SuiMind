@@ -8,18 +8,22 @@ import GooeyNav from "@/components/ui/gooey-nav"
 import { navigation } from "@/lib/constants"
 import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
 import { SuiMindLogo, MindyAILogo } from "@/components/icons"
-import { usePaymentRequests } from "@/hooks";
+import { usePaymentRequests, useTransactionManager, useGetBalances } from "@/hooks";
 import { useState, useEffect, useRef } from "react";
 import { playSound } from "@/lib/sound-effects";
 import { motion, AnimatePresence } from "motion/react";
-import { formatSuiAmount } from "@/lib/utils";
+import { formatSuiAmount, mistToSui } from "@/lib/utils";
 
 
 export function Header() {
     const pathname = usePathname()
 
     // Determine active nav index based on current path
-    const { pendingRequests, isLoading, hasUnread, onTransactionSuccess, rejectedRequests, paidNotifications } = usePaymentRequests();
+    const { pendingRequests, isLoading, hasUnread, onTransactionSuccess, refetch, rejectedRequests, paidNotifications } = usePaymentRequests();
+    const { transferSui, rejectRequest, deleteNotification } = useTransactionManager();
+    const { data: balanceData } = useGetBalances();
+    const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
+
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
     const activeIndex = navigation.findIndex(item => pathname === item.href)
@@ -60,6 +64,45 @@ export function Header() {
             document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [showDropdown])
+
+    const handlePayRequest = async (req: any) => {
+        const success = await transferSui({
+            amount: req.amountSui,
+            recipient: req.requester,
+            paymentRequestId: req.id,
+            walletBalance
+        });
+        if (success) {
+            await onTransactionSuccess();
+            refetch();
+            setShowDropdown(false);
+        }
+    };
+
+    const handleReject = async (id: string) => {
+        const success = await rejectRequest(id);
+        if (success) {
+            await onTransactionSuccess();
+            refetch();
+            setSelectedRequestId(null);
+        }
+    };
+
+    const handleClearPaid = async (id: string) => {
+        const success = await deleteNotification(id, 'paid');
+        if (success) {
+            await onTransactionSuccess();
+            refetch();
+        }
+    };
+
+    const handleClearReject = async (id: string) => {
+        const success = await deleteNotification(id, 'reject');
+        if (success) {
+            await onTransactionSuccess();
+            refetch();
+        }
+    };
 
     return (
         <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 fixed top-0 left-0 right-0 z-40">
@@ -205,10 +248,7 @@ export function Header() {
                                                                                     <Button
                                                                                         size="sm"
                                                                                         className="flex-1 h-11 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white text-sm font-black rounded-xl shadow-lg shadow-[#6FBEE5]/20 group relative overflow-hidden"
-                                                                                        onClick={() => {
-                                                                                            window.dispatchEvent(new CustomEvent('PAY_REQUEST', { detail: req }));
-                                                                                            setShowDropdown(false);
-                                                                                        }}
+                                                                                        onClick={() => handlePayRequest(req)}
                                                                                     >
                                                                                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
                                                                                         <span className="relative z-10 flex items-center justify-center gap-2">
@@ -220,10 +260,7 @@ export function Header() {
                                                                                         size="sm"
                                                                                         variant="ghost"
                                                                                         className="flex-1 h-11 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm font-black rounded-xl border border-red-500/20"
-                                                                                        onClick={() => {
-                                                                                            setSelectedRequestId(null);
-                                                                                            window.dispatchEvent(new CustomEvent('REJECT_REQUEST', { detail: req.id }));
-                                                                                        }}
+                                                                                        onClick={() => handleReject(req.id)}
                                                                                     >
                                                                                         <X className="w-4 h-4 mr-1.5" />
                                                                                         REJECT
@@ -259,7 +296,7 @@ export function Header() {
                                                                 </p>
                                                             </div>
                                                             <button
-                                                                onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_PAID_NOTIFICATION', { detail: noti.id }))}
+                                                                onClick={() => handleClearPaid(noti.id)}
                                                                 className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/20 hover:text-white transition-all"
                                                                 title="Dismiss"
                                                             >
@@ -295,7 +332,9 @@ export function Header() {
                                                                 </div>
                                                             </div>
                                                             <button
-                                                                onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_REJECT_NOTIFICATION', { detail: rej.id }))}
+                                                                onClick={() => {
+                                                                    if (rej.id) handleClearReject(rej.id);
+                                                                }}
                                                                 className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/20 hover:text-white transition-all"
                                                                 title="Dismiss"
                                                             >
