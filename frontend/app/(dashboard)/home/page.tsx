@@ -45,9 +45,9 @@ export default function HomePage() {
   const [showRecentsDropdown, setShowRecentsDropdown] = useState(false);
 
   useEffect(() => {
-  const saved = localStorage.getItem('recent_recipients');
-  if (saved) setRecentRecipients(JSON.parse(saved));
-}, []);
+    const saved = localStorage.getItem('recent_recipients');
+    if (saved) setRecentRecipients(JSON.parse(saved));
+  }, []);
 
   const saveRecipient = (address: string) => {
     const updated = [address, ...recentRecipients.filter(a => a !== address)].slice(0, 5);
@@ -466,9 +466,34 @@ export default function HomePage() {
                                 type="text"
                                 placeholder="0x..."
                                 value={recipient}
+                                onFocus={() => setShowRecentsDropdown(true)}
+    onBlur={() => setTimeout(() => setShowRecentsDropdown(false), 200)}
                                 onChange={(e) => setRecipient(e.target.value)}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all font-mono text-sm"
                               />
+
+                              {/* Recent Transactions Dropdown */}
+                              {showRecentsDropdown && recentRecipients.length > 0 && (
+                                <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+                                  <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recent Recipients</p>
+                                  </div>
+                                  {recentRecipients.map((addr) => (
+                                    <button
+                                      key={addr}
+                                      type="button"
+                                      onClick={() => {
+                                        setRecipient(addr);
+                                        setShowRecentsDropdown(false);
+                                      }}
+                                      className="w-full px-4 py-3 text-left text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2"
+                                    >
+                                      <AtSign className="w-4 h-4 text-gray-300" />
+                                      <span className="font-mono">{addr.slice(0, 10)}...{addr.slice(-8)}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
 
