@@ -12,7 +12,7 @@ import { usePaymentRequests, useTransactionManager, useGetBalances } from "@/hoo
 import { useState, useEffect, useRef } from "react";
 import { playSound } from "@/lib/sound-effects";
 import { motion, AnimatePresence } from "motion/react";
-import { formatSuiAmount, mistToSui } from "@/lib/utils";
+import { mistToSui, truncateAddress } from "@/lib/utils";
 
 
 export function Header() {
@@ -212,7 +212,7 @@ export function Header() {
                                                                                 <p className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Payment Request</p>
                                                                             </div>
                                                                             <p className="text-sm font-bold text-white mb-0.5">
-                                                                                Request from {req.requester.slice(0, 6)}...{req.requester.slice(-4)}
+                                                                                Request from {truncateAddress(req.requester)}
                                                                             </p>
                                                                             <p className="text-xl font-black text-white tracking-tight">
                                                                                 {req.amountSui} <span className="text-xs text-[#6FBEE5] font-bold ml-1 uppercase">SUI</span>
@@ -289,7 +289,7 @@ export function Header() {
                                                         >
                                                             <div className="flex-1">
                                                                 <p className="text-xs text-white/50 font-medium mb-1">
-                                                                    {noti.paid_by.slice(0, 6)}... paid you
+                                                                    {truncateAddress(noti.paid_by)} paid you
                                                                 </p>
                                                                 <p className="text-lg font-black text-emerald-400">
                                                                     +{noti.amountSui} <span className="text-[10px] text-emerald-400/50 ml-1">SUI</span>
@@ -320,7 +320,7 @@ export function Header() {
                                                         >
                                                             <div className="flex-1">
                                                                 <p className="text-xs text-white/50 font-medium mb-1">
-                                                                    Request to {rej.rejected_by.slice(0, 6)}... was declined
+                                                                    Request to {truncateAddress(rej.rejected_by)} was declined
                                                                 </p>
                                                                 <div className="flex items-center gap-3">
                                                                     <p className="text-lg font-black text-white/20 line-through tracking-tight">

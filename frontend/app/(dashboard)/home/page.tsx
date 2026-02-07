@@ -4,14 +4,14 @@ import { Button, Card, Skeleton, CopyAddress } from "@/components/ui"
 import { processTx, mistToSui, formatSuiAmount, truncateAddress } from "@/lib/utils"
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
-  X, Repeat, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
+  X, RefreshCcw, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
   Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus,
   Wallet, Info, HelpingHand
 } from "lucide-react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, usePaymentRequests, useTransactionManager } from "@/hooks"
+import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
@@ -19,6 +19,7 @@ import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
 import { toast } from "sonner"
 import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
+import { HOME_PAGE_INSIGHTS, HOME_PAGE_SUGGESTIONS, getHomeInsightsContextPrompt, getHomeSuggestionsContextPrompt } from "@/lib/prompts";
 
 
 
@@ -138,7 +139,7 @@ export default function HomePage() {
   }, [deleteNotification, onTransactionSuccess]);
 
 
-
+  // ==============  Balance & Recent Transaction  ==============  
   const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
   const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(20)
 
@@ -166,10 +167,15 @@ export default function HomePage() {
     prevBalance.current = walletBalance;
   }, [walletBalance, isBalanceLoading]);
 
-  const recentTransactions = (transactionData?.transactions
-    ?.map((tx: any) => processTx(tx, account?.address))
-    .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || []).slice(0, 5);
+  const recentTransactions = useMemo(() => {
+    return (transactionData?.transactions
+      ?.map((tx: any) => processTx(tx, account?.address))
+      .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || []).slice(0, 5);
+  }, [transactionData, account?.address]);
 
+
+  // ==============  Mindy Chat  ==============  
+  const [mindyInput, setMindyInput] = useState("")
   const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
   const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -185,17 +191,14 @@ export default function HomePage() {
     setMindyInput("")
   }
 
-
   // ============   MOCK   ============
   const [salary, setSalary] = useState("0")
   const [activeSalary, setActiveSalary] = useState("0.00")
   const [passiveSalary, setPassiveSalary] = useState("0.00")
 
   // Use reusable modal hook for all modals
-  const insightModal = useModal()
   const salaryModal = useModal()
   const expensesModal = useModal()
-  const [mindyInput, setMindyInput] = useState("")
 
   const [expenseCategories] = useState([
     { id: 1, name: "Rent & Utilities", amount: "1200", icon: "🏠" },
@@ -214,36 +217,87 @@ export default function HomePage() {
   const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
   const balance = calculateBalance()
 
-  const [suggestions] = useState([
-    {
-      id: 1,
-      title: "Optimize Your Savings",
-      description: "You could save 15% more by reducing discretionary spending. Consider setting aside $500 monthly.",
-      icon: "💰",
-      priority: "high",
-    },
-    {
-      id: 2,
-      title: "Investment Opportunity",
-      description: "Based on your surplus, investing in DeFi protocols could yield 8-12% APY on stablecoins.",
-      icon: "📈",
-      priority: "medium",
-    },
-    {
-      id: 3,
-      title: "Budget Alert",
-      description: "Your expenses are trending upward. Review your spending categories to identify areas to optimize.",
-      icon: "⚠️",
-      priority: "medium",
-    },
-    {
-      id: 4,
-      title: "Emergency Fund",
-      description: "Build an emergency fund of 3-6 months of expenses for financial security.",
-      icon: "🛡️",
-      priority: "low",
-    },
-  ])
+  // ==============  AI Insight  ==============  
+  const insightModal = useModal()
+  const {
+    insight,
+    isLoading: isInsightLoading,
+    error: insightError,
+    fetchInsight,
+    regenerateInsight
+  } = useMindyInsight();
+
+  const handleRegenerateInsight = () => {
+    regenerateInsight(HOME_PAGE_INSIGHTS, getHomeInsightsContextPrompt({
+      balance: walletBalance,
+      totalExpenses,
+      expenseCategories,
+      recentActivity: recentTransactions
+    }));
+  };
+
+  // Auto-fetch insight when modal opens
+  useEffect(() => {
+    if (insightModal.isOpen && !insight && !isInsightLoading && !insightError) {
+      fetchInsight(HOME_PAGE_INSIGHTS, getHomeInsightsContextPrompt({
+        balance: walletBalance,
+        totalExpenses,
+        expenseCategories,
+        recentActivity: recentTransactions
+      }));
+    }
+  }, [insightModal.isOpen, recentTransactions, insight, isInsightLoading, insightError]); // Added missing deps for correctness
+
+  // ==============  AI Powered Suggestions  ==============  
+  const [suggestions, setSuggestions] = useState<any[]>([])
+
+  const {
+    insight: rawSuggestions,
+    isLoading: isSuggestionsLoading,
+    error: suggestionsError,
+    fetchInsight: fetchSuggestions,
+    regenerateInsight: regenerateSuggestions
+  } = useMindyInsight();
+
+  const handleRegenerateSuggestions = () => {
+    regenerateSuggestions(HOME_PAGE_SUGGESTIONS, getHomeSuggestionsContextPrompt({
+      balance: walletBalance,
+      totalExpenses,
+      expenseCategories,
+      recentActivity: recentTransactions
+    }));
+  };
+
+  // Auto-fetch suggestions on load
+  useEffect(() => {
+    // Add suggestionsError check to prevent infinite loop on failure
+    if (!rawSuggestions && !isSuggestionsLoading && !suggestionsError && recentTransactions.length > 0) {
+      fetchSuggestions(HOME_PAGE_SUGGESTIONS, getHomeSuggestionsContextPrompt({
+        balance: walletBalance,
+        totalExpenses,
+        expenseCategories,
+        recentActivity: recentTransactions
+      }));
+    }
+  }, [rawSuggestions, isSuggestionsLoading, suggestionsError, recentTransactions]);
+
+  // Update suggestions when AI returns data
+  useEffect(() => {
+    if (rawSuggestions) {
+      try {
+        // Find JSON array in the response (in case AI adds extra text)
+        const jsonMatch = rawSuggestions.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          const parsedSuggestions = JSON.parse(jsonMatch[0]);
+          if (Array.isArray(parsedSuggestions) && parsedSuggestions.length > 0) {
+            setSuggestions(parsedSuggestions);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse AI suggestions", e);
+      }
+    }
+  }, [rawSuggestions]);
 
   // ======================================================
 
@@ -1020,13 +1074,13 @@ export default function HomePage() {
                         ) : tx.type === "send" ? (
                           <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" />
                         ) : (
-                          <Repeat className="w-5 h-5 text-white stroke-[3px]" />
+                          <RefreshCcw className="w-5 h-5 text-white stroke-[3px]" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={`font-medium text-sm truncate ${tx.type === "receive" ? "text-green-500" : tx.type === "send" ? "text-red-500" : "text-blue-500"}`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
                         <p className="text-xs text-white/60">{tx.time}</p>
-                        <p className="text-xs text-white/60 mt-1">
+                        <div className="text-xs text-white/60 mt-1">
                           {tx.label === "Sui Storage Rebate" ? (
                             <div className="flex items-center gap-1.5 group/tooltip relative">
                               <span className="text-[#6FBEE5] font-bold cursor-help">♻️ {tx.label}</span>
@@ -1065,7 +1119,7 @@ export default function HomePage() {
                               )}
                             </div>
                           )}
-                        </p>
+                        </div>
                       </div>
                       <span className="text-sm text-white">{tx.usd}</span>
                     </div>
@@ -1254,42 +1308,97 @@ export default function HomePage() {
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
               <MindyAILogo className="w-20 h-20 text-[#6FBEE5]" />
-              <h3 className="text-3xl font-bold text-white">AI-Powered Suggestions</h3>
+              <div className="flex items-center gap-4">
+                <h3 className="text-3xl font-bold text-white">AI-Powered Suggestions</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRegenerateSuggestions}
+                  disabled={isSuggestionsLoading}
+                  className="text-[#6FBEE5] hover:text-[#5DAED5] hover:bg-[#6FBEE5]/10 gap-2 px-3 h-8 mt-1"
+                >
+                  <RefreshCcw className={`w-4 h-4 ${isSuggestionsLoading ? "animate-spin" : ""}`} />
+                  <span className="text-xs font-semibold uppercase tracking-wider">
+                    {isSuggestionsLoading ? "Generating Suggestions..." : "Regenerate"}
+                  </span>
+                </Button>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {suggestions.map((suggestion) => (
-                <div
-                  key={suggestion.id}
-                  className="p-5 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 hover:border-[#6FBEE5]/30 transition-all hover:shadow-lg hover:shadow-[#6FBEE5]/10"
-                >
-                  <div className="flex items-start gap-3 mb-3">
-                    <span className="text-2xl">{suggestion.icon}</span>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-semibold text-white">{suggestion.title}</h4>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${suggestion.priority === "high"
-                            ? "bg-red-500/20 text-red-400"
-                            : suggestion.priority === "medium"
-                              ? "bg-yellow-500/20 text-yellow-400"
-                              : "bg-blue-500/20 text-blue-400"
-                            }`}
-                        >
-                          {suggestion.priority}
-                        </span>
-                      </div>
-                      <p className="text-sm text-white/70 leading-relaxed">{suggestion.description}</p>
-                    </div>
+              {suggestionsError ? (
+                <div className="col-span-full p-6 rounded-xl bg-red-500/10 border border-red-500/20 flex flex-col items-center justify-center text-center gap-3">
+                  <div className="p-3 bg-red-500/20 rounded-full">
+                    <Bot className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-white font-medium">Failed to load suggestions</p>
+                    <p className="text-white/50 text-sm">{suggestionsError}</p>
                   </div>
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full mt-2 text-[#6FBEE5] hover:text-[#5DAED5] hover:bg-[#6FBEE5]/10"
+                    onClick={() => handleRegenerateSuggestions()}
+                    className="mt-2 bg-white/5 hover:bg-white/10 text-white border border-white/10"
                   >
-                    Learn More
+                    <RefreshCcw className="w-4 h-4 mr-2" />
+                    Retry
                   </Button>
                 </div>
-              ))}
+              ) : isSuggestionsLoading ? (
+                // Skeleton loading state
+                Array.from({ length: 4 }).map((_, idx) => (
+                  <div key={idx} className="p-5 rounded-xl bg-white/5 border border-white/10">
+                    <div className="flex items-start gap-3 mb-3">
+                      <Skeleton className="w-10 h-10 rounded-lg bg-white/10" />
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-5 w-32 bg-white/10" />
+                          <Skeleton className="h-4 w-16 rounded-full bg-white/10" />
+                        </div>
+                        <Skeleton className="h-4 w-full bg-white/10" />
+                        <Skeleton className="h-4 w-3/4 bg-white/10" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-9 w-full rounded-md bg-white/10" />
+                  </div>
+                ))
+              ) : suggestions.length > 0 ? (
+                suggestions.map((suggestion) => (
+                  <div
+                    key={suggestion.id}
+                    className="p-5 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 hover:border-[#6FBEE5]/30 transition-all hover:shadow-lg hover:shadow-[#6FBEE5]/10"
+                  >
+                    <div className="flex items-start gap-3 mb-3">
+                      <span className="text-2xl">{suggestion.icon}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-semibold text-white">{suggestion.title}</h4>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${suggestion.risk === "high"
+                              ? "bg-red-500/20 text-red-400"
+                              : suggestion.risk === "medium"
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : "bg-blue-500/20 text-blue-400"
+                              }`}
+                          >
+                            {suggestion.risk}
+                          </span>
+                        </div>
+                        <p className="text-sm text-white/70 leading-relaxed">{suggestion.description}</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full mt-2 text-[#6FBEE5] hover:text-[#5DAED5] hover:bg-[#6FBEE5]/10"
+                    >
+                      Learn More
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-10 text-center border-2 border-dashed border-white/5 rounded-2xl">
+                  <p className="text-white/40">No suggestions available right now.</p>
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -1311,8 +1420,20 @@ export default function HomePage() {
                       <Zap className="w-6 h-6 text-[#6FBEE5]" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-black tracking-tight">AI Insight</h2>
-                      <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">Smart Analysis</p>
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-2xl font-black tracking-tight">AI Insight</h2>
+                        {/* Regenerate Button in Header */}
+                        {!isInsightLoading && (
+                          <button
+                            onClick={handleRegenerateInsight}
+                            className="p-1.5 rounded-lg text-white/50 hover:text-[#6FBEE5] hover:bg-white/5 transition-all"
+                            title="Regenerate Insight"
+                          >
+                            <RefreshCcw className="w-5 h-5" />
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">By Mindy AI</p>
                     </div>
                   </div>
                   <button
@@ -1323,15 +1444,53 @@ export default function HomePage() {
                   </button>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/5 mb-8">
-                  <p className="text-white/80 leading-relaxed text-lg font-medium">
-                    Based on your current cashflow, we suggest diversifying into <span className="text-[#6FBEE5] font-bold">Sui-native liquid staking protocols</span>. You could potentially increase your passive income by <span className="text-green-400 font-bold">8-12% annually</span>.
-                  </p>
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/5 mb-8 min-h-[120px] flex items-center justify-center relative group/insight">
+                  {/* Regenerate Button - Absolute Top Right */}
+
+                  {isInsightLoading ? (
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="flex space-x-1.5">
+                        <div className="w-2 h-2 bg-[#6FBEE5] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-2 h-2 bg-[#6FBEE5] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-2 h-2 bg-[#6FBEE5] rounded-full animate-bounce"></div>
+                      </div>
+                      <span className="text-xs text-white/40 font-bold uppercase tracking-widest animate-pulse">Analyzing Finances...</span>
+                    </div>
+                  ) : insightError ? (
+                    <div className="flex flex-col items-center gap-3 py-2">
+                      <p className="text-red-400 text-sm font-medium text-center">
+                        {insightError || "Failed to generate insight"}
+                      </p>
+                      <Button
+                        onClick={handleRegenerateInsight}
+                        size="sm"
+                        className="bg-white/5 hover:bg-white/10 text-white border border-white/10 h-8 text-xs"
+                      >
+                        <RefreshCcw className="w-3 h-3 mr-2" />
+                        Retry
+                      </Button>
+                    </div>
+                  ) : insight ? (
+                    <div className="text-white/80 leading-relaxed text-lg font-medium animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <ReactMarkdown
+                        components={{
+                          strong: ({ node: _node, ...props }) => <span className="text-[#6FBEE5] font-bold" {...props} />,
+                          em: ({ node: _node, ...props }) => <span className="text-green-400 font-bold not-italic" {...props} />,
+                          p: ({ node: _node, ...props }) => <p className="mb-3 last:mb-0" {...props} />,
+                        }}
+                      >
+                        {insight}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="text-white/40 text-sm">No insight available. Try regenerating.</p>
+                  )}
                 </div>
 
                 <Button
-                  className="w-full bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white py-6 rounded-xl font-black shadow-lg shadow-[#3B82F6]/20 border border-white/10 uppercase tracking-widest text-xs"
+                  className="w-full bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white py-6 rounded-xl font-black shadow-lg shadow-[#3B82F6]/20 border border-white/10 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={insightModal.close}
+                  disabled={isInsightLoading}
                 >
                   Action Plan
                 </Button>
@@ -1450,6 +1609,7 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
       {/* Expenses Breakdown Modal */}
       {expensesModal.isOpen && (
         <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
