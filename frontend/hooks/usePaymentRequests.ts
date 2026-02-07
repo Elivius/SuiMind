@@ -2,7 +2,6 @@
 
 import { useSuiClientQuery, useCurrentAccount } from "@mysten/dapp-kit";
 import { useQueryClient } from '@tanstack/react-query';
-import { playSound } from "../lib/sound-effects";
 import { PACKAGE_ID } from "@/lib/config";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
