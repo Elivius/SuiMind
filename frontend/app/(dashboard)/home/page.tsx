@@ -107,19 +107,34 @@ export default function HomePage() {
   };
 
   const handleRequest = async () => {
-    const execution = await createPaymentRequest({ amount: requestAmount, recipient: requestRecipient });
+    const requestCode = `REQ-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const execution = await createPaymentRequest({
+      amount: requestAmount,
+      recipient: requestRecipient,
+      code: requestCode
+    });
 
     if (execution) {
       const digest = execution?.effects?.transaction?.digest;
       if (digest) {
         try {
+          // Save to request_remarks collection for cleaner lookup
+          await setDoc(doc(db, "request_remarks", requestCode), {
+            remark: requestRemark || "No remark",
+            timestamp: serverTimestamp(),
+            category: requestRemarkCategory || 'Other'
+          });
+
+          // Also save to transactions for record keeping (optional but good for history)
           await setDoc(doc(db, "transactions", digest), {
             sender: account?.address,
             recipient: requestRecipient,
             amountSui: requestAmount,
             remark: requestRemark || "No remark",
             timestamp: serverTimestamp(),
+            requestCode: requestCode
           });
+
           setShowConfirmRequest(false);
           setRequestAmount('');
           setRequestRecipient('');
@@ -987,8 +1002,8 @@ export default function HomePage() {
                                           }
                                         }}
                                         className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${requestRemarkCategory === cat.id
-                                            ? 'bg-emerald-400 border-emerald-400 text-slate-950 shadow-[0_0_15px_rgba(52,211,153,0.3)]'
-                                            : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white'
+                                          ? 'bg-emerald-400 border-emerald-400 text-slate-950 shadow-[0_0_15px_rgba(52,211,153,0.3)]'
+                                          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white'
                                           }`}
                                       >
                                         {cat.icon}
