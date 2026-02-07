@@ -367,7 +367,8 @@ export default function HomePage() {
     ?.map((tx: any) => processTx(tx, account?.address))
     .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || []).slice(0, 5);
 
-    // ==============  Mindy Chat  ==============  
+
+  // ==============  Mindy Chat  ==============  
   const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
   const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
 
