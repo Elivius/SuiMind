@@ -24,7 +24,7 @@ import { playSound } from "@/lib/sound-effects"
 import { PACKAGE_ID } from "@/lib/config";
 import { toast } from "sonner"
 import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
-import { HOME_INSIGHT, HOME_SUGGESTIONS, getHomeInsightsContextPrompt, getHomeSuggestionsContextPrompt } from "@/lib/prompts";
+import { HOME_PAGE_INSIGHT, HOME_PAGE_SUGGESTIONS, getHomeInsightsContextPrompt, getHomeSuggestionsContextPrompt } from "@/lib/prompts";
 
 
 
@@ -425,7 +425,7 @@ export default function HomePage() {
   } = useMindyInsight();
 
   const handleRegenerateInsight = () => {
-    regenerateInsight(HOME_INSIGHT, getHomeInsightsContextPrompt({
+    regenerateInsight(HOME_PAGE_INSIGHT, getHomeInsightsContextPrompt({
       balance: walletBalance,
       totalExpenses,
       expenseCategories,
@@ -436,7 +436,7 @@ export default function HomePage() {
   // Auto-fetch insight when modal opens
   useEffect(() => {
     if (insightModal.isOpen && !insight && !isInsightLoading && !insightError) {
-      fetchInsight(HOME_INSIGHT, getHomeInsightsContextPrompt({
+      fetchInsight(HOME_PAGE_INSIGHT, getHomeInsightsContextPrompt({
         balance: walletBalance,
         totalExpenses,
         expenseCategories,
@@ -457,7 +457,7 @@ export default function HomePage() {
   } = useMindyInsight();
 
   const handleRegenerateSuggestions = () => {
-    regenerateSuggestions(HOME_SUGGESTIONS, getHomeSuggestionsContextPrompt({
+    regenerateSuggestions(HOME_PAGE_SUGGESTIONS, getHomeSuggestionsContextPrompt({
       balance: walletBalance,
       totalExpenses,
       expenseCategories,
@@ -469,7 +469,7 @@ export default function HomePage() {
   useEffect(() => {
     // Add suggestionsError check to prevent infinite loop on failure
     if (!rawSuggestions && !isSuggestionsLoading && !suggestionsError && recentTransactions.length > 0) {
-      fetchSuggestions(HOME_SUGGESTIONS, getHomeSuggestionsContextPrompt({
+      fetchSuggestions(HOME_PAGE_SUGGESTIONS, getHomeSuggestionsContextPrompt({
         balance: walletBalance,
         totalExpenses,
         expenseCategories,

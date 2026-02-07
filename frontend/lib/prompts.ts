@@ -2,8 +2,8 @@
  * AI Insight Context Keys
  * Used for caching insights in localStorage
  */
-export const HOME_INSIGHT = "home_insight";
-export const HOME_SUGGESTIONS = "home_suggestions";
+export const HOME_PAGE_INSIGHT = "home_page_insight";
+export const HOME_PAGE_SUGGESTIONS = "home_page_suggestions";
 
 /**
  * Prompt Generators
