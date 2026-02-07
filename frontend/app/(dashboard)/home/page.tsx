@@ -45,6 +45,9 @@ export default function HomePage() {
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
   const [recentRecipients, setRecentRecipients] = useState<string[]>([]);
   const [showRecentsDropdown, setShowRecentsDropdown] = useState(false);
+  const [requestRemark, setRequestRemark] = useState('');
+  const [isRequestRemarkOpen, setIsRequestRemarkOpen] = useState(false);
+  const [requestRemarkCategory, setRequestRemarkCategory] = useState('');
   const [remark, setRemark] = useState('');
   const [isRemarkOpen, setIsRemarkOpen] = useState(false);
   const [remarkCategory, setRemarkCategory] = useState('');
@@ -110,6 +113,9 @@ export default function HomePage() {
       setShowConfirmRequest(false);
       setRequestAmount('');
       setRequestRecipient('');
+      setRequestRemark('');
+      setRequestRemarkCategory('');
+      setIsRequestRemarkOpen(false);
       setSuccessMessage("Request sent successfully!");
       setShowSuccess(true);
     }
@@ -787,6 +793,9 @@ export default function HomePage() {
                       setShowConfirmRequest(false);
                       setRequestRecipient('');
                       setRequestAmount('');
+                      setRequestRemark('');
+                      setRequestRemarkCategory('');
+                      setIsRequestRemarkOpen(false);
                     }}
                     className="p-2 hover:bg-white/5 rounded-full transition-colors group"
                   >
@@ -914,6 +923,89 @@ export default function HomePage() {
                           </div>
                         </div>
 
+                        {/* Collapsible Remark Section */}
+                        <div className="mb-6 mt-6 border border-white/10 rounded-2xl overflow-hidden transition-all bg-white/5">
+                          <button
+                            onClick={() => setIsRequestRemarkOpen(!isRequestRemarkOpen)}
+                            className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 text-white font-bold text-sm">
+                              <MessageSquare className="w-4 h-4 text-emerald-400" />
+                              <span>Add a remark</span>
+                              {requestRemark && (
+                                <span className="bg-emerald-400/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  Added
+                                </span>
+                              )}
+                            </div>
+                            {isRequestRemarkOpen ? (
+                              <ChevronUp className="w-4 h-4 text-white/40" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-white/40" />
+                            )}
+                          </button>
+
+                          <AnimatePresence>
+                            {isRequestRemarkOpen && (
+                              <Motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="p-4 pt-0 space-y-4">
+                                  <div className="flex flex-wrap gap-2">
+                                    {[
+                                      { id: 'Food & Drink', icon: <Utensils className="w-3 h-3" /> },
+                                      { id: 'Accommodation', icon: <Home className="w-3 h-3" /> },
+                                      { id: 'Grocery', icon: <ShoppingCart className="w-3 h-3" /> },
+                                      { id: 'Shop', icon: <ShoppingBag className="w-3 h-3" /> },
+                                      { id: 'Other', icon: <Pencil className="w-3 h-3" /> }
+                                    ].map((cat) => (
+                                      <button
+                                        key={cat.id}
+                                        onClick={() => {
+                                          setRequestRemarkCategory(cat.id);
+                                          if (cat.id !== 'Other') {
+                                            setRequestRemark(cat.id);
+                                          } else {
+                                            setRequestRemark('');
+                                          }
+                                        }}
+                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${requestRemarkCategory === cat.id
+                                            ? 'bg-emerald-400 border-emerald-400 text-slate-950 shadow-[0_0_15px_rgba(52,211,153,0.3)]'
+                                            : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white'
+                                          }`}
+                                      >
+                                        {cat.icon}
+                                        {cat.id}
+                                      </button>
+                                    ))}
+                                  </div>
+
+                                  {requestRemarkCategory === 'Other' && (
+                                    <div className="relative">
+                                      <textarea
+                                        value={requestRemark}
+                                        onChange={(e) => {
+                                          if (e.target.value.length <= 50) {
+                                            setRequestRemark(e.target.value);
+                                          }
+                                        }}
+                                        placeholder="Type your remark..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-emerald-400/50 focus:border-emerald-400/50 transition-all resize-none h-20"
+                                      />
+                                      <div className="absolute bottom-2 right-2 text-[10px] text-white/40 font-mono">
+                                        {requestRemark.length}/50
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </Motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
                         {/* Action Buttons */}
                         <div className="flex gap-4 mt-10">
                           <button
@@ -938,6 +1030,23 @@ export default function HomePage() {
                             </span>
                           </button>
                         </div>
+                        {/* Remark Preview Badge */}
+                        {requestRemark && (
+                          <Motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 flex justify-center"
+                          >
+                            <div className="bg-emerald-400/10 border border-emerald-400/20 rounded-full px-4 py-1.5 flex items-center gap-2">
+                              {requestRemarkCategory === 'Food & Drink' && <Utensils className="w-3 h-3 text-emerald-400" />}
+                              {requestRemarkCategory === 'Accommodation' && <Home className="w-3 h-3 text-emerald-400" />}
+                              {requestRemarkCategory === 'Grocery' && <ShoppingCart className="w-3 h-3 text-emerald-400" />}
+                              {requestRemarkCategory === 'Shop' && <ShoppingBag className="w-3 h-3 text-emerald-400" />}
+                              {(requestRemarkCategory === 'Other' || !requestRemarkCategory) && <MessageSquare className="w-3 h-3 text-emerald-400" />}
+                              <span className="text-xs font-medium text-emerald-400">{requestRemark}</span>
+                            </div>
+                          </Motion.div>
+                        )}
                       </>
                     ) : (
                       <>
