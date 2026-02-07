@@ -11,17 +11,12 @@ import {
 import { useState, useRef, useEffect } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, usePaymentRequests } from "@/hooks"
-import { useCurrentAccount, useSuiClientQuery, useSignTransaction } from "@mysten/dapp-kit"
-import { SuiGraphQLClient } from '@mysten/sui/graphql'
-import { graphql } from '@mysten/sui/graphql/schemas/latest'
-import { Transaction } from '@mysten/sui/transactions'
-import { toBase64 } from '@mysten/sui/utils'
+import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, usePaymentRequests, useTransactionManager } from "@/hooks"
+import { useCurrentAccount } from "@mysten/dapp-kit"
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
-import { PACKAGE_ID } from "@/lib/config";
 import { toast } from "sonner"
 import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
 
@@ -31,9 +26,9 @@ export default function HomePage() {
   const router = useRouter()
   const account = useCurrentAccount()
 
-  // signTransaction
-  const { mutateAsync: signTransaction } = useSignTransaction();
-  const [isSending, setIsSending] = useState(false);
+  // signTransaction handled in hook
+  const { isSending, transferSui, createPaymentRequest, rejectRequest, deleteNotification } = useTransactionManager();
+
   const [showNewSendUI, setShowSendUI] = useState(false);
   const [showConfirmSend, setShowConfirmSend] = useState(false);
   const [showNewRequestUI, setShowRequestUI] = useState(false);
@@ -47,148 +42,35 @@ export default function HomePage() {
   const [successMessage, setSuccessMessage] = useState("");
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
 
-  // setup GraphQLClient
-  const gqlClient = new SuiGraphQLClient({
-    url: 'https://graphql.testnet.sui.io/graphql', // Testnet
-  });
-
-  const EXECUTE_TRANSACTION = graphql(`
-    mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
-      executeTransaction(transactionDataBcs: $transactionDataBcs, signatures: $signatures) {
-        errors
-        effects {
-          status
-          transaction {    # Digest lives here now
-            digest
-          }
-        }
-      }
-    }
-  `);
-
   const handleSend = async () => {
-    if (!account) {
-      toast.error("Please connect your wallet first.");
-      return;
-    }
-    if (!recipient.startsWith('0x')) { toast.error("Please enter a valid Sui address."); return; }
-    if (parseFloat(amount) <= 0) { toast.error("Please enter an amount greater than 0."); return; }
-    if (parseFloat(amount) > walletBalance) { toast.error("Insufficient balance."); return; }
+    const success = await transferSui({
+      amount,
+      recipient,
+      paymentRequestId: activeRequestObject?.id,
+      walletBalance
+    });
 
-
-    setIsSending(true);
-    let execution: any = null;
-
-    try {
-      const tx = new Transaction();
-      const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
-
-      const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
-      tx.transferObjects([coin], recipient);
-      tx.setSender(account.address);
-
-      if (activeRequestObject) {
-        tx.moveCall({
-          target: `${PACKAGE_ID}::request::settle_payment_request`,
-          arguments: [tx.object(activeRequestObject.id)],
-        });
-      }
-
-      const { bytes, signature } = await signTransaction({ transaction: tx });
-
-      const result = await gqlClient.query({
-        query: EXECUTE_TRANSACTION,
-        variables: {
-          transactionDataBcs: bytes,
-          signatures: [signature],
-        },
-      });
-
-      execution = result.data?.executeTransaction;
-
-      if (execution?.errors && execution.errors.length > 0) {
-        toast.error(`Execution Error: ${execution.errors[0]}`);
-        return;
-      }
-
-      const status = execution?.effects?.status;
-      const digest = execution?.effects?.transaction?.digest;
-
-      if (status === 'SUCCESS' || status?.status === 'success') {
-        await onTransactionSuccess();
-        // setShowSendUI(false); 
-        setShowConfirmSend(false);
-        setAmount('');
-        setRecipient('');
-        setActiveRequestObject(null);
-        refetch();
-        setSuccessMessage("Transaction Successful!");
-        setShowSuccess(true);
-        // toast.success("Transaction Successful!", {
-        //   description: `Digest: ${digest.slice(0, 10)}...${digest.slice(-10)}`,
-        // });
-        playSound('success');
-      } else {
-        const detail = status?.error || "Check console for effects object";
-        toast.error(`On-chain Failure: ${detail}`);
-        console.log("Effects Details:", execution?.effects);
-      }
-    } catch (e: any) {
-      console.error("System Error:", e);
-      toast.error(`System Error: ${e.message}`);
-    } finally {
-      setIsSending(false);
+    if (success) {
+      await onTransactionSuccess();
+      setShowConfirmSend(false);
+      setAmount('');
+      setRecipient('');
+      setActiveRequestObject(null);
+      refetch();
+      setSuccessMessage("Transaction Successful!");
+      setShowSuccess(true);
     }
   };
 
   const handleRequest = async () => {
-    if (!account) return;
-    if (!requestRecipient.startsWith('0x')) { toast.error("Invalid address"); return; }
+    const success = await createPaymentRequest({ amount: requestAmount, recipient: requestRecipient });
 
-    setIsSending(true);
-    try {
-      const tx = new Transaction();
-      const MODULE_NAME = "request";
-      const FUNCTION_NAME = "create_payment_request";
-      const amountInMist = Math.floor(parseFloat(requestAmount) * 1_000_000_000);
-      const expirationTimestamp = Date.now() + (24 * 60 * 60 * 1000);
-
-      tx.moveCall({
-        target: `${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}`,
-        arguments: [
-          tx.pure.address(requestRecipient),
-          tx.pure.u64(amountInMist),
-          tx.pure.string("REQ-ABCD-" + Date.now()),
-          tx.pure.u64(expirationTimestamp),
-        ],
-      });
-
-
-      const { bytes, signature } = await signTransaction({ transaction: tx });
-
-      const result = await gqlClient.query({
-        query: EXECUTE_TRANSACTION,
-        variables: {
-          transactionDataBcs: bytes,
-          signatures: [signature],
-        },
-      });
-
-      if (result.data?.executeTransaction?.effects?.status === 'SUCCESS') {
-        // toast.success("Request Object sent successfully!");
-        playSound('request_success');
-        // setShowRequestUI(false);
-        setShowConfirmRequest(false);
-        setRequestAmount('');
-        setRequestRecipient('');
-        setSuccessMessage("Request sent successfully!");
-        setShowSuccess(true);
-      }
-    } catch (e: any) {
-      console.error("Request failed:", e);
-      toast.error(`Error: ${e.message}`);
-    } finally {
-      setIsSending(false);
+    if (success) {
+      setShowConfirmRequest(false);
+      setRequestAmount('');
+      setRequestRecipient('');
+      setSuccessMessage("Request sent successfully!");
+      setShowSuccess(true);
     }
   };
 
@@ -205,61 +87,19 @@ export default function HomePage() {
     return () => window.removeEventListener('PAY_REQUEST', handlePayFromHeader);
   }, []);
 
-
   useEffect(() => {
     const handleRejectRequest = async (event: any) => {
       const requestId = event.detail;
-
-      if (!account) {
-        toast.error("Please connect your wallet first.");
-        return;
-      }
-
-      setIsSending(true);
-      try {
-        const tx = new Transaction();
-
-        tx.moveCall({
-          target: `${PACKAGE_ID}::request::reject_request`,
-          arguments: [tx.object(requestId)],
-        });
-
-        const { bytes, signature } = await signTransaction({ transaction: tx });
-
-        const result = await gqlClient.query({
-          query: EXECUTE_TRANSACTION,
-          variables: {
-            transactionDataBcs: bytes,
-            signatures: [signature],
-          },
-        });
-
-
-
-        const execution: any = result.data?.executeTransaction;
-        const statusObj = execution?.effects?.status;
-
-        const isSuccessStatus = statusObj === 'SUCCESS' || statusObj?.status === 'success';
-
-        if (isSuccessStatus) {
-          await onTransactionSuccess();
-          toast.success("Request rejected successfully.");
-          refetch();
-        } else {
-          const detail = statusObj?.error || "Check console for details";
-          toast.error(`Rejection failed: ${detail}`);
-        }
-      } catch (e: any) {
-        console.error("Rejection Error:", e);
-        toast.error(`System Error: ${e.message}`);
-      } finally {
-        setIsSending(false);
+      const success = await rejectRequest(requestId);
+      if (success) {
+        await onTransactionSuccess();
+        refetch();
       }
     };
 
     window.addEventListener('REJECT_REQUEST', handleRejectRequest);
     return () => window.removeEventListener('REJECT_REQUEST', handleRejectRequest);
-  }, [account, signTransaction, gqlClient, refetch]);
+  }, [rejectRequest, refetch, onTransactionSuccess]);
 
   useEffect(() => {
     if (!showNewSendUI && !showNewRequestUI) {
@@ -274,65 +114,28 @@ export default function HomePage() {
   useEffect(() => {
     const handleClearPaid = async (event: any) => {
       const objectId = event.detail;
-      if (!account) return;
-
-      setIsSending(true);
-      try {
-        const tx = new Transaction();
-        tx.moveCall({
-          target: `${PACKAGE_ID}::request::delete_paid`,
-          arguments: [tx.object(objectId)],
-        });
-
-        const { bytes, signature } = await signTransaction({ transaction: tx });
-        await gqlClient.query({
-          query: EXECUTE_TRANSACTION,
-          variables: { transactionDataBcs: bytes, signatures: [signature] },
-        });
-
+      const success = await deleteNotification(objectId, 'paid');
+      if (success) {
         await onTransactionSuccess();
-      } catch (e) {
-        console.error("Failed to clear notification:", e);
-      } finally {
-        setIsSending(false);
       }
     };
 
     window.addEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
     return () => window.removeEventListener('CLEAR_PAID_NOTIFICATION', handleClearPaid);
-  }, [account, signTransaction, onTransactionSuccess]);
-
+  }, [deleteNotification, onTransactionSuccess]);
 
   useEffect(() => {
     const handleClearReject = async (event: any) => {
       const objectId = event.detail;
-      if (!account) return;
-
-      setIsSending(true);
-      try {
-        const tx = new Transaction();
-        tx.moveCall({
-          target: `${PACKAGE_ID}::request::delete_reject`,
-          arguments: [tx.object(objectId)],
-        });
-
-        const { bytes, signature } = await signTransaction({ transaction: tx });
-        await gqlClient.query({
-          query: EXECUTE_TRANSACTION,
-          variables: { transactionDataBcs: bytes, signatures: [signature] },
-        });
-
+      const success = await deleteNotification(objectId, 'reject');
+      if (success) {
         await onTransactionSuccess();
-      } catch (e) {
-        console.error("Failed to clear rejection:", e);
-      } finally {
-        setIsSending(false);
       }
     };
 
     window.addEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
     return () => window.removeEventListener('CLEAR_REJECT_NOTIFICATION', handleClearReject);
-  }, [account, signTransaction, onTransactionSuccess]);
+  }, [deleteNotification, onTransactionSuccess]);
 
 
 
