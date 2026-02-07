@@ -41,7 +41,7 @@ export default function RootLayout({
         <FloatingOrbs />
         <div className="relative z-10">
           <Providers>
-            {children}
+              {children}
             <Toaster position="top-right" theme="dark" closeButton richColors expand={true} />
           </Providers>
         </div>
@@ -50,3 +50,4 @@ export default function RootLayout({
     </html>
   )
 }
+
