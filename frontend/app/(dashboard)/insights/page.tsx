@@ -1,15 +1,21 @@
 "use client"
 
 import { ArrowDownLeft, ArrowUpRight, TrendingUp, Wallet, Sparkles } from "lucide-react"
-import { Button, Card, Skeleton } from "@/components/ui"
+import { Button, Card, Skeleton, MindySuggestionCard } from "@/components/ui"
 import { useRouter } from "next/navigation"
-import { useInsightsData } from "@/hooks"
+import { useInsightsData, useGetBalances } from "@/hooks"
 import { ExpensesPieChart, CashflowChart } from "@/components/insightsChart"
 import { MindyAILogo } from "@/components/icons"
+import { useEffect, useState } from "react"
+import { mistToSui } from "@/lib/utils"
 
 export default function InsightsPage() {
     const router = useRouter()
     const { cashflowData, expensesData, totals, isLoading } = useInsightsData()
+
+    // =========== Use for AI Suggestions ===========
+    const { data: balanceData } = useGetBalances()
+    const balance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
 
     return (
         <div className="w-full px-6 py-8 space-y-6">
@@ -125,46 +131,12 @@ export default function InsightsPage() {
             </div>
 
             {/* AI Recommendations */}
-            <div className="relative">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[32px] blur opacity-25 transition duration-1000" />
-
-                <Card className="relative overflow-hidden backdrop-blur-3xl bg-gradient-to-br from-[#6FBEE5]/10 via-[#050B15]/40 to-[#A890FE]/10 border-white/10 p-6 sm:p-10 rounded-[30px]">
-                    {/* Background Auras */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#6FBEE5]/10 rounded-full blur-[100px] animate-pulse" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#A890FE]/10 rounded-full blur-[100px] animate-pulse delay-1000" />
-
-                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8">
-                        {/* Interactive Icon Orb */}
-                        <div className="relative shrink-0 animate-bounce-subtle">
-                            <div className="absolute inset-0 blur-xl opacity-40 animate-pulse" />
-                            <div className="w-30 h-30 bg-transparent items-center justify-center">
-                                <MindyAILogo className="w-30 h-30"/>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4 flex-1">
-                            <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent tracking-tight">
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4891ee] via-[#877acc] to-[#cd666e]">Mindy AI </span> Suggestion !
-                            </h3>
-
-                            <p className="text-white/70 text-lg leading-relaxed max-w-3xl font-medium">
-                                Your <span className="text-white font-bold underline decoration-[#00FAFF]/40 decoration-2 underline-offset-4">2,500 SUI</span> in the wallet could earn <span className="text-[#00FAFF] font-bold">6.8% APY</span> on Scallop (<span className="text-emerald-400 font-bold">2.6% higher</span> than current average).
-                                Moving these funds could generate an additional <span className="bg-gradient-to-r from-[#00FAFF] to-[#6FBEE5] bg-clip-text text-transparent font-bold">$1,700 annually</span>.
-                            </p>
-
-                            <div className="flex flex-wrap items-center gap-4 pt-2">
-                                <Button
-                                    onClick={() => router.push('/mindy-ai')}
-                                    className="h-16 px-12 text-lg bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white font-black rounded-[20px] shadow-xl shadow-[#3B82F6]/20 border border-white/20 transition-all hover:scale-105 active:scale-95 group/btn"
-                                >
-                                    View Opportunity
-                                    <ArrowUpRight className="ml-3 w-6 h-6 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            </div>
+            <MindySuggestionCard
+                balance={balance}
+                totals={totals}
+                expensesData={expensesData}
+                isLoading={isLoading}
+            />
 
             {/* Expenses Distribution */}
             <div className="space-y-6">
