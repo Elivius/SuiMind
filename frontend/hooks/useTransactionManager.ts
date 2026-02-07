@@ -36,6 +36,7 @@ interface TransferParams {
 interface RequestParams {
     amount: string;
     recipient: string;
+    code?: string;
 }
 
 export function useTransactionManager() {
@@ -124,7 +125,7 @@ export function useTransactionManager() {
     };
 
     // --- 2. Create Payment Request ---
-    const createPaymentRequest = async ({ amount, recipient }: RequestParams) => {
+    const createPaymentRequest = async ({ amount, recipient, code }: RequestParams) => {
         if (!account) return false;
         if (!recipient.startsWith('0x')) {
             toast.error("Invalid address");
@@ -138,13 +139,14 @@ export function useTransactionManager() {
             const FUNCTION_NAME = "create_payment_request";
             const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
             const expirationTimestamp = Date.now() + (24 * 60 * 60 * 1000);
+            const requestCode = code || "REQ-ABCD-" + Date.now();
 
             tx.moveCall({
                 target: `${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}`,
                 arguments: [
                     tx.pure.address(recipient),
                     tx.pure.u64(amountInMist),
-                    tx.pure.string("REQ-ABCD-" + Date.now()),
+                    tx.pure.string(requestCode),
                     tx.pure.u64(expirationTimestamp),
                 ],
             });

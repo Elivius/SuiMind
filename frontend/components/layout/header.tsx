@@ -214,6 +214,11 @@ export function Header() {
                                                                             <p className="text-sm font-bold text-white mb-0.5">
                                                                                 Request from {req.requester.slice(0, 6)}...{req.requester.slice(-4)}
                                                                             </p>
+                                                                            {req.remark && req.remark !== 'No remark' && (
+                                                                                <p className="text-xs text-white/50 mb-1 italic">
+                                                                                    "{req.remark}"
+                                                                                </p>
+                                                                            )}
                                                                             <p className="text-xl font-black text-white tracking-tight">
                                                                                 {req.amountSui} <span className="text-xs text-[#6FBEE5] font-bold ml-1 uppercase">SUI</span>
                                                                             </p>
