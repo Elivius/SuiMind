@@ -6,5 +6,6 @@ export * from "./useInsightsData"
 export * from "./useMindyAgent";
 export * from "./usePaymentRequests";
 export * from "./useRegisterEnokiWallets";
+export * from "./useMindyInsight";
 
 export * from "./useModal";
