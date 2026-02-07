@@ -261,7 +261,7 @@ export default function RecentActivityPage() {
                                                                     tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" /> :
                                                                         <Repeat className="w-5 h-5 text-white stroke-[3px]" />}
                                                         </div>
-                                                        <span className="capitalize font-medium text-white">{tx.type}</span>
+                                                        <span className="capitalize font-medium text-white">{tx.label === "Sui Storage Rebate" ? "rebate" : tx.type}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -371,7 +371,7 @@ export default function RecentActivityPage() {
                                                                 <Repeat className="w-4 h-4 text-white stroke-[3px]" />}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
+                                                    <p className="text-sm font-semibold text-white capitalize">{tx.label === "Sui Storage Rebate" ? "rebate" : tx.type}</p>
                                                     <p className="text-[10px] text-white/50">{tx.time}</p>
                                                 </div>
                                             </div>
