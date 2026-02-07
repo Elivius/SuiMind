@@ -143,6 +143,7 @@ export default function HomePage() {
           setIsRequestRemarkOpen(false);
           setSuccessMessage("Request sent successfully!");
           setShowSuccess(true);
+          saveRecipient(requestRecipient);
         } catch (dbError) {
           console.error("Firestore write failed:", dbError);
         }
@@ -913,6 +914,8 @@ export default function HomePage() {
                                 type="text"
                                 placeholder="0x..."
                                 value={requestRecipient}
+                                onFocus={() => setShowRecentsDropdown(true)}
+                                onBlur={() => setTimeout(() => setShowRecentsDropdown(false), 200)}
                                 onChange={(e) => setRequestRecipient(e.target.value)}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 transition-all font-mono text-sm"
                               />
