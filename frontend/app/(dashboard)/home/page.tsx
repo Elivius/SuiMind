@@ -90,6 +90,9 @@ export default function HomePage() {
           setSuccessMessage("Transaction Successful!");
           setShowSuccess(true);
           saveRecipient(recipient);
+          setRemark('');
+          setRemarkCategory('');
+          setIsRemarkOpen(false);
         } catch (dbError) {
           console.error("Firestore write failed:", dbError);
         }
