@@ -19,6 +19,8 @@ import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
 import { toast } from "sonner"
 import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
+import { db } from "@/lib/firebase"; // Import your initialized db
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 
 
@@ -56,23 +58,42 @@ export default function HomePage() {
   };
 
   const handleSend = async () => {
-    const success = await transferSui({
+    const execution = await transferSui({
       amount,
       recipient,
       paymentRequestId: activeRequestObject?.id,
       walletBalance,
     });
+    
+    if (execution) {
+      const digest = execution?.effects?.transaction?.digest;
+      if (digest) {
+        try {
+          await setDoc(doc(db, "transactions", digest), {
+            sender: account?.address,
+            recipient: recipient,
+            amountSui: amount,
+            // remark: remark || "No remark", 
+            timestamp: serverTimestamp(),
+          });
 
-    if (success) {
-      await onTransactionSuccess();
-      setShowConfirmSend(false);
-      setAmount('');
-      setRecipient('');
-      setActiveRequestObject(null);
-      refetch();
-      setSuccessMessage("Transaction Successful!");
-      setShowSuccess(true);
-      saveRecipient(recipient);
+          // Continue with your success logic
+          await onTransactionSuccess();
+          setShowConfirmSend(false);
+          setAmount('');
+          setRecipient('');
+          setActiveRequestObject(null);
+          refetch();
+          setSuccessMessage("Transaction Successful!");
+          setShowSuccess(true);
+          saveRecipient(recipient);
+        } catch (dbError) {
+          console.error("Firestore write failed:", dbError);
+        }
+      }
+    } else {
+      // This runs if execution was 'false' (transaction failed or cancelled)
+      console.error("Transaction failed or was cancelled.");
     }
   };
 
