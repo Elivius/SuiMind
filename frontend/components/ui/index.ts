@@ -12,3 +12,4 @@ export * from "./wallet-connect-button";
 export * from "./skeleton";
 export * from "./scroll-to-top";
 export * from "./copy-address";
+export * from "./mindy-suggestion-card";

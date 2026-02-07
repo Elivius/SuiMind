@@ -8,18 +8,22 @@ import GooeyNav from "@/components/ui/gooey-nav"
 import { navigation } from "@/lib/constants"
 import { WalletConnectButton } from "@/components/ui/wallet-connect-button"
 import { SuiMindLogo, MindyAILogo } from "@/components/icons"
-import { usePaymentRequests } from "@/hooks";
+import { usePaymentRequests, useTransactionManager, useGetBalances } from "@/hooks";
 import { useState, useEffect, useRef } from "react";
 import { playSound } from "@/lib/sound-effects";
 import { motion, AnimatePresence } from "motion/react";
-import { formatSuiAmount } from "@/lib/utils";
+import { mistToSui, truncateAddress } from "@/lib/utils";
 
 
 export function Header() {
     const pathname = usePathname()
 
     // Determine active nav index based on current path
-    const { pendingRequests, isLoading, hasUnread, onTransactionSuccess, rejectedRequests, paidNotifications } = usePaymentRequests();
+    const { pendingRequests, isLoading, hasUnread, onTransactionSuccess, refetch, rejectedRequests, paidNotifications } = usePaymentRequests();
+    const { transferSui, rejectRequest, deleteNotification } = useTransactionManager();
+    const { data: balanceData } = useGetBalances();
+    const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
+
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
     const activeIndex = navigation.findIndex(item => pathname === item.href)
@@ -60,6 +64,45 @@ export function Header() {
             document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [showDropdown])
+
+    const handlePayRequest = async (req: any) => {
+        const success = await transferSui({
+            amount: req.amountSui,
+            recipient: req.requester,
+            paymentRequestId: req.id,
+            walletBalance
+        });
+        if (success) {
+            await onTransactionSuccess();
+            refetch();
+            setShowDropdown(false);
+        }
+    };
+
+    const handleReject = async (id: string) => {
+        const success = await rejectRequest(id);
+        if (success) {
+            await onTransactionSuccess();
+            refetch();
+            setSelectedRequestId(null);
+        }
+    };
+
+    const handleClearPaid = async (id: string) => {
+        const success = await deleteNotification(id, 'paid');
+        if (success) {
+            await onTransactionSuccess();
+            refetch();
+        }
+    };
+
+    const handleClearReject = async (id: string) => {
+        const success = await deleteNotification(id, 'reject');
+        if (success) {
+            await onTransactionSuccess();
+            refetch();
+        }
+    };
 
     return (
         <header className="border-b border-white/10 backdrop-blur-xl bg-white/5 fixed top-0 left-0 right-0 z-40">
@@ -169,7 +212,7 @@ export function Header() {
                                                                                 <p className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Payment Request</p>
                                                                             </div>
                                                                             <p className="text-sm font-bold text-white mb-0.5">
-                                                                                Request from {req.requester.slice(0, 6)}...{req.requester.slice(-4)}
+                                                                                Request from {truncateAddress(req.requester)}
                                                                             </p>
                                                                             <p className="text-xl font-black text-white tracking-tight">
                                                                                 {req.amountSui} <span className="text-xs text-[#6FBEE5] font-bold ml-1 uppercase">SUI</span>
@@ -205,10 +248,7 @@ export function Header() {
                                                                                     <Button
                                                                                         size="sm"
                                                                                         className="flex-1 h-11 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white text-sm font-black rounded-xl shadow-lg shadow-[#6FBEE5]/20 group relative overflow-hidden"
-                                                                                        onClick={() => {
-                                                                                            window.dispatchEvent(new CustomEvent('PAY_REQUEST', { detail: req }));
-                                                                                            setShowDropdown(false);
-                                                                                        }}
+                                                                                        onClick={() => handlePayRequest(req)}
                                                                                     >
                                                                                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
                                                                                         <span className="relative z-10 flex items-center justify-center gap-2">
@@ -220,10 +260,7 @@ export function Header() {
                                                                                         size="sm"
                                                                                         variant="ghost"
                                                                                         className="flex-1 h-11 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm font-black rounded-xl border border-red-500/20"
-                                                                                        onClick={() => {
-                                                                                            setSelectedRequestId(null);
-                                                                                            window.dispatchEvent(new CustomEvent('REJECT_REQUEST', { detail: req.id }));
-                                                                                        }}
+                                                                                        onClick={() => handleReject(req.id)}
                                                                                     >
                                                                                         <X className="w-4 h-4 mr-1.5" />
                                                                                         REJECT
@@ -252,14 +289,14 @@ export function Header() {
                                                         >
                                                             <div className="flex-1">
                                                                 <p className="text-xs text-white/50 font-medium mb-1">
-                                                                    {noti.paid_by.slice(0, 6)}... paid you
+                                                                    {truncateAddress(noti.paid_by)} paid you
                                                                 </p>
                                                                 <p className="text-lg font-black text-emerald-400">
                                                                     +{noti.amountSui} <span className="text-[10px] text-emerald-400/50 ml-1">SUI</span>
                                                                 </p>
                                                             </div>
                                                             <button
-                                                                onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_PAID_NOTIFICATION', { detail: noti.id }))}
+                                                                onClick={() => handleClearPaid(noti.id)}
                                                                 className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/20 hover:text-white transition-all"
                                                                 title="Dismiss"
                                                             >
@@ -283,7 +320,7 @@ export function Header() {
                                                         >
                                                             <div className="flex-1">
                                                                 <p className="text-xs text-white/50 font-medium mb-1">
-                                                                    Request to {rej.rejected_by.slice(0, 6)}... was declined
+                                                                    Request to {truncateAddress(rej.rejected_by)} was declined
                                                                 </p>
                                                                 <div className="flex items-center gap-3">
                                                                     <p className="text-lg font-black text-white/20 line-through tracking-tight">
@@ -295,7 +332,9 @@ export function Header() {
                                                                 </div>
                                                             </div>
                                                             <button
-                                                                onClick={() => window.dispatchEvent(new CustomEvent('CLEAR_REJECT_NOTIFICATION', { detail: rej.id }))}
+                                                                onClick={() => {
+                                                                    if (rej.id) handleClearReject(rej.id);
+                                                                }}
                                                                 className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/20 hover:text-white transition-all"
                                                                 title="Dismiss"
                                                             >
