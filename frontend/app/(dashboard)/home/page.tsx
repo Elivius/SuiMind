@@ -467,7 +467,7 @@ export default function HomePage() {
                                 placeholder="0x..."
                                 value={recipient}
                                 onFocus={() => setShowRecentsDropdown(true)}
-    onBlur={() => setTimeout(() => setShowRecentsDropdown(false), 200)}
+                                onBlur={() => setTimeout(() => setShowRecentsDropdown(false), 200)}
                                 onChange={(e) => setRecipient(e.target.value)}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all font-mono text-sm"
                               />
