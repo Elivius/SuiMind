@@ -110,14 +110,28 @@ export default function HomePage() {
     const execution = await createPaymentRequest({ amount: requestAmount, recipient: requestRecipient });
 
     if (execution) {
-      setShowConfirmRequest(false);
-      setRequestAmount('');
-      setRequestRecipient('');
-      setRequestRemark('');
-      setRequestRemarkCategory('');
-      setIsRequestRemarkOpen(false);
-      setSuccessMessage("Request sent successfully!");
-      setShowSuccess(true);
+      const digest = execution?.effects?.transaction?.digest;
+      if (digest) {
+        try {
+          await setDoc(doc(db, "transactions", digest), {
+            sender: account?.address,
+            recipient: requestRecipient,
+            amountSui: requestAmount,
+            remark: requestRemark || "No remark",
+            timestamp: serverTimestamp(),
+          });
+          setShowConfirmRequest(false);
+          setRequestAmount('');
+          setRequestRecipient('');
+          setRequestRemark('');
+          setRequestRemarkCategory('');
+          setIsRequestRemarkOpen(false);
+          setSuccessMessage("Request sent successfully!");
+          setShowSuccess(true);
+        } catch (dbError) {
+          console.error("Firestore write failed:", dbError);
+        }
+      }
     }
   };
 
