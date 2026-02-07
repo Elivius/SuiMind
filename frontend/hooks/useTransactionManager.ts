@@ -150,10 +150,10 @@ export function useTransactionManager() {
             });
 
             const { bytes, signature } = await signTransaction({ transaction: tx });
-            await executeViaGraphQL(bytes, signature);
+            const execution = await executeViaGraphQL(bytes, signature);
 
             playSound('request_success');
-            return true;
+            return execution;
         } catch (e: any) {
             console.error("Request failed:", e);
             toast.error(`Error: ${e.message}`);

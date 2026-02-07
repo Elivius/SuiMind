@@ -107,9 +107,9 @@ export default function HomePage() {
   };
 
   const handleRequest = async () => {
-    const success = await createPaymentRequest({ amount: requestAmount, recipient: requestRecipient });
+    const execution = await createPaymentRequest({ amount: requestAmount, recipient: requestRecipient });
 
-    if (success) {
+    if (execution) {
       setShowConfirmRequest(false);
       setRequestAmount('');
       setRequestRecipient('');
