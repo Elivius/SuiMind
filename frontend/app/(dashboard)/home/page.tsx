@@ -1372,14 +1372,14 @@ export default function HomePage() {
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-white">{suggestion.title}</h4>
                           <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${suggestion.priority === "high"
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${suggestion.risk === "high"
                               ? "bg-red-500/20 text-red-400"
-                              : suggestion.priority === "medium"
+                              : suggestion.risk === "medium"
                                 ? "bg-yellow-500/20 text-yellow-400"
                                 : "bg-blue-500/20 text-blue-400"
                               }`}
                           >
-                            {suggestion.priority}
+                            {suggestion.risk}
                           </span>
                         </div>
                         <p className="text-sm text-white/70 leading-relaxed">{suggestion.description}</p>

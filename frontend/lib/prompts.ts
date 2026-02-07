@@ -4,6 +4,7 @@
  */
 export const HOME_PAGE_INSIGHTS = "home_page_insights";
 export const HOME_PAGE_SUGGESTIONS = "home_page_suggestions";
+export const INSIGHTS_PAGE_SUGGESTIONS = "insights_page_suggestions";
 
 /**
  * Prompt Generators
@@ -20,6 +21,13 @@ interface HomeContextData {
         time: string;
         gas_fee: string;
     }>;
+}
+
+interface InsightsPageContextData {
+    balance: number;
+    netFlow: number;
+    monthOverMonthChange: number;
+    topExpenses: Array<{ name: string; value: number }>;
 }
 
 /**
@@ -62,8 +70,38 @@ export const getHomeSuggestionsContextPrompt = (data: HomeContextData) => {
           - title: short descriptive title
           - description: 1-2 sentences of specific advice (e.g., "Your gas fees are high, try batching transactions")
           - icon: a single relevant emoji
-          - priority: "high", "medium", or "low"
+          - risk: "high", "medium", or "low"
 
           IMPORTANT: Return ONLY the JSON array, nothing else.
       `;
+};
+
+/**
+ * Generates the prompt for the Insights page AI suggestion
+ * Focus: Cashflow analysis, staking opportunities, and financial health
+ */
+export const getInsightsPageContextPrompt = (data: InsightsPageContextData) => {
+    return `
+        Analyze my current financial status to provide a strategic recommendation.
+        
+        Financial Context:
+        - Current Wallet Balance: ${data.balance.toLocaleString()} SUI
+        - Net Cash Flow (this month): ${data.netFlow.toFixed(4)} SUI
+        - Month-over-Month Change: ${data.monthOverMonthChange.toFixed(2)}%
+        - Top Expenses: ${data.topExpenses.map(e => `${e.name} (${e.value})`).join(', ')}
+
+        Task:
+        Provide a specific, actionable suggestion to improve my financial position.
+        Focus on:
+        1. **Staking/DeFi**: If I have a significant balance, suggest staking or lending (e.g., "Stake your 2,500 SUI to earn ~6% APY").
+        2. **Cash Flow**: If net flow is negative, suggest reducing specific top expenses.
+        3. **Growth**: If net flow is positive, suggest reinvesting the surplus.
+
+        Format your response as a JSON object with the following fields:
+        - "highlightedText": A short, catchy phrase highlighting the opportunity (e.g., "Earn 6.8% APY on Scallop").
+        - "body": A 1-2 sentence explanation of why this is a good move and how much I could potentially earn or save.
+        - "action": A short action phrase (e.g., "Start Staking Now").
+
+        IMPORTANT: Return ONLY the JSON object. Do not include markdown formatting or extra text.
+    `;
 };
