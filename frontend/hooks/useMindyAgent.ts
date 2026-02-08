@@ -14,6 +14,7 @@ export const useMindyAgent = () => {
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const prevMindyMessagesCount = useRef(0); // Tracks message count to detect NEW messages for sound effects
@@ -81,6 +82,7 @@ export const useMindyAgent = () => {
                     }
                 }
             }
+            setIsInitialized(true);
         };
         init();
     }, []);
@@ -101,8 +103,23 @@ export const useMindyAgent = () => {
                         setIsLoading(false);
                     }
                 }
-            } catch (e) {
+            } catch (e: any) {
                 console.error("Polling failed", e);
+                // If polling fails (e.g. 500 or Network Error), stop loading after a few tries
+                localStorage.removeItem('mindy_ai_pending');
+                setIsLoading(false);
+                const errorMsgText = e.message === 'fetch failed' ? "Agent server is offline. Please try again later." : e.message;
+                setError(errorMsgText);
+
+                // Add error message to chat so user sees it
+                setMessages(prev => [
+                    ...prev,
+                    {
+                        role: 'mindy',
+                        content: errorMsgText,
+                        id: Date.now().toString()
+                    }
+                ]);
             }
         }, 5000);
 
@@ -256,6 +273,7 @@ export const useMindyAgent = () => {
     return {
         messages,
         isLoading,
+        isInitialized,
         error,
         sendMessage,
         startSession,
