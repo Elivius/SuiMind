@@ -100,7 +100,6 @@ export const getInsightsPageContextPrompt = (data: InsightsPageContextData) => {
         Format your response as a JSON object with the following fields:
         - "highlightedText": A short, catchy phrase highlighting the opportunity (e.g., "Earn 6.8% APY on Scallop").
         - "body": A 1-2 sentence explanation of why this is a good move and how much I could potentially earn or save.
-        - "action": A short action phrase (e.g., "Start Staking Now").
 
         IMPORTANT: Return ONLY the JSON object. Do not include markdown formatting or extra text.
     `;

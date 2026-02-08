@@ -6,7 +6,7 @@ import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, RefreshCcw, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
   Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus,
-  Wallet, Info, HelpingHand
+  Wallet, Info, HelpingHand, ChevronDown, ChevronUp, Utensils, Home, ShoppingCart, ShoppingBag, MessageSquare
 } from "lucide-react"
 import { useState, useRef, useEffect, useMemo } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
@@ -19,6 +19,8 @@ import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
 import { toast } from "sonner"
 import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
+import { db } from "@/lib/firebase"; // Import your initialized db
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { HOME_PAGE_INSIGHTS, HOME_PAGE_SUGGESTIONS, getHomeInsightsContextPrompt, getHomeSuggestionsContextPrompt } from "@/lib/prompts";
 
 
@@ -42,36 +44,111 @@ export default function HomePage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
+  const [recentRecipients, setRecentRecipients] = useState<string[]>([]);
+  const [showRecentsDropdown, setShowRecentsDropdown] = useState(false);
+  const [requestRemark, setRequestRemark] = useState('');
+  const [isRequestRemarkOpen, setIsRequestRemarkOpen] = useState(false);
+  const [requestRemarkCategory, setRequestRemarkCategory] = useState('');
+  const [remark, setRemark] = useState('');
+  const [isRemarkOpen, setIsRemarkOpen] = useState(false);
+  const [remarkCategory, setRemarkCategory] = useState('');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('recent_recipients');
+    if (saved) setRecentRecipients(JSON.parse(saved));
+  }, []);
+
+  const saveRecipient = (address: string) => {
+    const updated = [address, ...recentRecipients.filter(a => a !== address)].slice(0, 5);
+    setRecentRecipients(updated);
+    localStorage.setItem('recent_recipients', JSON.stringify(updated));
+  };
 
   const handleSend = async () => {
-    const success = await transferSui({
+    const execution = await transferSui({
       amount,
       recipient,
       paymentRequestId: activeRequestObject?.id,
-      walletBalance
+      walletBalance,
     });
 
-    if (success) {
-      await onTransactionSuccess();
-      setShowConfirmSend(false);
-      setAmount('');
-      setRecipient('');
-      setActiveRequestObject(null);
-      refetch();
-      setSuccessMessage("Transaction Successful!");
-      setShowSuccess(true);
+    if (execution) {
+      const digest = execution?.effects?.transaction?.digest;
+      if (digest) {
+        try {
+          await setDoc(doc(db, "transactions", digest), {
+            sender: account?.address,
+            recipient: recipient,
+            amountSui: amount,
+            remark: remark || "No remark",
+            timestamp: serverTimestamp(),
+          });
+
+          // Continue with your success logic
+          await onTransactionSuccess();
+          setShowConfirmSend(false);
+          setAmount('');
+          setRecipient('');
+          setActiveRequestObject(null);
+          refetch();
+          setSuccessMessage("Transaction Successful!");
+          setShowSuccess(true);
+          saveRecipient(recipient);
+          setRemark('');
+          setRemarkCategory('');
+          setIsRemarkOpen(false);
+        } catch (dbError) {
+          console.error("Firestore write failed:", dbError);
+        }
+      }
+    } else {
+      // This runs if execution was 'false' (transaction failed or cancelled)
+      console.error("Transaction failed or was cancelled.");
     }
   };
 
   const handleRequest = async () => {
-    const success = await createPaymentRequest({ amount: requestAmount, recipient: requestRecipient });
+    const requestCode = `REQ-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const execution = await createPaymentRequest({
+      amount: requestAmount,
+      recipient: requestRecipient,
+      code: requestCode
+    });
 
-    if (success) {
-      setShowConfirmRequest(false);
-      setRequestAmount('');
-      setRequestRecipient('');
-      setSuccessMessage("Request sent successfully!");
-      setShowSuccess(true);
+    if (execution) {
+      const digest = execution?.effects?.transaction?.digest;
+      if (digest) {
+        try {
+          // Save to request_remarks collection for cleaner lookup
+          await setDoc(doc(db, "request_remarks", requestCode), {
+            remark: requestRemark || "No remark",
+            timestamp: serverTimestamp(),
+            category: requestRemarkCategory || 'Other'
+          });
+
+          // Also save to transactions for record keeping (optional but good for history)
+          await setDoc(doc(db, "transactions", digest), {
+            sender: account?.address,
+            recipient: requestRecipient,
+            amountSui: requestAmount,
+            remark: requestRemark || "No remark",
+            timestamp: serverTimestamp(),
+            requestCode: requestCode
+          });
+
+          setShowConfirmRequest(false);
+          setRequestAmount('');
+          setRequestRecipient('');
+          setRequestRemark('');
+          setRequestRemarkCategory('');
+          setIsRequestRemarkOpen(false);
+          setSuccessMessage("Request sent successfully!");
+          setShowSuccess(true);
+          saveRecipient(requestRecipient);
+        } catch (dbError) {
+          console.error("Firestore write failed:", dbError);
+        }
+      }
     }
   };
 
@@ -506,9 +583,34 @@ export default function HomePage() {
                                 type="text"
                                 placeholder="0x..."
                                 value={recipient}
+                                onFocus={() => setShowRecentsDropdown(true)}
+                                onBlur={() => setTimeout(() => setShowRecentsDropdown(false), 200)}
                                 onChange={(e) => setRecipient(e.target.value)}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all font-mono text-sm"
                               />
+
+                              {/* Recent Transactions Dropdown */}
+                              {showRecentsDropdown && recentRecipients.length > 0 && (
+                                <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+                                  <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recent Recipients</p>
+                                  </div>
+                                  {recentRecipients.map((addr) => (
+                                    <button
+                                      key={addr}
+                                      type="button"
+                                      onClick={() => {
+                                        setRecipient(addr);
+                                        setShowRecentsDropdown(false);
+                                      }}
+                                      className="w-full px-4 py-3 text-left text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2"
+                                    >
+                                      <AtSign className="w-4 h-4 text-gray-300" />
+                                      <span className="font-mono">{truncateAddress(addr)}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
 
@@ -545,6 +647,89 @@ export default function HomePage() {
                           </div>
                         </div>
 
+                        {/* Collapsible Remark Section */}
+                        <div className="mb-6 mt-6 border border-white/10 rounded-2xl overflow-hidden transition-all bg-white/5">
+                          <button
+                            onClick={() => setIsRemarkOpen(!isRemarkOpen)}
+                            className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 text-white font-bold text-sm">
+                              <MessageSquare className="w-4 h-4 text-[#6FBEE5]" />
+                              <span>Add a remark</span>
+                              {remark && (
+                                <span className="bg-[#6FBEE5]/20 text-[#6FBEE5] text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  Added
+                                </span>
+                              )}
+                            </div>
+                            {isRemarkOpen ? (
+                              <ChevronUp className="w-4 h-4 text-white/40" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-white/40" />
+                            )}
+                          </button>
+
+                          <AnimatePresence>
+                            {isRemarkOpen && (
+                              <Motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="p-4 pt-0 space-y-4">
+                                  <div className="flex flex-wrap gap-2">
+                                    {[
+                                      { id: 'Food & Drink', icon: <Utensils className="w-3 h-3" /> },
+                                      { id: 'Accommodation', icon: <Home className="w-3 h-3" /> },
+                                      { id: 'Grocery', icon: <ShoppingCart className="w-3 h-3" /> },
+                                      { id: 'Shop', icon: <ShoppingBag className="w-3 h-3" /> },
+                                      { id: 'Other', icon: <Pencil className="w-3 h-3" /> }
+                                    ].map((cat) => (
+                                      <button
+                                        key={cat.id}
+                                        onClick={() => {
+                                          setRemarkCategory(cat.id);
+                                          if (cat.id !== 'Other') {
+                                            setRemark(cat.id);
+                                          } else {
+                                            setRemark('');
+                                          }
+                                        }}
+                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${remarkCategory === cat.id
+                                          ? 'bg-[#6FBEE5] border-[#6FBEE5] text-white shadow-[0_0_15px_rgba(111,190,229,0.3)]'
+                                          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white'
+                                          }`}
+                                      >
+                                        {cat.icon}
+                                        {cat.id}
+                                      </button>
+                                    ))}
+                                  </div>
+
+                                  {remarkCategory === 'Other' && (
+                                    <div className="relative">
+                                      <textarea
+                                        value={remark}
+                                        onChange={(e) => {
+                                          if (e.target.value.length <= 50) {
+                                            setRemark(e.target.value);
+                                          }
+                                        }}
+                                        placeholder="Type your remark..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all resize-none h-20"
+                                      />
+                                      <div className="absolute bottom-2 right-2 text-[10px] text-white/40 font-mono">
+                                        {remark.length}/50
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </Motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
                         {/* Action Buttons */}
                         <div className="flex gap-4 mt-10">
                           <button
@@ -569,6 +754,23 @@ export default function HomePage() {
                             </span>
                           </button>
                         </div>
+                        {/* Remark Preview Badge */}
+                        {remark && (
+                          <Motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 flex justify-center"
+                          >
+                            <div className="bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 rounded-full px-4 py-1.5 flex items-center gap-2">
+                              {remarkCategory === 'Food & Drink' && <Utensils className="w-3 h-3 text-[#6FBEE5]" />}
+                              {remarkCategory === 'Accommodation' && <Home className="w-3 h-3 text-[#6FBEE5]" />}
+                              {remarkCategory === 'Grocery' && <ShoppingCart className="w-3 h-3 text-[#6FBEE5]" />}
+                              {remarkCategory === 'Shop' && <ShoppingBag className="w-3 h-3 text-[#6FBEE5]" />}
+                              {(remarkCategory === 'Other' || !remarkCategory) && <MessageSquare className="w-3 h-3 text-[#6FBEE5]" />}
+                              <span className="text-xs font-medium text-[#6FBEE5]">{remark}</span>
+                            </div>
+                          </Motion.div>
+                        )}
                       </>
                     ) : (
                       <>
@@ -675,6 +877,9 @@ export default function HomePage() {
                       setShowConfirmRequest(false);
                       setRequestRecipient('');
                       setRequestAmount('');
+                      setRequestRemark('');
+                      setRequestRemarkCategory('');
+                      setIsRequestRemarkOpen(false);
                     }}
                     className="p-2 hover:bg-white/5 rounded-full transition-colors group"
                   >
@@ -763,9 +968,34 @@ export default function HomePage() {
                                 type="text"
                                 placeholder="0x..."
                                 value={requestRecipient}
+                                onFocus={() => setShowRecentsDropdown(true)}
+                                onBlur={() => setTimeout(() => setShowRecentsDropdown(false), 200)}
                                 onChange={(e) => setRequestRecipient(e.target.value)}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 transition-all font-mono text-sm"
                               />
+
+                              {/* Recent Transactions Dropdown */}
+                              {showRecentsDropdown && recentRecipients.length > 0 && (
+                                <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+                                  <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recent Recipients</p>
+                                  </div>
+                                  {recentRecipients.map((addr) => (
+                                    <button
+                                      key={addr}
+                                      type="button"
+                                      onClick={() => {
+                                        setRequestRecipient(addr);
+                                        setShowRecentsDropdown(false);
+                                      }}
+                                      className="w-full px-4 py-3 text-left text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2"
+                                    >
+                                      <AtSign className="w-4 h-4 text-gray-300" />
+                                      <span className="font-mono">{truncateAddress(addr)}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
 
@@ -802,6 +1032,89 @@ export default function HomePage() {
                           </div>
                         </div>
 
+                        {/* Collapsible Remark Section */}
+                        <div className="mb-6 mt-6 border border-white/10 rounded-2xl overflow-hidden transition-all bg-white/5">
+                          <button
+                            onClick={() => setIsRequestRemarkOpen(!isRequestRemarkOpen)}
+                            className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 text-white font-bold text-sm">
+                              <MessageSquare className="w-4 h-4 text-emerald-400" />
+                              <span>Add a remark</span>
+                              {requestRemark && (
+                                <span className="bg-emerald-400/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  Added
+                                </span>
+                              )}
+                            </div>
+                            {isRequestRemarkOpen ? (
+                              <ChevronUp className="w-4 h-4 text-white/40" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-white/40" />
+                            )}
+                          </button>
+
+                          <AnimatePresence>
+                            {isRequestRemarkOpen && (
+                              <Motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="p-4 pt-0 space-y-4">
+                                  <div className="flex flex-wrap gap-2">
+                                    {[
+                                      { id: 'Food & Drink', icon: <Utensils className="w-3 h-3" /> },
+                                      { id: 'Accommodation', icon: <Home className="w-3 h-3" /> },
+                                      { id: 'Grocery', icon: <ShoppingCart className="w-3 h-3" /> },
+                                      { id: 'Shop', icon: <ShoppingBag className="w-3 h-3" /> },
+                                      { id: 'Other', icon: <Pencil className="w-3 h-3" /> }
+                                    ].map((cat) => (
+                                      <button
+                                        key={cat.id}
+                                        onClick={() => {
+                                          setRequestRemarkCategory(cat.id);
+                                          if (cat.id !== 'Other') {
+                                            setRequestRemark(cat.id);
+                                          } else {
+                                            setRequestRemark('');
+                                          }
+                                        }}
+                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${requestRemarkCategory === cat.id
+                                          ? 'bg-emerald-400 border-emerald-400 text-slate-950 shadow-[0_0_15px_rgba(52,211,153,0.3)]'
+                                          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white'
+                                          }`}
+                                      >
+                                        {cat.icon}
+                                        {cat.id}
+                                      </button>
+                                    ))}
+                                  </div>
+
+                                  {requestRemarkCategory === 'Other' && (
+                                    <div className="relative">
+                                      <textarea
+                                        value={requestRemark}
+                                        onChange={(e) => {
+                                          if (e.target.value.length <= 50) {
+                                            setRequestRemark(e.target.value);
+                                          }
+                                        }}
+                                        placeholder="Type your remark..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-emerald-400/50 focus:border-emerald-400/50 transition-all resize-none h-20"
+                                      />
+                                      <div className="absolute bottom-2 right-2 text-[10px] text-white/40 font-mono">
+                                        {requestRemark.length}/50
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </Motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
                         {/* Action Buttons */}
                         <div className="flex gap-4 mt-10">
                           <button
@@ -826,6 +1139,23 @@ export default function HomePage() {
                             </span>
                           </button>
                         </div>
+                        {/* Remark Preview Badge */}
+                        {requestRemark && (
+                          <Motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 flex justify-center"
+                          >
+                            <div className="bg-emerald-400/10 border border-emerald-400/20 rounded-full px-4 py-1.5 flex items-center gap-2">
+                              {requestRemarkCategory === 'Food & Drink' && <Utensils className="w-3 h-3 text-emerald-400" />}
+                              {requestRemarkCategory === 'Accommodation' && <Home className="w-3 h-3 text-emerald-400" />}
+                              {requestRemarkCategory === 'Grocery' && <ShoppingCart className="w-3 h-3 text-emerald-400" />}
+                              {requestRemarkCategory === 'Shop' && <ShoppingBag className="w-3 h-3 text-emerald-400" />}
+                              {(requestRemarkCategory === 'Other' || !requestRemarkCategory) && <MessageSquare className="w-3 h-3 text-emerald-400" />}
+                              <span className="text-xs font-medium text-emerald-400">{requestRemark}</span>
+                            </div>
+                          </Motion.div>
+                        )}
                       </>
                     ) : (
                       <>
@@ -1389,8 +1719,11 @@ export default function HomePage() {
                       variant="ghost"
                       size="sm"
                       className="w-full mt-2 text-[#6FBEE5] hover:text-[#5DAED5] hover:bg-[#6FBEE5]/10"
+                      onClick={() => {
+                        router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this suggestion:\n\nTitle: ${suggestion.title}\n\nRisk: ${suggestion.risk}\n\nDescription: ${suggestion.description}`)}`)
+                      }}
                     >
-                      Learn More
+                      Learn More @ Mindy AI
                     </Button>
                   </div>
                 ))
@@ -1489,10 +1822,13 @@ export default function HomePage() {
 
                 <Button
                   className="w-full bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white py-6 rounded-xl font-black shadow-lg shadow-[#3B82F6]/20 border border-white/10 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={insightModal.close}
+                  onClick={() => {
+                    insightModal.close()
+                    router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this financial insight:\n\n${insight}`)}`)
+                  }}
                   disabled={isInsightLoading}
                 >
-                  Action Plan
+                  Learn More @ Mindy AI
                 </Button>
               </div>
             </Card>

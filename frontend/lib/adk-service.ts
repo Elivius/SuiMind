@@ -116,7 +116,7 @@ export const getSessionHistory = async (
 
         if (!response.ok) {
             console.error("Failed to fetch history:", await response.text());
-            return [];
+            throw new Error(`Failed to fetch history: ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -150,6 +150,6 @@ export const getSessionHistory = async (
 
     } catch (error) {
         console.error("Error fetching history:", error);
-        return [];
+        throw error; // Throw error so we can handle it in the hook (stop polling)
     }
 };
