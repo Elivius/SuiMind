@@ -1389,8 +1389,11 @@ export default function HomePage() {
                       variant="ghost"
                       size="sm"
                       className="w-full mt-2 text-[#6FBEE5] hover:text-[#5DAED5] hover:bg-[#6FBEE5]/10"
+                      onClick={() => {
+                        router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this suggestion:\n\nTitle: ${suggestion.title}\n\nRisk: ${suggestion.risk}\n\nDescription: ${suggestion.description}`)}`)
+                      }}
                     >
-                      Learn More
+                      Learn More @ Mindy AI
                     </Button>
                   </div>
                 ))
