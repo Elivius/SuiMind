@@ -22,6 +22,7 @@ import { MindyAILogo } from "@/components/icons"
 import { useMindyAgent } from "@/hooks"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { useSearchParams, useRouter } from "next/navigation"
 
 const QUICK_ACTIONS = [
     {
@@ -88,7 +89,8 @@ const QUICK_ACTIONS = [
 
 export default function MindyAIPage() {
     const [mindyInput, setMindyInput] = useState("")
-    const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
+    const [pendingPrompt, setPendingPrompt] = useState<string | null>(null)
+    const { messages: mindyMessages, isLoading: isMindyLoading, isInitialized, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
     const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
     const hasMindyMessages = mindyMessages.length > 0;
 
@@ -99,8 +101,34 @@ export default function MindyAIPage() {
         }
     }, [mindyMessages])
 
+    // ========= Other page AI context =========
+    // Handle context from other page's ai generated insight for mindy-ai to elaborate more
+    // Pass thru url params
+    const searchParams = useSearchParams()
+    const promptParam = searchParams.get('prompt')
+    const router = useRouter()
 
+    // Store the prompt param when detected
+    useEffect(() => {
+        if (promptParam) {
+            // Clear the query param so refresh doesn't resend
+            router.replace('/mindy-ai', { scroll: false })
+            // Store the prompt to be sent once session is ready
+            setPendingPrompt(promptParam)
+        }
+    }, [promptParam, router])
 
+    // Send the pending prompt once hook is initialized and not loading
+    // IMPORTANT: Wait for isInitialized to prevent race condition with history fetch
+    useEffect(() => {
+        if (pendingPrompt && isInitialized && !isMindyLoading) {
+            const promptToSend = pendingPrompt
+            setPendingPrompt(null) // Clear before sending to prevent re-sends
+            sendMindyMessage(promptToSend)
+        }
+    }, [pendingPrompt, isInitialized, isMindyLoading, sendMindyMessage])
+
+    // ========= Normal QnA chatting send =========
     const handleMindySend = () => {
         if (!mindyInput.trim()) return
         sendMindyMessage(mindyInput)

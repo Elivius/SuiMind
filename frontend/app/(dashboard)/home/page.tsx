@@ -1719,8 +1719,11 @@ export default function HomePage() {
                       variant="ghost"
                       size="sm"
                       className="w-full mt-2 text-[#6FBEE5] hover:text-[#5DAED5] hover:bg-[#6FBEE5]/10"
+                      onClick={() => {
+                        router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this suggestion:\n\nTitle: ${suggestion.title}\n\nRisk: ${suggestion.risk}\n\nDescription: ${suggestion.description}`)}`)
+                      }}
                     >
-                      Learn More
+                      Learn More @ Mindy AI
                     </Button>
                   </div>
                 ))
@@ -1819,10 +1822,13 @@ export default function HomePage() {
 
                 <Button
                   className="w-full bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white py-6 rounded-xl font-black shadow-lg shadow-[#3B82F6]/20 border border-white/10 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={insightModal.close}
+                  onClick={() => {
+                    insightModal.close()
+                    router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this financial insight:\n\n${insight}`)}`)
+                  }}
                   disabled={isInsightLoading}
                 >
-                  Action Plan
+                  Learn More @ Mindy AI
                 </Button>
               </div>
             </Card>
