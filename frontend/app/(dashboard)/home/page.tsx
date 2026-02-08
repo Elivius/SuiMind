@@ -606,7 +606,7 @@ export default function HomePage() {
                                       className="w-full px-4 py-3 text-left text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2"
                                     >
                                       <AtSign className="w-4 h-4 text-gray-300" />
-                                      <span className="font-mono">{addr.slice(0, 10)}...{addr.slice(-8)}</span>
+                                      <span className="font-mono">{truncateAddress(addr)}</span>
                                     </button>
                                   ))}
                                 </div>
@@ -991,7 +991,7 @@ export default function HomePage() {
                                       className="w-full px-4 py-3 text-left text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2"
                                     >
                                       <AtSign className="w-4 h-4 text-gray-300" />
-                                      <span className="font-mono">{addr.slice(0, 10)}...{addr.slice(-8)}</span>
+                                      <span className="font-mono">{truncateAddress(addr)}</span>
                                     </button>
                                   ))}
                                 </div>
