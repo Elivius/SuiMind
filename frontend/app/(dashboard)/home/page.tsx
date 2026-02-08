@@ -985,7 +985,7 @@ export default function HomePage() {
                                       key={addr}
                                       type="button"
                                       onClick={() => {
-                                        setRecipient(addr);
+                                        setRequestRecipient(addr);
                                         setShowRecentsDropdown(false);
                                       }}
                                       className="w-full px-4 py-3 text-left text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2"
