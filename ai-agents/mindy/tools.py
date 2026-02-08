@@ -179,3 +179,143 @@ def get_balance(address: Optional[str] = None, tool_context: ToolContext = None)
         "address": address
     }
     return execute_sui_graphql_query(query, variables)
+
+
+# ============================================================
+# TRANSACTION INTENT TOOLS
+# These tools prepare transaction intents that the frontend will execute
+# The AI agent describes WHAT to do, the frontend handles signing/execution
+# ============================================================
+
+def prepare_transfer(
+    recipient: str,
+    amount: float,
+    reason: Optional[str] = None,
+    tool_context: ToolContext = None
+) -> Dict[str, Any]:
+    """
+    Prepares a SUI transfer transaction intent for the frontend to execute.
+    The user must approve and sign this transaction through their wallet.
+    
+    Args:
+        recipient (str): The Sui address to send SUI to (must start with 0x).
+        amount (float): The amount of SUI to send.
+        reason (str, optional): Optional reason/remark for the transfer.
+        tool_context (ToolContext, optional): The tool context to access session state.
+        
+    Returns:
+        dict: A transaction intent object that the frontend will use to execute the transfer.
+    """
+    # Validate inputs
+    if not recipient or not recipient.startswith('0x'):
+        return {
+            "success": False,
+            "error": "Invalid recipient address. Must start with 0x."
+        }
+    
+    if amount <= 0:
+        return {
+            "success": False,
+            "error": "Amount must be greater than 0."
+        }
+    
+    sender = None
+    if tool_context and tool_context.state:
+        sender = tool_context.state.get("sui_address")
+    
+    return {
+        "success": True,
+        "transaction_intent": {
+            "type": "TRANSFER_SUI",
+            "recipient": recipient,
+            "amount": amount,
+            "amount_mist": int(amount * 1_000_000_000),
+            "sender": sender,
+            "reason": reason or "Transfer via Mindy AI",
+            "requires_signature": True
+        },
+        "message": f"I've prepared a transfer of {amount} SUI to {recipient[:6]}...{recipient[-4:]}. Please confirm this transaction in your wallet."
+    }
+
+
+def prepare_payment_request(
+    recipient: str,
+    amount: float,
+    reason: Optional[str] = None,
+    tool_context: ToolContext = None
+) -> Dict[str, Any]:
+    """
+    Prepares a payment request transaction intent. This creates a request asking
+    another user to pay you.
+    
+    Args:
+        recipient (str): The Sui address of the person you're requesting payment FROM (must start with 0x).
+        amount (float): The amount of SUI you're requesting.
+        reason (str, optional): Optional reason/remark for the payment request.
+        tool_context (ToolContext, optional): The tool context to access session state.
+        
+    Returns:
+        dict: A transaction intent object that the frontend will use to create the payment request.
+    """
+    if not recipient or not recipient.startswith('0x'):
+        return {
+            "success": False,
+            "error": "Invalid recipient address. Must start with 0x."
+        }
+    
+    if amount <= 0:
+        return {
+            "success": False,
+            "error": "Amount must be greater than 0."
+        }
+    
+    sender = None
+    if tool_context and tool_context.state:
+        sender = tool_context.state.get("sui_address")
+    
+    return {
+        "success": True,
+        "transaction_intent": {
+            "type": "CREATE_PAYMENT_REQUEST",
+            "recipient": recipient,  # Who should pay
+            "amount": amount,
+            "amount_mist": int(amount * 1_000_000_000),
+            "sender": sender,  # Who is requesting
+            "reason": reason or "Payment request via Mindy AI",
+            "requires_signature": True
+        },
+        "message": f"I've prepared a payment request for {amount} SUI from {recipient[:6]}...{recipient[-4:]}. Please confirm to send this request."
+    }
+
+
+# REJECT STILL IN BETA
+def prepare_reject_request(
+    request_id: str,
+    tool_context: ToolContext = None
+) -> Dict[str, Any]:
+    """
+    Prepares a rejection for a payment request. Use this when the user wants to
+    decline a payment request they received.
+    
+    Args:
+        request_id (str): The object ID of the payment request to reject.
+        tool_context (ToolContext, optional): The tool context to access session state.
+        
+    Returns:
+        dict: A transaction intent object that the frontend will use to reject the request.
+    """
+    if not request_id:
+        return {
+            "success": False,
+            "error": "Request ID is required."
+        }
+    
+    return {
+        "success": True,
+        "transaction_intent": {
+            "type": "REJECT_PAYMENT_REQUEST",
+            "request_id": request_id,
+            "requires_signature": True
+        },
+        "message": f"I've prepared to reject the payment request. Please confirm in your wallet."
+    }
