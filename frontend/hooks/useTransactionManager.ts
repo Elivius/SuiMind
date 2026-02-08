@@ -1,16 +1,19 @@
+/*
+Use to execute transactions:
+- Transfer SUI
+- Create Payment Request
+- Reject Payment Request
+- Delete Payment Request (Clear Notification)
+*/
+
 import { useState } from "react";
 import { useSignTransaction, useCurrentAccount } from "@mysten/dapp-kit";
-import { SuiGraphQLClient } from '@mysten/sui/graphql';
 import { graphql } from '@mysten/sui/graphql/schemas/latest';
 import { Transaction } from '@mysten/sui/transactions';
 import { toast } from "sonner";
 import { PACKAGE_ID } from "@/lib/config";
 import { playSound } from "@/lib/sound-effects";
-
-// Setup GraphQL Client
-const gqlClient = new SuiGraphQLClient({
-    url: 'https://graphql.testnet.sui.io/graphql',
-});
+import { gqlClient } from "@/lib/sui-client";
 
 const EXECUTE_TRANSACTION = graphql(`
   mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
