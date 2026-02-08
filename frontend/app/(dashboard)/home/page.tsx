@@ -1219,7 +1219,8 @@ export default function HomePage() {
           </div>
         )}
       </AnimatePresence>
-
+      
+      {/* Frequent Contact card */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="md:col-span-2 xl:col-span-2">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
