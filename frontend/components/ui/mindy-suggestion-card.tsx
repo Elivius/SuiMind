@@ -114,10 +114,12 @@ export function MindySuggestionCard({ balance, totals, expensesData, isLoading }
                                 </p>
                                 <div className="flex flex-wrap items-center gap-4 pt-2">
                                     <Button
-                                        onClick={() => router.push('/mindy-ai')}
+                                        onClick={() => {
+                                            router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this suggestion:\n\nTitle: ${suggestion.highlightedText}\n\nDescription: ${suggestion.body}`)}`)
+                                        }}
                                         className="h-16 px-12 text-lg bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white font-black rounded-[20px] shadow-xl shadow-[#3B82F6]/20 border border-white/20 transition-all hover:scale-105 active:scale-95 group/btn"
                                     >
-                                        {suggestion.action || "View Opportunity"}
+                                        Learn More @ Mindy AI
                                         <ArrowUpRight className="ml-3 w-6 h-6 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                                     </Button>
                                 </div>
