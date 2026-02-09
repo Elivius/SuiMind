@@ -180,8 +180,8 @@ export default function RecentActivityPage() {
 
     return (
         <div className="w-full px-6 py-8">
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
-                <div className="xl:col-span-3">
+            <div className="grid grid-cols-1 xl:grid-cols-10 gap-6 items-start">
+                <div className="xl:col-span-7">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-6">
                         <div className="flex items-baseline gap-2">
                             <h1 className="text-4xl font-bold text-white">Dashboard</h1>
@@ -527,7 +527,7 @@ export default function RecentActivityPage() {
                 </div>
 
                 {/* Mindy AI */}
-                <div className="xl:col-span-1 xl:sticky xl:top-[100px] xl:self-start transition-all duration-500 ease-in-out">
+                <div className="xl:col-span-3 xl:sticky xl:top-[100px] xl:self-start transition-all duration-500 ease-in-out">
                     <Card className="border-white/20 backdrop-blur-xl bg-white/5 flex flex-col h-[650px] overflow-hidden shadow-2xl">
                         <div className="p-6 h-full flex flex-col">
                             <div className="flex items-center justify-between mb-6">
