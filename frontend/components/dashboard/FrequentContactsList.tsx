@@ -44,8 +44,7 @@ export function FrequentContactsList({ contacts }: Props) {
                                 <div className="flex items-start justify-between mb-6">
                                     <div className="flex items-center gap-4">
                                         <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-slate-950 relative
-                                    ${idx === 0 ? 'bg-emerald-400' : idx === 1 ? 'bg-[#6FBEE5]' : 'bg-purple-400'}
-                                 `}>
+                                            ${idx === 0 ? 'bg-emerald-400' : idx === 1 ? 'bg-[#6FBEE5]' : 'bg-purple-400'}`}>
                                             {displayInitials}
                                             <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#111] rounded-full flex items-center justify-center">
                                                 <div className={`w-2.5 h-2.5 rounded-full ${idx === 0 ? 'bg-emerald-400' : idx === 1 ? 'bg-[#6FBEE5]' : 'bg-purple-400'}`} />
