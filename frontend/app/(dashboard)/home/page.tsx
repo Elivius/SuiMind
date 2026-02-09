@@ -401,25 +401,28 @@ export default function HomePage() {
             </div>
 
             {/* Right side: Send & Request Buttons */}
-            <div className="flex flex-row lg:flex-col gap-3">
+            <div className="flex flex-row lg:flex-col gap-4">
               <Button
-                onClick={() => setShowSendUI(true)} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => setShowSendUI(true)}
+                disabled={isSending || !account}
+                className="flex-1 lg:flex-none lg:min-w-[210px] py-6 sm:py-10 text-base sm:text-lg font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center overflow-hidden"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0">
-                  <SendHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors ml-0.5" />
-                </div>
-                <div className="flex flex-col center w-16 sm:w-20">
-                  <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors">Send</span>
+                <div className="w-[150px] flex items-center gap-8">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0 shadow-lg shadow-[#6FBEE5]/20">
+                    <SendHorizontal className="w-5 h-5 sm:w-6 sm:h-6 text-white transition-colors" />
+                  </div>
+                  <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors font-black tracking-tight text-xl translate-y-[1px]">Send</span>
                 </div>
               </Button>
               <Button
-                onClick={() => setShowRequestUI(true)} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => setShowRequestUI(true)}
+                className="flex-1 lg:flex-none lg:min-w-[210px] py-6 sm:py-10 text-base sm:text-lg font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center overflow-hidden"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
-                  <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
-                </div>
-                <div className="flex flex-col items-center w-16 sm:w-20">
-                  <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors">Request</span>
+                <div className="w-[150px] flex items-center gap-5">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0 shadow-lg shadow-[#34D399]/20">
+                    <ArrowDown className="w-5 h-5 sm:w-6 sm:h-6 text-white transition-colors" />
+                  </div>
+                  <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors font-black tracking-tight text-xl translate-y-[1px]">Request</span>
                 </div>
               </Button>
             </div>
