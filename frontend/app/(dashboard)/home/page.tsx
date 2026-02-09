@@ -12,7 +12,7 @@ import {
 import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager } from "@/hooks"
+import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager, useInsightsData } from "@/hooks"
 import { SendTransactionModal, RequestTransactionModal } from "@/components/transactionModal"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
@@ -38,6 +38,7 @@ export default function HomePage() {
   const { data: balanceData, isLoading: isBalanceLoading, refetch } = useGetBalances();
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
   const { data: transactionData, isLoading: isTransactionLoading, refetch: refetchTransactions } = useGetDetailTransactions(20);
+  const { frequentContacts } = useInsightsData();
 
   const onTransactionSuccess = async () => {
     await refetch();
@@ -523,11 +524,7 @@ export default function HomePage() {
         <div className="md:col-span-2 xl:col-span-2">
           {/* Change card - Frequent Contacts */}
           <div className="md:col-span-2 xl:col-span-2">
-            <FrequentContactsList transactions={
-              (transactionData?.transactions
-                ?.map((tx: any) => processTx(tx, account?.address))
-                .filter((tx): tx is NonNullable<typeof tx> => tx !== null) || [])
-            } />
+            <FrequentContactsList contacts={frequentContacts} />
           </div>
         </div>
 
