@@ -14,6 +14,9 @@ import { useState, useEffect, useRef } from "react";
 import { playSound } from "@/lib/sound-effects";
 import { motion, AnimatePresence } from "motion/react";
 import { mistToSui, truncateAddress } from "@/lib/utils";
+import { db } from "@/lib/firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 
 export function Header() {
@@ -23,6 +26,7 @@ export function Header() {
     const { pendingRequests, isLoading, hasUnread, onTransactionSuccess, refetch, rejectedRequests, paidNotifications } = usePaymentRequests();
     const { transferSui, rejectRequest, deleteNotification } = useTransactionManager();
     const { data: balanceData } = useGetBalances();
+    const account = useCurrentAccount();
     const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
 
     const [showDropdown, setShowDropdown] = useState(false);
@@ -79,13 +83,29 @@ export function Header() {
         if (!selectedPaymentRequest) return;
         setIsProcessingPayment(true);
         try {
-            const success = await transferSui({
+            const execution = await transferSui({
                 amount: selectedPaymentRequest.amountSui,
                 recipient: selectedPaymentRequest.requester,
                 paymentRequestId: selectedPaymentRequest.id,
                 walletBalance
             });
-            if (success) {
+            if (execution) {
+                // Save to Firebase with remark from the payment request
+                const digest = execution?.effects?.transaction?.digest;
+                if (digest && account?.address) {
+                    try {
+                        await setDoc(doc(db, "transactions", digest), {
+                            sender: account.address,
+                            recipient: selectedPaymentRequest.requester,
+                            amountSui: selectedPaymentRequest.amountSui,
+                            remark: selectedPaymentRequest.remark || "No remark",
+                            timestamp: serverTimestamp(),
+                        });
+                        console.log('[DEBUG handleConfirmPayment] Saved to Firebase:', { digest, remark: selectedPaymentRequest.remark });
+                    } catch (err) {
+                        console.error('[handleConfirmPayment] Firebase save error:', err);
+                    }
+                }
                 await onTransactionSuccess();
                 refetch();
                 // Don't close modal here - let the success screen show first
