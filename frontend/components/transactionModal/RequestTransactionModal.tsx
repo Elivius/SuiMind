@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { truncateAddress } from "@/lib/utils";
 import { TransactionConfirmModal } from "./TransactionConfirmModal";
+import { playSound } from "@/lib/sound-effects";
 
 interface RequestTransactionModalProps {
     isOpen: boolean;
@@ -72,6 +73,7 @@ export function RequestTransactionModal({
     const handleConfirm = async () => {
         await onConfirm({ recipient, amount, remark, remarkCategory });
         setShowSuccess(true);
+        playSound('request_success');
     };
 
     const handleClose = () => {
