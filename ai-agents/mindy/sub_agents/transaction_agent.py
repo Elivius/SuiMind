@@ -1,14 +1,14 @@
 from google.adk.agents import Agent
 
 from tools import prepare_transfer, prepare_payment_request, prepare_reject_request, get_balance
-from config import GEMINI_2_5_FLASH
+from config import GEMINI_3_FLASH_PREVIEW
 from instructions import GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 
 # Transaction Agent - Handles preparing transaction intents for the frontend
 transaction_agent = None
 transaction_agent = Agent(
     name="transaction_agent",
-    model=GEMINI_2_5_FLASH,
+    model=GEMINI_3_FLASH_PREVIEW,
     description="Prepares SUI transaction intents like transfers, payment requests, and rejections.",
     instruction=f"""
     You are the SuiMind Transaction Agent.
