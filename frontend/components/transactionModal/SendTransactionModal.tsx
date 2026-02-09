@@ -29,6 +29,8 @@ interface SendTransactionModalProps {
     initialAmount?: string;
     skipToConfirm?: boolean; // For bypassing form (AI-initiated) - directly to confirmation page
     aiMessage?: string;
+    showAiBadge?: boolean; // Explicit control over AI badge visibility
+    initialRemark?: string; // Pre-fill remark when skipping form
 }
 
 export function SendTransactionModal({
@@ -42,6 +44,8 @@ export function SendTransactionModal({
     initialAmount = '',
     skipToConfirm = false,
     aiMessage,
+    showAiBadge,
+    initialRemark = '',
 }: SendTransactionModalProps) {
     const [recipient, setRecipient] = useState(initialRecipient);
     const [amount, setAmount] = useState(initialAmount);
@@ -57,6 +61,7 @@ export function SendTransactionModal({
         if (isOpen) {
             setRecipient(initialRecipient);
             setAmount(initialAmount);
+            setRemark(initialRemark);
             setShowConfirm(skipToConfirm);
             setShowSuccess(false);
         } else {
@@ -98,6 +103,28 @@ export function SendTransactionModal({
         { id: 'Shop', icon: <ShoppingBag className="w-3 h-3" /> },
         { id: 'Other', icon: <Pencil className="w-3 h-3" /> }
     ];
+
+    // When skipToConfirm is true, render TransactionConfirmModal directly without outer wrapper
+    // This avoids double animations (outer modal + inner modal both animating)
+    if (skipToConfirm && showConfirm && !showSuccess) {
+        return (
+            <TransactionConfirmModal
+                isOpen={isOpen}
+                details={{
+                    type: 'TRANSFER_SUI',
+                    recipient,
+                    amount,
+                    reason: remark
+                }}
+                walletBalance={walletBalance}
+                isSending={isSending}
+                onConfirm={handleConfirm}
+                onCancel={handleClose}
+                aiMessage={aiMessage}
+                showAiBadge={showAiBadge ?? !!aiMessage}
+            />
+        );
+    }
 
     return (
         <AnimatePresence>
@@ -437,7 +464,7 @@ export function SendTransactionModal({
                                             onConfirm={handleConfirm}
                                             onCancel={() => setShowConfirm(false)}
                                             aiMessage={aiMessage}
-                                            showAiBadge={!!aiMessage}
+                                            showAiBadge={showAiBadge ?? !!aiMessage}
                                         />
                                     )}
                                 </>
