@@ -16,6 +16,7 @@ export const useMindyAgent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [pendingTransactionIntent, setPendingTransactionIntent] = useState<any | null>(null);
 
     const prevMindyMessagesCount = useRef(0); // Tracks message count to detect NEW messages for sound effects
     const isFirstLoadMessages = useRef(true); // Flag to prevent sound on initial history load
@@ -227,6 +228,10 @@ export const useMindyAgent = () => {
                             content: retryResponse.text!,
                             id: Date.now().toString()
                         }]);
+                        // Check for transaction intent in retry response - from adk-service.ts
+                        if (retryResponse.transactionIntent) {
+                            setPendingTransactionIntent(retryResponse.transactionIntent);
+                        }
                         return;
                     } else if (retryResponse.error) {
                         throw new Error(retryResponse.error);
@@ -249,6 +254,11 @@ export const useMindyAgent = () => {
 
             setMessages(prev => [...prev, agentMsg]);
 
+            // Check for transaction intent in response from adk-service.ts
+            if (response.transactionIntent) {
+                setPendingTransactionIntent(response.transactionIntent);
+            }
+
         } catch (e: any) {
             console.error("Error sending message:", e);
             const errorMsgText = e.message || "Failed to send message.";
@@ -270,6 +280,10 @@ export const useMindyAgent = () => {
         }
     }, [sessionId, userId]);
 
+    const clearTransactionIntent = useCallback(() => {
+        setPendingTransactionIntent(null);
+    }, []);
+
     return {
         messages,
         isLoading,
@@ -277,6 +291,8 @@ export const useMindyAgent = () => {
         error,
         sendMessage,
         startSession,
-        hasSession: !!sessionId
+        hasSession: !!sessionId,
+        pendingTransactionIntent,
+        clearTransactionIntent
     };
 };

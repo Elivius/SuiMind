@@ -48,7 +48,7 @@ export const sendMessageToAgent = async (
     userId: string,
     sessionId: string,
     message: string
-): Promise<{ text?: string, error?: string }> => {
+): Promise<{ text?: string, transactionIntent?: any, error?: string }> => {
     try {
         const response = await fetch(
             `${API_BASE_URL}/run`,
@@ -80,6 +80,7 @@ export const sendMessageToAgent = async (
 
         const events = await response.json();
         let mindyMessage = "";
+        let transactionIntent = null;
 
         for (const event of events) {
             // Extract text response
@@ -89,9 +90,58 @@ export const sendMessageToAgent = async (
             if (content.role === "model" && parts.length > 0 && parts[0].text) {
                 mindyMessage += parts[0].text;
             }
+
+            // ========= WAY 1 to get transaction intent from LLM =========
+            // Check for function call responses that contain transaction_intent
+            for (const part of parts) {
+                // Check functionResponse (tool output)
+                if (part.functionResponse) {
+                    const funcResult = part.functionResponse.response || part.functionResponse;
+                    if (funcResult?.transaction_intent) {
+                        transactionIntent = funcResult;
+                    }
+                }
+            }
         }
 
-        return { text: mindyMessage };
+        // ========= WAY 2 to get transaction intent from LLM =========
+        // Parse :::TRANSACTION_INTENT::: markers from the accumulated text
+        // This is the primary method - the AI agent includes this in its response
+        if (mindyMessage.includes(':::TRANSACTION_INTENT:::')) {
+            const intentMatch = mindyMessage.match(/:::TRANSACTION_INTENT:::\s*([\s\S]*?)\s*:::END_TRANSACTION_INTENT:::/);
+            if (intentMatch && intentMatch[1]) {
+                try {
+                    const extracted = JSON.parse(intentMatch[1].trim());
+                    if (extracted.transaction_intent) {
+                        transactionIntent = extracted;
+                    }
+                } catch (e) {
+                    console.warn("Failed to parse transaction intent from markers:", e);
+                }
+            }
+            // Remove the markers from the displayed message
+            mindyMessage = mindyMessage
+                .replace(/:::TRANSACTION_INTENT:::[\s\S]*?:::END_TRANSACTION_INTENT:::/g, '')
+                .trim();
+        }
+
+        // ========= WAY 3 to get transaction intent from LLM =========
+        // Fallback: Try to extract JSON with transaction_intent from text (less reliable)
+        if (!transactionIntent && mindyMessage.includes('transaction_intent')) {
+            const jsonMatch = mindyMessage.match(/\{[\s\S]*"transaction_intent"[\s\S]*?\}/);
+            if (jsonMatch) {
+                try {
+                    const extracted = JSON.parse(jsonMatch[0]);
+                    if (extracted.transaction_intent) {
+                        transactionIntent = extracted;
+                    }
+                } catch { /* ignore */ }
+            }
+        }
+
+        // mindyMessage will be the trimmed / formated pure human readable text
+        // transactionIntent will be the transaction intent object :::TRANSACTION_INTENT:::xxx:::END_TRANSACTION_INTENT:::
+        return { text: mindyMessage, transactionIntent };
 
     } catch (error: any) {
         if (error.cause && error.cause.code === 'ECONNREFUSED') {
@@ -138,11 +188,21 @@ export const getSessionHistory = async (
                 }
 
                 if (text) {
-                    history.push({
-                        role: role === "model" ? "mindy" : "user",
-                        content: text,
-                        id: event.id || Date.now().toString()
-                    });
+                    // Clean up transaction intent markers from history as well
+                    if (role === "model") {
+                        text = text
+                            .replace(/:::TRANSACTION_INTENT:::[\s\S]*?:::END_TRANSACTION_INTENT:::/g, '')
+                            .trim();
+                    }
+
+                    // Only add if there is still text content after cleanup
+                    if (text) {
+                        history.push({
+                            role: role === "model" ? "mindy" : "user",
+                            content: text,
+                            id: event.id || Date.now().toString()
+                        });
+                    }
                 }
             }
         }
