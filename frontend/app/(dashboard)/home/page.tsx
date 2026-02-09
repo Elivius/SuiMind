@@ -591,7 +591,7 @@ export default function HomePage() {
               >
                 Recent Activity
               </Button>
-              <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2 pt-12 -mt-12">
+              <div className="space-y-6 flex-1 pt-12 -mt-12">
                 {isTransactionLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <div
