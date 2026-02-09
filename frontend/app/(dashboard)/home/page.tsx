@@ -13,6 +13,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
 import { useRouter } from "next/navigation"
 import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager } from "@/hooks"
+import { SendTransactionModal, RequestTransactionModal } from "@/components/transactionModal"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
@@ -33,26 +34,24 @@ export default function HomePage() {
   // signTransaction handled in hook
   const { isSending, transferSui, createPaymentRequest, rejectRequest, deleteNotification } = useTransactionManager();
 
+  const { data: balanceData, isLoading: isBalanceLoading, refetch } = useGetBalances();
+  const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
+  const { data: transactionData, isLoading: isTransactionLoading, refetch: refetchTransactions } = useGetDetailTransactions(20);
+
+  const onTransactionSuccess = async () => {
+    await refetch();
+    if (refetchTransactions) await refetchTransactions();
+  };
+
   const [showNewSendUI, setShowSendUI] = useState(false);
-  const [showConfirmSend, setShowConfirmSend] = useState(false);
   const [showNewRequestUI, setShowRequestUI] = useState(false);
-  const [showConfirmRequest, setShowConfirmRequest] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [requestRecipient, setRequestRecipient] = useState('');
   const [requestAmount, setRequestAmount] = useState('');
   const [activeRequestObject, setActiveRequestObject] = useState<any>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const { pendingRequests, hasUnread, refetch, onTransactionSuccess } = usePaymentRequests();
   const [recentRecipients, setRecentRecipients] = useState<string[]>([]);
-  const [showRecentsDropdown, setShowRecentsDropdown] = useState(false);
-  const [requestRemark, setRequestRemark] = useState('');
-  const [isRequestRemarkOpen, setIsRequestRemarkOpen] = useState(false);
-  const [requestRemarkCategory, setRequestRemarkCategory] = useState('');
-  const [remark, setRemark] = useState('');
-  const [isRemarkOpen, setIsRemarkOpen] = useState(false);
-  const [remarkCategory, setRemarkCategory] = useState('');
+
 
   useEffect(() => {
     const saved = localStorage.getItem('recent_recipients');
@@ -65,10 +64,13 @@ export default function HomePage() {
     localStorage.setItem('recent_recipients', JSON.stringify(updated));
   };
 
-  const handleSend = async () => {
+  const handleSend = async (data: { recipient: string; amount: string; remark?: string; remarkCategory?: string }) => {
+    const { recipient: sendRecipient, amount: sendAmount, remark: sendRemark, remarkCategory: sendRemarkCategory } = data;
+
+    // Use local variables from arguments instead of state
     const execution = await transferSui({
-      amount,
-      recipient,
+      amount: sendAmount,
+      recipient: sendRecipient,
       paymentRequestId: activeRequestObject?.id,
       walletBalance,
     });
@@ -79,25 +81,18 @@ export default function HomePage() {
         try {
           await setDoc(doc(db, "transactions", digest), {
             sender: account?.address,
-            recipient: recipient,
-            amountSui: amount,
-            remark: remark || "No remark",
+            recipient: sendRecipient,
+            amountSui: sendAmount,
+            remark: sendRemark || "No remark",
             timestamp: serverTimestamp(),
           });
 
           // Continue with your success logic
           await onTransactionSuccess();
-          setShowConfirmSend(false);
-          setAmount('');
-          setRecipient('');
+          // The modal handles its own success state. We just need to clean up data.
           setActiveRequestObject(null);
           refetch();
-          setSuccessMessage("Transaction Successful!");
-          setShowSuccess(true);
-          saveRecipient(recipient);
-          setRemark('');
-          setRemarkCategory('');
-          setIsRemarkOpen(false);
+          saveRecipient(sendRecipient);
         } catch (dbError) {
           console.error("Firestore write failed:", dbError);
         }
@@ -108,11 +103,13 @@ export default function HomePage() {
     }
   };
 
-  const handleRequest = async () => {
+  const handleRequest = async (data: { recipient: string; amount: string; remark?: string; remarkCategory?: string }) => {
+    const { recipient: reqRecipient, amount: reqAmount, remark: reqRemark, remarkCategory: reqCategory } = data;
+
     const requestCode = `REQ-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const execution = await createPaymentRequest({
-      amount: requestAmount,
-      recipient: requestRecipient,
+      amount: reqAmount,
+      recipient: reqRecipient,
       code: requestCode
     });
 
@@ -122,30 +119,23 @@ export default function HomePage() {
         try {
           // Save to request_remarks collection for cleaner lookup
           await setDoc(doc(db, "request_remarks", requestCode), {
-            remark: requestRemark || "No remark",
+            remark: reqRemark || "No remark",
             timestamp: serverTimestamp(),
-            category: requestRemarkCategory || 'Other'
+            category: reqCategory || 'Other'
           });
 
           // Also save to transactions for record keeping (optional but good for history)
           await setDoc(doc(db, "transactions", digest), {
             sender: account?.address,
-            recipient: requestRecipient,
-            amountSui: requestAmount,
-            remark: requestRemark || "No remark",
+            recipient: reqRecipient,
+            amountSui: reqAmount,
+            remark: reqRemark || "No remark",
             timestamp: serverTimestamp(),
             requestCode: requestCode
           });
 
-          setShowConfirmRequest(false);
-          setRequestAmount('');
-          setRequestRecipient('');
-          setRequestRemark('');
-          setRequestRemarkCategory('');
-          setIsRequestRemarkOpen(false);
-          setSuccessMessage("Request sent successfully!");
-          setShowSuccess(true);
-          saveRecipient(requestRecipient);
+          // Modal handles success UI
+          saveRecipient(reqRecipient);
         } catch (dbError) {
           console.error("Firestore write failed:", dbError);
         }
@@ -180,15 +170,7 @@ export default function HomePage() {
     return () => window.removeEventListener('REJECT_REQUEST', handleRejectRequest);
   }, [rejectRequest, refetch, onTransactionSuccess]);
 
-  useEffect(() => {
-    if (!showNewSendUI && !showNewRequestUI) {
-      setTimeout(() => {
-        setShowSuccess(false);
-        setShowConfirmSend(false);
-        setShowConfirmRequest(false);
-      }, 300);
-    }
-  }, [showNewSendUI, showNewRequestUI]);
+
 
   useEffect(() => {
     const handleClearPaid = async (event: any) => {
@@ -218,11 +200,7 @@ export default function HomePage() {
 
 
   // ==============  Balance & Recent Transaction  ==============  
-  const { data: balanceData, isLoading: isBalanceLoading } = useGetBalances()
-  const { data: transactionData, isLoading: isTransactionLoading } = useGetDetailTransactions(20)
 
-  // Convert MIST to SUI (1 SUI = 1,000,000,000 MIST)
-  const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
 
   // Play sound when new notifications arrive
   const prevBalance = useRef(0)
@@ -494,7 +472,7 @@ const CONTACTS: TransactionContact[] = [
             {/* Right side: Send & Request Buttons */}
             <div className="flex flex-row lg:flex-col gap-3">
               <Button
-                onClick={() => { setShowSendUI(true); setShowSuccess(false); }} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => setShowSendUI(true)} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0">
                   <SendHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors ml-0.5" />
@@ -504,7 +482,7 @@ const CONTACTS: TransactionContact[] = [
                 </div>
               </Button>
               <Button
-                onClick={() => { setShowRequestUI(true); setShowSuccess(false); }} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => setShowRequestUI(true)} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
                   <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
@@ -518,776 +496,27 @@ const CONTACTS: TransactionContact[] = [
         </div>
       </Card>
 
-      {/* Send UI Modal */}
-      <AnimatePresence>
-        {showNewSendUI && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <Motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
-              onClick={() => setShowSendUI(false)}
-            />
+      <SendTransactionModal
+        isOpen={showNewSendUI}
+        onClose={() => setShowSendUI(false)}
+        walletBalance={walletBalance}
+        isSending={isSending}
+        onConfirm={handleSend}
+        recentRecipients={recentRecipients}
+        initialRecipient={recipient}
+        initialAmount={amount}
+      />
 
-            <Motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative z-10 w-full max-w-lg overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-[#0D1117]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl" />
+      <RequestTransactionModal
+        isOpen={showNewRequestUI}
+        onClose={() => setShowRequestUI(false)}
+        isSending={isSending}
+        onConfirm={handleRequest}
+        recentRecipients={recentRecipients}
+        initialRecipient={requestRecipient}
+        initialAmount={requestAmount}
+      />
 
-              <div className="relative p-8">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#6FBEE5]/20 rounded-2xl flex items-center justify-center border border-[#6FBEE5]/30">
-                      <SendHorizontal className="w-6 h-6 text-[#6FBEE5]" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-black text-white tracking-tight">Send SUI</h2>
-                      <p className="text-[#6FBEE5] text-sm font-medium">Quick and secure transfer</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowSendUI(false);
-                      setShowConfirmSend(false);
-                      setRecipient('');
-                      setAmount('');
-                    }}
-                    className="p-2 hover:bg-white/5 rounded-full transition-colors group"
-                  >
-                    <X className="w-6 h-6 text-white/40 group-hover:text-white" />
-                  </button>
-                </div>
-
-                {showSuccess ? (
-                  <Motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-12 space-y-8"
-                  >
-                    <div className="relative">
-                      <Motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", damping: 12, stiffness: 200 }}
-                        className="w-24 h-24 bg-[#6FBEE5]/20 rounded-full flex items-center justify-center border-2 border-[#6FBEE5]/50 shadow-[0_0_40px_rgba(111,190,229,0.2)]"
-                      >
-                        <Motion.svg
-                          width="48"
-                          height="48"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="text-[#6FBEE5]"
-                        >
-                          <Motion.path
-                            d="M20 6L9 17L4 12"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                          />
-                        </Motion.svg>
-                      </Motion.div>
-                      <Motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: [1, 1.5, 1], opacity: [0, 1, 0] }}
-                        transition={{ duration: 1, delay: 0.5 }}
-                        className="absolute inset-0 bg-[#6FBEE5]/30 rounded-full -z-10"
-                      />
-                    </div>
-
-                    <div className="text-center space-y-2">
-                      <h3 className="text-3xl font-black text-white tracking-tight">{successMessage}</h3>
-                      <p className="text-[#6FBEE5] font-medium">Transaction completed successfully</p>
-                    </div>
-
-                    <button
-                      onClick={() => setShowSendUI(false)}
-                      className="w-full py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] group relative overflow-hidden"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                      <span className="relative z-10 flex items-center justify-center gap-3 text-white text-2xl">
-                        Done
-                        <CheckCircle2 className="w-8 h-8 text-white" />
-                      </span>
-                    </button>
-                  </Motion.div>
-                ) : (
-                  <>
-                    {/* Available Balance */}
-                    <div className="mb-8 p-5 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between">
-                      <div>
-                        <p className="text-white text-xs font-bold uppercase tracking-widest mb-1">Available Balance</p>
-                        <p className="text-2xl font-black text-white">
-                          {walletBalance.toLocaleString("en-US", {
-                            minimumFractionDigits: 4,
-                            maximumFractionDigits: 4
-                          })}
-                          <span className="text-lg font-bold text-[#6FBEE5] ml-2">SUI</span>
-                        </p>
-                      </div>
-                      <div className="bg-[#6FBEE5]/10 p-3 rounded-xl border border-[#6FBEE5]/20">
-                        <Wallet className="w-6 h-6 text-[#6FBEE5]" />
-                      </div>
-                    </div>
-
-                    {!showConfirmSend ? (
-                      <>
-                        {/* Form Fields */}
-                        <div className="space-y-6">
-                          <div className="group">
-                            <label className="block text-white text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
-                              Recipient Address
-                            </label>
-                            <div className="relative">
-                              <input
-                                type="text"
-                                placeholder="0x..."
-                                value={recipient}
-                                onFocus={() => setShowRecentsDropdown(true)}
-                                onBlur={() => setTimeout(() => setShowRecentsDropdown(false), 200)}
-                                onChange={(e) => setRecipient(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all font-mono text-sm"
-                              />
-
-                              {/* Recent Transactions Dropdown */}
-                              {showRecentsDropdown && recentRecipients.length > 0 && (
-                                <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
-                                  <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recent Recipients</p>
-                                  </div>
-                                  {recentRecipients.map((addr) => (
-                                    <button
-                                      key={addr}
-                                      type="button"
-                                      onClick={() => {
-                                        setRecipient(addr);
-                                        setShowRecentsDropdown(false);
-                                      }}
-                                      className="w-full px-4 py-3 text-left text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2"
-                                    >
-                                      <AtSign className="w-4 h-4 text-gray-300" />
-                                      <span className="font-mono">{truncateAddress(addr)}</span>
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="group">
-                            <label className="block text-white text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
-                              Amount
-                            </label>
-                            <div className="relative">
-                              <input
-                                type="number"
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                placeholder="0.00"
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#6FBEE5]/30 focus:border-[#6FBEE5]/50 transition-all text-3xl font-black"
-                              />
-                              <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
-                                <div className="flex flex-col border-r border-white/10 pr-4">
-                                  <button
-                                    onClick={() => setAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
-                                    className="text-white/20 hover:text-[#6FBEE5] transition-colors"
-                                  >
-                                    <ArrowUp className="w-5 h-5" />
-                                  </button>
-                                  <button
-                                    onClick={() => setAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
-                                    className="text-white/20 hover:text-[#6FBEE5] transition-colors"
-                                  >
-                                    <ArrowDown className="w-5 h-5" />
-                                  </button>
-                                </div>
-                                <span className="text-[#6FBEE5] font-black text-xl">SUI</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Collapsible Remark Section */}
-                        <div className="mb-6 mt-6 border border-white/10 rounded-2xl overflow-hidden transition-all bg-white/5">
-                          <button
-                            onClick={() => setIsRemarkOpen(!isRemarkOpen)}
-                            className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
-                          >
-                            <div className="flex items-center gap-2 text-white font-bold text-sm">
-                              <MessageSquare className="w-4 h-4 text-[#6FBEE5]" />
-                              <span>Add a remark</span>
-                              {remark && (
-                                <span className="bg-[#6FBEE5]/20 text-[#6FBEE5] text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                  Added
-                                </span>
-                              )}
-                            </div>
-                            {isRemarkOpen ? (
-                              <ChevronUp className="w-4 h-4 text-white/40" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4 text-white/40" />
-                            )}
-                          </button>
-
-                          <AnimatePresence>
-                            {isRemarkOpen && (
-                              <Motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                className="overflow-hidden"
-                              >
-                                <div className="p-4 pt-0 space-y-4">
-                                  <div className="flex flex-wrap gap-2">
-                                    {[
-                                      { id: 'Food & Drink', icon: <Utensils className="w-3 h-3" /> },
-                                      { id: 'Accommodation', icon: <Home className="w-3 h-3" /> },
-                                      { id: 'Grocery', icon: <ShoppingCart className="w-3 h-3" /> },
-                                      { id: 'Shop', icon: <ShoppingBag className="w-3 h-3" /> },
-                                      { id: 'Other', icon: <Pencil className="w-3 h-3" /> }
-                                    ].map((cat) => (
-                                      <button
-                                        key={cat.id}
-                                        onClick={() => {
-                                          setRemarkCategory(cat.id);
-                                          if (cat.id !== 'Other') {
-                                            setRemark(cat.id);
-                                          } else {
-                                            setRemark('');
-                                          }
-                                        }}
-                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${remarkCategory === cat.id
-                                          ? 'bg-[#6FBEE5] border-[#6FBEE5] text-white shadow-[0_0_15px_rgba(111,190,229,0.3)]'
-                                          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white'
-                                          }`}
-                                      >
-                                        {cat.icon}
-                                        {cat.id}
-                                      </button>
-                                    ))}
-                                  </div>
-
-                                  {remarkCategory === 'Other' && (
-                                    <div className="relative">
-                                      <textarea
-                                        value={remark}
-                                        onChange={(e) => {
-                                          if (e.target.value.length <= 50) {
-                                            setRemark(e.target.value);
-                                          }
-                                        }}
-                                        placeholder="Type your remark..."
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-[#6FBEE5]/50 focus:border-[#6FBEE5]/50 transition-all resize-none h-20"
-                                      />
-                                      <div className="absolute bottom-2 right-2 text-[10px] text-white/40 font-mono">
-                                        {remark.length}/50
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </Motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-4 mt-10">
-                          <button
-                            onClick={() => {
-                              setShowSendUI(false);
-                              setRecipient('');
-                              setAmount('');
-                            }}
-                            className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => setShowConfirmSend(true)}
-                            disabled={isSending || (parseFloat(amount) || 0) <= 0 || (parseFloat(amount) || 0) > walletBalance || !recipient.startsWith('0x')}
-                            className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                            <span className="relative z-10 flex items-center justify-center gap-2 text-xl text-white">
-                              Next
-                              <ArrowUpRight className="w-7 h-7 text-white" />
-                            </span>
-                          </button>
-                        </div>
-                        {/* Remark Preview Badge */}
-                        {remark && (
-                          <Motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-4 flex justify-center"
-                          >
-                            <div className="bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 rounded-full px-4 py-1.5 flex items-center gap-2">
-                              {remarkCategory === 'Food & Drink' && <Utensils className="w-3 h-3 text-[#6FBEE5]" />}
-                              {remarkCategory === 'Accommodation' && <Home className="w-3 h-3 text-[#6FBEE5]" />}
-                              {remarkCategory === 'Grocery' && <ShoppingCart className="w-3 h-3 text-[#6FBEE5]" />}
-                              {remarkCategory === 'Shop' && <ShoppingBag className="w-3 h-3 text-[#6FBEE5]" />}
-                              {(remarkCategory === 'Other' || !remarkCategory) && <MessageSquare className="w-3 h-3 text-[#6FBEE5]" />}
-                              <span className="text-xs font-medium text-[#6FBEE5]">{remark}</span>
-                            </div>
-                          </Motion.div>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {/* Confirmation View */}
-                        <div className="space-y-6">
-                          <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
-                            <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                              <span className="text-white font-bold uppercase tracking-wider text-xs">Sending</span>
-                              <span className="text-2xl font-black text-white">{amount} SUI</span>
-                            </div>
-                            <div className="space-y-2">
-                              <span className="text-white font-bold uppercase tracking-wider text-xs block">To Recipient</span>
-                              <span className="text-sm font-mono text-white break-all bg-black/40 p-3 rounded-xl block border border-white/5">
-                                {recipient}
-                              </span>
-                            </div>
-                            <div className="flex justify-between items-center pt-2">
-                              <span className="text-white font-bold uppercase tracking-wider text-xs">Estimated Fee</span>
-                              <span className="text-sm text-[#6FBEE5] font-bold">~0.002 SUI</span>
-                            </div>
-                          </div>
-
-                          <div className="bg-[#6FBEE5]/10 p-4 rounded-xl border border-[#6FBEE5]/20 flex items-start gap-3">
-                            <Zap className="w-5 h-5 text-[#6FBEE5] flex-shrink-0 mt-0.5" />
-                            <p className="text-xs text-[#6FBEE5] leading-relaxed">
-                              Transactions on Sui are permanent. Please double-check the recipient address before confirming.
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-4 mt-10">
-                          <button
-                            onClick={() => setShowConfirmSend(false)}
-                            className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
-                          >
-                            Back
-                          </button>
-                          <button
-                            onClick={handleSend}
-                            disabled={isSending}
-                            className="flex-[2] py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                            <span className="relative z-10 flex items-center justify-center gap-2 text-xl text-white">
-                              {isSending ? (
-                                <>
-                                  <div className="w-7 h-7 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                                  Sending...
-                                </>
-                              ) : (
-                                <>
-                                  Confirm Send
-                                  <SendHorizontal className="w-7 h-7 text-white" />
-                                </>
-                              )}
-                            </span>
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-            </Motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Request UI Modal */}
-      <AnimatePresence>
-        {showNewRequestUI && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <Motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
-              onClick={() => setShowRequestUI(false)}
-            />
-
-            <Motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative z-10 w-full max-w-lg overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-[#0D1117]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl" />
-
-              <div className="relative p-8">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-emerald-400/20 rounded-2xl flex items-center justify-center border border-emerald-400/30">
-                      <ArrowDown className="w-6 h-6 text-emerald-300" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-black text-white tracking-tight">Request SUI</h2>
-                      <p className="text-emerald-300/80 text-sm font-medium">Create a payment link</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowRequestUI(false);
-                      setShowConfirmRequest(false);
-                      setRequestRecipient('');
-                      setRequestAmount('');
-                      setRequestRemark('');
-                      setRequestRemarkCategory('');
-                      setIsRequestRemarkOpen(false);
-                    }}
-                    className="p-2 hover:bg-white/5 rounded-full transition-colors group"
-                  >
-                    <X className="w-6 h-6 text-white/40 group-hover:text-white" />
-                  </button>
-                </div>
-
-                {showSuccess ? (
-                  <Motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-12 space-y-8"
-                  >
-                    <div className="relative">
-                      <Motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", damping: 12, stiffness: 200 }}
-                        className="w-24 h-24 bg-emerald-400/20 rounded-full flex items-center justify-center border-2 border-emerald-400/50 shadow-[0_0_40px_rgba(52,211,153,0.2)]"
-                      >
-                        <Motion.svg
-                          width="48"
-                          height="48"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="text-emerald-400"
-                        >
-                          <Motion.path
-                            d="M20 6L9 17L4 12"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                          />
-                        </Motion.svg>
-                      </Motion.div>
-                      <Motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: [1, 1.5, 1], opacity: [0, 1, 0] }}
-                        transition={{ duration: 1, delay: 0.5 }}
-                        className="absolute inset-0 bg-emerald-400/30 rounded-full -z-10"
-                      />
-                    </div>
-
-                    <div className="text-center space-y-2">
-                      <h3 className="text-3xl font-black text-white tracking-tight">{successMessage}</h3>
-                      <p className="text-emerald-400 font-medium">Request sent successfully</p>
-                    </div>
-
-                    <button
-                      onClick={() => setShowRequestUI(false)}
-                      className="w-full py-4 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] group relative overflow-hidden"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                      <span className="relative z-10 flex items-center justify-center gap-3 text-2xl">
-                        Done
-                        <CheckCircle2 className="w-8 h-8" />
-                      </span>
-                    </button>
-                  </Motion.div>
-                ) : (
-                  <>
-                    {/* Info Box */}
-                    <div className="mb-8 p-5 bg-emerald-400/5 rounded-2xl border border-emerald-400/10 flex items-center gap-4">
-                      <div className="w-10 h-10 bg-emerald-400/20 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Sparkles className="w-5 h-5 text-emerald-300" />
-                      </div>
-                      <p className="text-emerald-300/80 text-sm font-medium">
-                        Requested assets will appear in your wallet once the recipient approves.
-                      </p>
-                    </div>
-
-                    {!showConfirmRequest ? (
-                      <>
-                        {/* Form Fields */}
-                        <div className="space-y-6">
-                          <div className="group">
-                            <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
-                              Request From Address
-                            </label>
-                            <div className="relative">
-                              <input
-                                type="text"
-                                placeholder="0x..."
-                                value={requestRecipient}
-                                onFocus={() => setShowRecentsDropdown(true)}
-                                onBlur={() => setTimeout(() => setShowRecentsDropdown(false), 200)}
-                                onChange={(e) => setRequestRecipient(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 transition-all font-mono text-sm"
-                              />
-
-                              {/* Recent Transactions Dropdown */}
-                              {showRecentsDropdown && recentRecipients.length > 0 && (
-                                <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
-                                  <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recent Recipients</p>
-                                  </div>
-                                  {recentRecipients.map((addr) => (
-                                    <button
-                                      key={addr}
-                                      type="button"
-                                      onClick={() => {
-                                        setRequestRecipient(addr);
-                                        setShowRecentsDropdown(false);
-                                      }}
-                                      className="w-full px-4 py-3 text-left text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2"
-                                    >
-                                      <AtSign className="w-4 h-4 text-gray-300" />
-                                      <span className="font-mono">{truncateAddress(addr)}</span>
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="group">
-                            <label className="block text-white/50 text-xs font-bold uppercase tracking-widest mb-2.5 ml-1">
-                              Amount to Request
-                            </label>
-                            <div className="relative">
-                              <input
-                                type="number"
-                                value={requestAmount}
-                                onChange={(e) => setRequestAmount(e.target.value)}
-                                placeholder="0.00"
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 transition-all text-3xl font-black"
-                              />
-                              <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
-                                <div className="flex flex-col border-r border-white/10 pr-4">
-                                  <button
-                                    onClick={() => setRequestAmount((prev) => (parseFloat(prev || '0') + 0.1).toFixed(2))}
-                                    className="text-white/20 hover:text-emerald-400 transition-colors"
-                                  >
-                                    <ArrowUp className="w-5 h-5" />
-                                  </button>
-                                  <button
-                                    onClick={() => setRequestAmount((prev) => Math.max(0, parseFloat(prev || '0') - 0.1).toFixed(2))}
-                                    className="text-white/20 hover:text-emerald-500 transition-colors"
-                                  >
-                                    <ArrowDown className="w-5 h-5" />
-                                  </button>
-                                </div>
-                                <span className="text-emerald-400 font-black text-xl">SUI</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Collapsible Remark Section */}
-                        <div className="mb-6 mt-6 border border-white/10 rounded-2xl overflow-hidden transition-all bg-white/5">
-                          <button
-                            onClick={() => setIsRequestRemarkOpen(!isRequestRemarkOpen)}
-                            className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
-                          >
-                            <div className="flex items-center gap-2 text-white font-bold text-sm">
-                              <MessageSquare className="w-4 h-4 text-emerald-400" />
-                              <span>Add a remark</span>
-                              {requestRemark && (
-                                <span className="bg-emerald-400/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                  Added
-                                </span>
-                              )}
-                            </div>
-                            {isRequestRemarkOpen ? (
-                              <ChevronUp className="w-4 h-4 text-white/40" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4 text-white/40" />
-                            )}
-                          </button>
-
-                          <AnimatePresence>
-                            {isRequestRemarkOpen && (
-                              <Motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                className="overflow-hidden"
-                              >
-                                <div className="p-4 pt-0 space-y-4">
-                                  <div className="flex flex-wrap gap-2">
-                                    {[
-                                      { id: 'Food & Drink', icon: <Utensils className="w-3 h-3" /> },
-                                      { id: 'Accommodation', icon: <Home className="w-3 h-3" /> },
-                                      { id: 'Grocery', icon: <ShoppingCart className="w-3 h-3" /> },
-                                      { id: 'Shop', icon: <ShoppingBag className="w-3 h-3" /> },
-                                      { id: 'Other', icon: <Pencil className="w-3 h-3" /> }
-                                    ].map((cat) => (
-                                      <button
-                                        key={cat.id}
-                                        onClick={() => {
-                                          setRequestRemarkCategory(cat.id);
-                                          if (cat.id !== 'Other') {
-                                            setRequestRemark(cat.id);
-                                          } else {
-                                            setRequestRemark('');
-                                          }
-                                        }}
-                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${requestRemarkCategory === cat.id
-                                          ? 'bg-emerald-400 border-emerald-400 text-slate-950 shadow-[0_0_15px_rgba(52,211,153,0.3)]'
-                                          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20 hover:text-white'
-                                          }`}
-                                      >
-                                        {cat.icon}
-                                        {cat.id}
-                                      </button>
-                                    ))}
-                                  </div>
-
-                                  {requestRemarkCategory === 'Other' && (
-                                    <div className="relative">
-                                      <textarea
-                                        value={requestRemark}
-                                        onChange={(e) => {
-                                          if (e.target.value.length <= 50) {
-                                            setRequestRemark(e.target.value);
-                                          }
-                                        }}
-                                        placeholder="Type your remark..."
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-emerald-400/50 focus:border-emerald-400/50 transition-all resize-none h-20"
-                                      />
-                                      <div className="absolute bottom-2 right-2 text-[10px] text-white/40 font-mono">
-                                        {requestRemark.length}/50
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </Motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-4 mt-10">
-                          <button
-                            onClick={() => {
-                              setShowRequestUI(false);
-                              setRequestRecipient('');
-                              setRequestAmount('');
-                            }}
-                            className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => setShowConfirmRequest(true)}
-                            disabled={isSending || (parseFloat(requestAmount) || 0) <= 0 || !requestRecipient.startsWith('0x')}
-                            className="flex-[2] py-4 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                            <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
-                              Next
-                              <ArrowUpRight className="w-5 h-5" />
-                            </span>
-                          </button>
-                        </div>
-                        {/* Remark Preview Badge */}
-                        {requestRemark && (
-                          <Motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-4 flex justify-center"
-                          >
-                            <div className="bg-emerald-400/10 border border-emerald-400/20 rounded-full px-4 py-1.5 flex items-center gap-2">
-                              {requestRemarkCategory === 'Food & Drink' && <Utensils className="w-3 h-3 text-emerald-400" />}
-                              {requestRemarkCategory === 'Accommodation' && <Home className="w-3 h-3 text-emerald-400" />}
-                              {requestRemarkCategory === 'Grocery' && <ShoppingCart className="w-3 h-3 text-emerald-400" />}
-                              {requestRemarkCategory === 'Shop' && <ShoppingBag className="w-3 h-3 text-emerald-400" />}
-                              {(requestRemarkCategory === 'Other' || !requestRemarkCategory) && <MessageSquare className="w-3 h-3 text-emerald-400" />}
-                              <span className="text-xs font-medium text-emerald-400">{requestRemark}</span>
-                            </div>
-                          </Motion.div>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {/* Confirmation View */}
-                        <div className="space-y-6">
-                          <div className="p-6 bg-emerald-400/5 rounded-2xl border border-emerald-400/10 space-y-4">
-                            <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                              <span className="text-emerald-300/80 font-bold uppercase tracking-wider text-xs">Requesting</span>
-                              <span className="text-2xl font-black text-white">{requestAmount} SUI</span>
-                            </div>
-                            <div className="space-y-2">
-                              <span className="text-emerald-300/80 font-bold uppercase tracking-wider text-xs block">From Address</span>
-                              <span className="text-sm font-mono text-white break-all bg-black/40 p-3 rounded-xl block border border-white/5">
-                                {requestRecipient}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="bg-emerald-400/10 p-4 rounded-xl border border-emerald-400/20 flex items-start gap-3">
-                            <Sparkles className="w-5 h-5 text-emerald-300 flex-shrink-0 mt-0.5" />
-                            <p className="text-xs text-emerald-300/80 leading-relaxed">
-                              Once confirmed, a payment request will be sent to this address. You will receive the funds after they approve the transaction.
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-4 mt-10">
-                          <button
-                            onClick={() => setShowConfirmRequest(false)}
-                            className="flex-1 py-4 px-6 rounded-2xl text-white/60 font-bold hover:bg-white/5 transition-all outline-none"
-                          >
-                            Back
-                          </button>
-                          <button
-                            onClick={handleRequest}
-                            disabled={isSending}
-                            className="flex-[2] py-4 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-950 font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-                            <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
-                              {isSending ? (
-                                <>
-                                  <div className="w-5 h-5 border-3 border-black/20 border-t-black rounded-full animate-spin" />
-                                  Processing...
-                                </>
-                              ) : (
-                                <>
-                                  Confirm Request
-                                  <ArrowDown className="w-5 h-5" />
-                                </>
-                              )}
-                            </span>
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-            </Motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {/* Frequent Contact card */}
         <div className="md:col-span-2 xl:col-span-2">
@@ -1788,8 +1017,11 @@ const CONTACTS: TransactionContact[] = [
                       variant="ghost"
                       size="sm"
                       className="w-full mt-2 text-[#6FBEE5] hover:text-[#5DAED5] hover:bg-[#6FBEE5]/10"
+                      onClick={() => {
+                        router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this suggestion:\n\nTitle: ${suggestion.title}\n\nRisk: ${suggestion.risk}\n\nDescription: ${suggestion.description}`)}`)
+                      }}
                     >
-                      Learn More
+                      Learn More @ Mindy AI
                     </Button>
                   </div>
                 ))
@@ -1888,10 +1120,13 @@ const CONTACTS: TransactionContact[] = [
 
                 <Button
                   className="w-full bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white py-6 rounded-xl font-black shadow-lg shadow-[#3B82F6]/20 border border-white/10 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={insightModal.close}
+                  onClick={() => {
+                    insightModal.close()
+                    router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this financial insight:\n\n${insight}`)}`)
+                  }}
                   disabled={isInsightLoading}
                 >
-                  Action Plan
+                  Learn More @ Mindy AI
                 </Button>
               </div>
             </Card>

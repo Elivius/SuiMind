@@ -20,6 +20,7 @@ from sub_agents import (
     parser_agent,
     query_agent,
     analyst_agent,
+    transaction_agent,
 )
 
 from guardrails import (
@@ -42,6 +43,8 @@ root_agent = Agent(
     3. PARSING: Delegate raw transaction JSON interpretation to 'parser_agent'.
     4. QUERIES: Delegate requests about recent transactions, gas fee, capital efficiency or idle assets to 'query_agent'.
     5. STRATEGY & SECURITY: Delegate requests for risk assessments, definitions (e.g., "What is a Rug Pull?"), or financial advice to 'analyst_agent'.
+    6. TRANSACTIONS: Delegate requests to send SUI, create payment requests, or reject payment requests to 'transaction_agent'.
+       - Examples: "Send 5 SUI to 0x...", "Request 10 SUI from 0x...", "Reject that payment request"
 
     BRAND VOICE & SAFETY:
     - Language: Use professional, modern 'Sui Blue' terminology.
@@ -58,6 +61,7 @@ root_agent = Agent(
         parser_agent,
         query_agent,
         analyst_agent,
+        transaction_agent,
     ],
     tools=[get_current_time],
     output_key="financial_intelligence_report",
