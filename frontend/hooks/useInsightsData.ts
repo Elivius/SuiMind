@@ -127,7 +127,7 @@ export function useInsightsData(): UseInsightsDataReturn {
         // Sort Frequent Contacts (descending by txCount)
         const frequentContacts = Object.values(contactStats)
             .sort((a, b) => b.txCount - a.txCount)
-            .slice(0, 5); // Return top 5
+            .slice(0, 5); 
 
         // Get this month's and last month's net for comparison
         const thisMonthNetFlow = cashflow.length > 0 ? cashflow[cashflow.length - 1].netFlow : 0

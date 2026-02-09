@@ -38,7 +38,6 @@ export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
 
     const handleStartEdit = (contact: FrequentContact) => {
         setEditingAddress(contact.address);
-        // Prioritize address book name, then contact name (if any), then empty
         setEditName(addressBook[contact.address] || contact.name || "");
     };
 
