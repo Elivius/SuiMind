@@ -88,8 +88,8 @@ export function Header() {
             if (success) {
                 await onTransactionSuccess();
                 refetch();
-                setShowConfirmModal(false);
-                setSelectedPaymentRequest(null);
+                // Don't close modal here - let the success screen show first
+                // Modal will close when user clicks "Done" via onClose callback
             }
         } finally {
             setIsProcessingPayment(false);
