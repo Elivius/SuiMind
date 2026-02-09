@@ -135,6 +135,25 @@ export default function HomePage() {
     localStorage.setItem('recent_recipients', JSON.stringify(updated));
   };
 
+  const handlePin = useCallback(
+    (address: string) => {
+      const trimmed = address.trim()
+      if (!trimmed) return
+      if (pinnedAddresses.some((p) => p.address.toLowerCase() === trimmed.toLowerCase())) return
+
+      const matchedContact = CONTACTS.find(
+        (c) => c.address.toLowerCase() === trimmed.toLowerCase(),
+      )
+      setPinnedAddresses((prev) => [
+        { id: crypto.randomUUID(), address: trimmed, label: matchedContact?.name },
+        ...prev,
+      ])
+      setPinInput("")
+      setShowPinInput(false)
+    },
+    [pinnedAddresses],
+  )
+
   const handleSend = async () => {
     const execution = await transferSui({
       amount,
