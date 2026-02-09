@@ -10,4 +10,5 @@ export * from "./useMindyInsight";
 export * from "./useAddressBook";
 export * from "./useTransactionManager";
 export * from "./useStakingData";
+export * from "./useDryRunTransaction";
 export * from "./useModal";
