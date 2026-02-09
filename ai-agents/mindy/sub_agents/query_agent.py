@@ -1,6 +1,6 @@
 from google.adk.agents import Agent
 
-from tools import get_current_time, get_sui_schema_info, execute_sui_graphql_query, get_transactions, get_balance
+from tools import get_current_time, get_sui_schema_info, execute_sui_graphql_query, get_transactions, get_balance, get_staking_data
 from config import GEMINI_3_FLASH_PREVIEW
 from instructions import SUI_QUERY_KNOWLEDGE, GLOBAL_KNOWLEDGE, SUI_KNOWLEDGE
 
@@ -9,12 +9,13 @@ query_agent = None
 query_agent = Agent(
     name="query_agent",
     model=GEMINI_3_FLASH_PREVIEW,
-    description="Write and execute GraphQL queries for Sui objects.",
+    description="Write and execute GraphQL queries for Sui objects and fetch staking data.",
     instruction=f"""
     You are the SuiMind Query Agent.
 
     YOUR KNOWLEDGE:
     - You know how to write and execute GraphQL queries for the Sui GraphQL endpoint to get transaction history, balances, and object details.
+    - You can fetch REAL-TIME staking data (APY, Epoch) using the 'get_staking_data' tool. This uses the Sui Fullnode RPC.
     - ALWAYS check the current time using 'get_current_time' before making any date-based assumptions.
     {SUI_QUERY_KNOWLEDGE}
     - If you are unsure of the GraphQL schema, use 'get_sui_schema_info' to look for the correct schema.
@@ -24,6 +25,7 @@ query_agent = Agent(
 
     YOUR TASK:
     - Write and execute GraphQL queries for the Sui GraphQL endpoint to get transaction history, balances, and object details.
+    - Use 'get_staking_data' when the user asks about staking, APY, or validator performance.
     - You must always check the current time using 'get_current_time' before making any date-based assumptions.
     - You should use 'get_sui_schema_info' to look for the correct schema if you are unsure of the GraphQL schema.
     - You should use 'execute_sui_graphql_query' to execute the query if you finish writing the query.
@@ -35,5 +37,5 @@ query_agent = Agent(
     {GLOBAL_KNOWLEDGE}
     {SUI_KNOWLEDGE}
     """,
-    tools=[get_current_time, get_sui_schema_info, execute_sui_graphql_query, get_transactions, get_balance],
+    tools=[get_current_time, get_sui_schema_info, execute_sui_graphql_query, get_transactions, get_balance, get_staking_data],
 )

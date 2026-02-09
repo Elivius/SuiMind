@@ -319,3 +319,69 @@ def prepare_reject_request(
         },
         "message": f"I've prepared to reject the payment request. Please confirm in your wallet."
     }
+
+def get_staking_data() -> Dict[str, Any]:
+    """
+    Fetches real-time staking data including the current APY (Annual Percentage Yield) for Sui validators.
+    Uses the Sui Fullnode JSON-RPC endpoint.
+    
+    Returns:
+        dict: A dictionary containing the average APY, current epoch, and a summary message.
+    """
+    import requests
+    # Using Testnet to match the GraphQL endpoint in this file. 
+    # Switch to "https://fullnode.mainnet.sui.io:443" for mainnet.
+    url = "https://fullnode.testnet.sui.io:443"
+    
+    payload = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "suix_getValidatorsApy",
+        "params": []
+    }
+    
+    try:
+        print(f"--- Tool: get_staking_data fetching from {url} ---")
+        response = requests.post(url, json=payload, timeout=10)
+        data = response.json()
+        
+        if "result" in data and "apys" in data["result"]:
+            # Calculate average APY from the latest epoch
+            apys_list = data["result"]["apys"]
+            if not apys_list:
+                return {"error": "No APY data returned from the network."}
+                
+            # apys_list contains objects like {'apy': 0.05, 'address': '0x...'}
+            # APY is usually returned as a float (e.g., 0.05 for 5%) or string
+            valid_apys = []
+            for entry in apys_list:
+                try:
+                    val = float(entry.get('apy', 0))
+                    if val > 0:
+                        valid_apys.append(val)
+                except (ValueError, TypeError):
+                    continue
+            
+            if valid_apys:
+                avg_apy = sum(valid_apys) / len(valid_apys)
+                formatted_apy = avg_apy * 100 # Convert to percentage
+                epoch = data["result"].get("epoch", "Unknown")
+                
+                return {
+                    "average_apy": avg_apy,
+                    "average_apy_percent": f"{formatted_apy:.2f}%",
+                    "epoch": epoch,
+                    "validator_count": len(apys_list),
+                    "message": f"The current average staking APY on Sui (Testnet) is approximately {formatted_apy:.2f}% (Epoch {epoch}).",
+                    "suiscan_link": "https://suiscan.xyz/testnet/validators"
+                }
+            else:
+                return {"message": "Could not calculate average APY from validator data."}
+        elif "error" in data:
+            return {"error": f"RPC Error: {data['error']}"}
+        else:
+            return {"error": "Unexpected response format from Sui RPC."}
+            
+    except Exception as e:
+        print(f"Error executing get_staking_data: {e}")
+        return {"error": str(e)}
