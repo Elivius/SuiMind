@@ -122,9 +122,7 @@ export default function RecentActivityPage() {
         .filter((item: any) => item !== null && item.id); // Ensure processTx succeeded
 
     const filteredTransactionsWithCursor = recentTransactionsWithCursor.filter((tx: any) => {
-        const matchesType = typeFilter === "all" ||
-            (typeFilter === "rebate" && tx.label === "Sui Storage Rebate") ||
-            (typeFilter !== "rebate" && tx.type === typeFilter && tx.label !== "Sui Storage Rebate")
+        const matchesType = typeFilter === "all" || tx.type === typeFilter
 
         // Time filter logic using raw timestamp
         let matchesTime = true
@@ -208,8 +206,7 @@ export default function RecentActivityPage() {
                                         {[
                                             { label: 'All Types', value: 'all' },
                                             { label: 'Send', value: 'send' },
-                                            { label: 'Receive', value: 'receive' },
-                                            { label: 'Rebate', value: 'rebate' }
+                                            { label: 'Receive', value: 'receive' }
                                         ].map((opt) => (
                                             <button
                                                 key={opt.value}
