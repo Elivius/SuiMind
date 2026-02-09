@@ -116,7 +116,6 @@ export function useTransactionManager() {
             const { bytes, signature } = await signTransaction({ transaction: tx });
             const execution = await executeViaGraphQL(bytes, signature);
 
-            playSound('success');
             return execution;
         } catch (e: any) {
             console.error("Transfer Error:", e);
@@ -157,7 +156,6 @@ export function useTransactionManager() {
             const { bytes, signature } = await signTransaction({ transaction: tx });
             const execution = await executeViaGraphQL(bytes, signature);
 
-            playSound('request_success');
             return execution;
         } catch (e: any) {
             console.error("Request failed:", e);
