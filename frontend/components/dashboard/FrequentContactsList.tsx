@@ -1,15 +1,61 @@
 "use client";
 
 import { Card } from "@/components/ui";
-import { ArrowUpRight, ArrowDownLeft, TrendingUp, TrendingDown, MoreHorizontal, Copy, ExternalLink, Pin } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, TrendingUp, TrendingDown, MoreHorizontal, Copy, ExternalLink, Pin, Pencil, Check, X } from "lucide-react";
 import { formatSuiAmount, truncateAddress } from "@/lib/utils";
 import type { FrequentContact } from "@/types/insights";
+import { useState, useRef, useEffect } from "react";
+import { useAddressBook } from "@/hooks";
+import { toast } from "sonner";
 
 interface Props {
     contacts: FrequentContact[];
 }
 
 export function FrequentContactsList({ contacts }: Props) {
+    const { contacts: addressBook, updateContactName } = useAddressBook();
+    const [editingAddress, setEditingAddress] = useState<string | null>(null);
+    const [editName, setEditName] = useState("");
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (editingAddress && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [editingAddress]);
+
+    const handleStartEdit = (contact: FrequentContact) => {
+        setEditingAddress(contact.address);
+        // Prioritize address book name, then contact name (if any), then empty
+        setEditName(addressBook[contact.address] || contact.name || "");
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editingAddress) return;
+
+        try {
+            await updateContactName(editingAddress, editName.trim());
+            toast.success("Contact name updated");
+        } catch (error) {
+            toast.error("Failed to update contact name");
+        } finally {
+            setEditingAddress(null);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingAddress(null);
+        setEditName("");
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSaveEdit();
+        } else if (e.key === 'Escape') {
+            handleCancelEdit();
+        }
+    };
+
     return (
         <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh] flex flex-col">
             <div className="p-6 pb-2 flex-shrink-0">
@@ -35,8 +81,12 @@ export function FrequentContactsList({ contacts }: Props) {
                     </div>
                 ) : (
                     contacts.map((contact, idx) => {
-                        const displayName = contact.name || truncateAddress(contact.address);
-                        const displayInitials = (contact.name?.charAt(0) || contact.address.charAt(2) || "?").toUpperCase();
+                        // Use name from address book if available, otherwise fallback
+                        const savedName = addressBook[contact.address];
+                        const displayName = savedName || contact.name || truncateAddress(contact.address);
+                        const displayInitials = (displayName.charAt(0) || "?").toUpperCase();
+
+                        const isEditing = editingAddress === contact.address;
 
                         return (
                             <div key={contact.address} className="group p-5 rounded-3xl bg-[#111] border border-white/5 hover:border-white/10 transition-all">
@@ -51,10 +101,41 @@ export function FrequentContactsList({ contacts }: Props) {
                                             </div>
                                         </div>
                                         <div>
-                                            <h3 className="text-white font-bold text-lg leading-tight">{displayName}</h3>
+                                            {isEditing ? (
+                                                <div className="flex items-center gap-2">
+                                                    <input
+                                                        ref={inputRef}
+                                                        value={editName}
+                                                        onChange={(e) => setEditName(e.target.value)}
+                                                        onKeyDown={handleKeyDown}
+                                                        className="bg-white/10 border border-white/20 rounded-md px-2 py-1 text-white font-bold text-lg leading-tight focus:outline-none focus:border-white/40 w-[150px]"
+                                                        onBlur={handleSaveEdit}
+                                                    />
+                                                    <button onClick={handleSaveEdit} className="p-1 hover:bg-white/10 rounded-full text-emerald-400">
+                                                        <Check className="w-4 h-4" />
+                                                    </button>
+                                                    <button onClick={handleCancelEdit} className="p-1 hover:bg-white/10 rounded-full text-red-400">
+                                                        <X className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="group/name flex items-center gap-2 cursor-pointer"
+                                                    onDoubleClick={() => handleStartEdit(contact)}
+                                                >
+                                                    <h3 className="text-white font-bold text-lg leading-tight group-hover/name:text-blue-400 transition-colors" title="Double click to rename">
+                                                        {displayName}
+                                                    </h3>
+                                                    <Pencil className="w-3 h-3 text-white/20 opacity-0 group-hover/name:opacity-100 transition-opacity" />
+                                                </div>
+                                            )}
+
                                             <div className="flex items-center gap-2 mt-0.5">
                                                 <span className="text-white/40 text-xs font-mono">{truncateAddress(contact.address)}</span>
-                                                <button className="text-white/20 hover:text-white transition-colors">
+                                                <button className="text-white/20 hover:text-white transition-colors" onClick={() => {
+                                                    navigator.clipboard.writeText(contact.address);
+                                                    toast.success("Address copied");
+                                                }}>
                                                     <Copy className="w-3 h-3" />
                                                 </button>
                                             </div>
