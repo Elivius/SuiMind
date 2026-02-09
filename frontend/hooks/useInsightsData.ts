@@ -28,7 +28,7 @@ export function useInsightsData(): UseInsightsDataReturn {
         let outFlowTransactionCount = 0
 
         const mockNames: Record<string, string> = {
-            "0x1a2b3c4d": "Alex Morgan", // Example (won't match real addresses likely, but good for structure)
+            "0x1a2b3c4d": "Alex Morgan", // This one will display if there is no transaction in the frequent contact ui
         };
 
         const contactStats: Record<string, FrequentContact> = {}
@@ -57,7 +57,7 @@ export function useInsightsData(): UseInsightsDataReturn {
                 expenseCategories[category] = (expenseCategories[category] || 0) + amount
             }
 
-            // --- New Frequent Contacts Logic ---
+            // --- Frequent Contacts Logic ---
             let counterpart = "";
             let isIncoming = false;
 
