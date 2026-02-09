@@ -66,7 +66,7 @@ export function FrequentContactsList({ contacts }: Props) {
                     </div>
                     <button className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all text-sm font-bold flex items-center gap-2">
                         <Pin className="w-4 h-4" />
-                        Pin Address
+                        Add Address
                     </button>
                 </div>
             </div>
@@ -147,46 +147,8 @@ export function FrequentContactsList({ contacts }: Props) {
                                 </div>
 
                                 {/* Stats Grid */}
-                                <div className="grid grid-cols-3 gap-4 border-t border-white/5 pt-4">
-                                    {/* Sent */}
-                                    <div>
-                                        <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Sent</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
-                                                <ArrowUpRight className="w-3 h-3 text-red-400" />
-                                            </div>
-                                            <span className="text-white font-bold text-sm">{formatSuiAmount(contact.sent, 2)} SUI</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Received */}
-                                    <div>
-                                        <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Received</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-                                                <ArrowDownLeft className="w-3 h-3 text-emerald-400" />
-                                            </div>
-                                            <span className="text-white font-bold text-sm">{formatSuiAmount(contact.received, 2)} SUI</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Cashflow */}
-                                    <div>
-                                        <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Cashflow</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${contact.cashflow >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
-                                                {contact.cashflow >= 0 ? (
-                                                    <TrendingUp className="w-3 h-3 text-emerald-400" />
-                                                ) : (
-                                                    <TrendingDown className="w-3 h-3 text-red-400" />
-                                                )}
-                                            </div>
-                                            <span className={`font-bold text-sm ${contact.cashflow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                                                {contact.cashflow > 0 ? '+' : ''}{formatSuiAmount(contact.cashflow, 2)} SUI
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                
+                                
                             </div>
                         )
                     })
