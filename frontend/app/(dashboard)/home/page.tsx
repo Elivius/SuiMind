@@ -70,9 +70,6 @@ export default function HomePage() {
   const handleSend = async (data: { recipient: string; amount: string; remark?: string; remarkCategory?: string }) => {
     const { recipient: sendRecipient, amount: sendAmount, remark: sendRemark, remarkCategory: sendRemarkCategory } = data;
 
-    // DEBUG: Log the remark value received
-    console.log('[DEBUG handleSend] Received data:', { sendRecipient, sendAmount, sendRemark, sendRemarkCategory });
-
     // Use local variables from arguments instead of state
     const execution = await transferSui({
       amount: sendAmount,
@@ -85,9 +82,6 @@ export default function HomePage() {
       const digest = execution?.effects?.transaction?.digest;
       if (digest) {
         try {
-          // DEBUG: Log what we're saving to Firebase
-          console.log('[DEBUG handleSend] Saving to Firebase:', { digest, remark: sendRemark || "No remark" });
-
           await setDoc(doc(db, "transactions", digest), {
             sender: account?.address,
             recipient: sendRecipient,

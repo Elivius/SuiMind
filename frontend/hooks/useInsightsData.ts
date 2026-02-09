@@ -75,11 +75,6 @@ export function useInsightsData(): UseInsightsDataReturn {
 
 
                 const firestoreTx = firestoreTransactions[tx.id]; // tx.id is the digest
-
-                if (!firestoreTx && tx.id) {
-                    console.log('[DEBUG] Available Firestore keys:', Object.keys(firestoreTransactions).slice(0, 5));
-                }
-
                 const remark = firestoreTx?.remark;
                 const categoryFromRemark = firestoreTx?.category; // Some records might have category directly
 
