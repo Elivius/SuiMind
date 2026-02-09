@@ -21,7 +21,7 @@ import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
 import { toast } from "sonner"
 import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
-import { db } from "@/lib/firebase"; 
+import { db } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { HOME_PAGE_INSIGHTS, HOME_PAGE_SUGGESTIONS, getHomeInsightsContextPrompt, getHomeSuggestionsContextPrompt } from "@/lib/prompts";
 import { FrequentContactsList } from "@/components/dashboard/FrequentContactsList";
@@ -371,7 +371,7 @@ export default function HomePage() {
     label?: string
   }
 
- 
+
 
   // ======================================================
 
@@ -472,7 +472,17 @@ export default function HomePage() {
         {/* Frequent Contact card */}
         <div className="md:col-span-2 xl:col-span-2">
           <div className="md:col-span-2 xl:col-span-2">
-            <FrequentContactsList contacts={frequentContacts} />
+            <FrequentContactsList
+              contacts={frequentContacts}
+              onSend={(address) => {
+                setRecipient(address);
+                setShowSendUI(true);
+              }}
+              onRequest={(address) => {
+                setRequestRecipient(address);
+                setShowRequestUI(true);
+              }}
+            />
           </div>
         </div>
 
