@@ -12,7 +12,7 @@ import {
 import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { motion as Motion, AnimatePresence, motion } from "motion/react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager, useInsightsData } from "@/hooks"
+import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager, useInsightsData, useStakingData } from "@/hooks"
 import { SendTransactionModal, RequestTransactionModal, TransactionConfirmModal } from "@/components/transactionModal"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
@@ -39,6 +39,7 @@ export default function HomePage() {
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
   const { data: transactionData, isLoading: isTransactionLoading, refetch: refetchTransactions } = useGetDetailTransactions(20);
   const { frequentContacts } = useInsightsData();
+  const { data: stakingData } = useStakingData();
 
   const onTransactionSuccess = async () => {
     await refetch();
@@ -333,7 +334,8 @@ export default function HomePage() {
       balance: walletBalance,
       totalExpenses,
       expenseCategories,
-      recentActivity: recentTransactions
+      recentActivity: recentTransactions,
+      stakingApy: stakingData?.avgApy
     }));
   };
 
@@ -344,10 +346,11 @@ export default function HomePage() {
         balance: walletBalance,
         totalExpenses,
         expenseCategories,
-        recentActivity: recentTransactions
+        recentActivity: recentTransactions,
+        stakingApy: stakingData?.avgApy
       }));
     }
-  }, [insightModal.isOpen, recentTransactions, insight, isInsightLoading, insightError]); // Added missing deps for correctness
+  }, [insightModal.isOpen, recentTransactions, insight, isInsightLoading, insightError, stakingData]); // Added missing deps for correctness
 
   // ==============  AI Powered Suggestions  ==============  
   const [suggestions, setSuggestions] = useState<any[]>([])
@@ -365,7 +368,8 @@ export default function HomePage() {
       balance: walletBalance,
       totalExpenses,
       expenseCategories,
-      recentActivity: recentTransactions
+      recentActivity: recentTransactions,
+      stakingApy: stakingData?.avgApy
     }));
   };
 
@@ -377,10 +381,11 @@ export default function HomePage() {
         balance: walletBalance,
         totalExpenses,
         expenseCategories,
-        recentActivity: recentTransactions
+        recentActivity: recentTransactions,
+        stakingApy: stakingData?.avgApy
       }));
     }
-  }, [rawSuggestions, isSuggestionsLoading, suggestionsError, recentTransactions]);
+  }, [rawSuggestions, isSuggestionsLoading, suggestionsError, recentTransactions, stakingData]);
 
   // Update suggestions when AI returns data
   useEffect(() => {
