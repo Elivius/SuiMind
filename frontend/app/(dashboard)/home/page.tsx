@@ -89,9 +89,9 @@ export default function HomePage() {
             timestamp: serverTimestamp(),
           });
 
-          // Continue with your success logic
+
           await onTransactionSuccess();
-          // The modal handles its own success state. We just need to clean up data.
+
           setActiveRequestObject(null);
           refetch();
           saveRecipient(sendRecipient);
@@ -100,7 +100,7 @@ export default function HomePage() {
         }
       }
     } else {
-      // This runs if execution was 'false' (transaction failed or cancelled)
+
       console.error("Transaction failed or was cancelled.");
     }
   };
@@ -119,14 +119,13 @@ export default function HomePage() {
       const digest = execution?.effects?.transaction?.digest;
       if (digest) {
         try {
-          // Save to request_remarks collection for cleaner lookup
+
           await setDoc(doc(db, "request_remarks", requestCode), {
             remark: reqRemark || "No remark",
             timestamp: serverTimestamp(),
             category: reqCategory || 'Other'
           });
 
-          // Also save to transactions for record keeping (optional but good for history)
           await setDoc(doc(db, "transactions", digest), {
             sender: account?.address,
             recipient: reqRecipient,
@@ -136,7 +135,6 @@ export default function HomePage() {
             requestCode: requestCode
           });
 
-          // Modal handles success UI
           saveRecipient(reqRecipient);
         } catch (dbError) {
           console.error("Firestore write failed:", dbError);
