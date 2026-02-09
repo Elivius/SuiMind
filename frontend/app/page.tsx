@@ -97,7 +97,7 @@ export default function LandingPage() {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4385f5] via-[#e94335] to-[#fcbc05]"> Cashflow Master
                                     </span>
                                 </h3>
-                                <p className="text-white/80 leading-relaxed font-medium text-sm md:text-base">Take full control of your financial flow by managing your active and passive income with intuitive visual insights into your monthly spending patterns.</p>
+                                <p className="text-white/80 leading-relaxed font-medium">Experience the future of DeFi with AI-powered transaction management, real-time staking insights, and intelligent portfolio analysis on the Sui network.</p>
                             </Card>
                         </FadeReveal>
 
@@ -230,7 +230,7 @@ export default function LandingPage() {
                                                     <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-1">Recent Activity</p>
                                                     <p className="text-white text-sm font-black truncate">15 transactions this week</p>
                                                 </div>
-                                                <div className="text-[#6FBEE5] text-xs font-black bg-[#6FBEE5]/10 px-3 py-1.5 rounded-xl border border-[#6FBEE5]/20 hover:bg-[#6FBEE5]/20 transition-colors cursor-pointer">
+                                                <div className="text-[#6FBEE5] text-xs font-black bg-[#6FBEE5]/10 px-3 py-1.5 rounded-xl border border-[#6FBEE5]/20 hover:bg-[#6FBEE5]/20 transition-colors cursor-default">
                                                     View
                                                 </div>
                                             </Card>

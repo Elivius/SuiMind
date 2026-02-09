@@ -13,9 +13,10 @@ interface Props {
     contacts: FrequentContact[];
     onSend: (address: string) => void;
     onRequest: (address: string) => void;
+    isLoading?: boolean;
 }
 
-export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
+export function FrequentContactsList({ contacts, onSend, onRequest, isLoading = false }: Props) {
     const { contacts: addressBook, pinnedContacts, updateContactName, pinContact, unpinContact } = useAddressBook();
     const [editingAddress, setEditingAddress] = useState<string | null>(null);
     const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
@@ -185,8 +186,22 @@ export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
             </div>
 
             {/* List section */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6 space-y-2">
-                {displayList.length === 0 ? (
+            <div className="flex-1 overflow-hidden px-6 pb-6 space-y-2">
+                {isLoading ? (
+                    // Skeleton Loading
+                    Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="p-4 rounded-2xl border border-white/5 bg-white/[0.02] flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-full bg-white/5 animate-pulse" />
+                                <div className="space-y-2">
+                                    <div className="h-4 w-32 bg-white/5 rounded animate-pulse" />
+                                    <div className="h-3 w-20 bg-white/5 rounded animate-pulse" />
+                                </div>
+                            </div>
+                            <div className="h-4 w-16 bg-white/5 rounded animate-pulse" />
+                        </div>
+                    ))
+                ) : displayList.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center p-10">
                         <div className="w-20 h-20 bg-white/[0.02] border border-white/5 rounded-[2.5rem] flex items-center justify-center mb-6">
                             <Star className="w-10 h-10 text-white/10" />

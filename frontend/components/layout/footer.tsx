@@ -13,7 +13,7 @@ export function Footer() {
                 <span className="text-2xl font-bold tracking-tighter text-white">SuiMind</span>
             </div>
 
-            <p className="text-white/40 text-sm font-medium">© 2026 SuiMind. Built on Sui Network.</p>
+            <p className="text-white/40 text-sm font-medium">© {new Date().getFullYear()} SuiMind. Built on Sui Network by Gemini 3.0.</p>
         </footer>
     )
 }
