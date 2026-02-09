@@ -24,72 +24,7 @@ import { db } from "@/lib/firebase"; // Import your initialized db
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { HOME_PAGE_INSIGHTS, HOME_PAGE_SUGGESTIONS, getHomeInsightsContextPrompt, getHomeSuggestionsContextPrompt } from "@/lib/prompts";
 
-// Frequent contact setup
-  interface TransactionContact {
-  id: string
-  name: string
-  address: string
-  sent: number
-  received: number
-  transactionCount: number
-}
 
-interface PinnedAddress {
-  id: string
-  address: string
-  label?: string
-}
-
-const CONTACTS: TransactionContact[] = [
-  {
-    id: "1",
-    name: "Alex Morgan",
-    address: "0x1a2B3c4D5e6F7890aBcDeF1234567890AbCdEf12",
-    sent: 4.2,
-    received: 8.25,
-    transactionCount: 47,
-  },
-  {
-    id: "2",
-    name: "Samira Patel",
-    address: "0x9876FeDcBa0987654321AbCdEf1234567890FeDc",
-    sent: 6.1,
-    received: 2.22,
-    transactionCount: 34,
-  },
-  {
-    id: "3",
-    name: "Jordan Lee",
-    address: "0xAbCd1234EfGh5678IjKl9012MnOp3456QrSt7890",
-    sent: 2.5,
-    received: 3.28,
-    transactionCount: 28,
-  },
-  {
-    id: "4",
-    name: "Taylor Reed",
-    address: "0xDeAdBeEf0000CaFeBaBe11112222333344445555",
-    sent: 3.21,
-    received: 0.0,
-    transactionCount: 19,
-  },
-  {
-    id: "5",
-    name: "Riley Chen",
-    address: "0xFaCe0fF1Ce2024DeF1aBcD5678EfGh9012IjKlMn",
-    sent: 0.85,
-    received: 2.94,
-    transactionCount: 15,
-  },
-  {
-    id: "6",
-    name: "Casey Brooks",
-    address: "0x1111AaAa2222BbBb3333CcCc4444DdDd5555EeEe",
-    sent: 1.54,
-    received: 1.54,
-    transactionCount: 11,
-  },
-]
 
 export default function HomePage() {
   const router = useRouter()
@@ -118,11 +53,6 @@ export default function HomePage() {
   const [remark, setRemark] = useState('');
   const [isRemarkOpen, setIsRemarkOpen] = useState(false);
   const [remarkCategory, setRemarkCategory] = useState('');
-  const [pinnedAddresses, setPinnedAddresses] = useState<PinnedAddress[]>([])
-  const [pinInput, setPinInput] = useState("")
-  const [showPinInput, setShowPinInput] = useState(false)
-  const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [copiedCard, setCopiedCard] = useState<string | null>(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('recent_recipients');
@@ -134,25 +64,6 @@ export default function HomePage() {
     setRecentRecipients(updated);
     localStorage.setItem('recent_recipients', JSON.stringify(updated));
   };
-
-  const handlePin = useCallback(
-    (address: string) => {
-      const trimmed = address.trim()
-      if (!trimmed) return
-      if (pinnedAddresses.some((p) => p.address.toLowerCase() === trimmed.toLowerCase())) return
-
-      const matchedContact = CONTACTS.find(
-        (c) => c.address.toLowerCase() === trimmed.toLowerCase(),
-      )
-      setPinnedAddresses((prev) => [
-        { id: crypto.randomUUID(), address: trimmed, label: matchedContact?.name },
-        ...prev,
-      ])
-      setPinInput("")
-      setShowPinInput(false)
-    },
-    [pinnedAddresses],
-  )
 
   const handleSend = async () => {
     const execution = await transferSui({
@@ -466,7 +377,72 @@ export default function HomePage() {
     }
   }, [rawSuggestions]);
 
-  
+  // Frequent contact setup
+  interface TransactionContact {
+  id: string
+  name: string
+  address: string
+  sent: number
+  received: number
+  transactionCount: number
+}
+
+interface PinnedAddress {
+  id: string
+  address: string
+  label?: string
+}
+
+const CONTACTS: TransactionContact[] = [
+  {
+    id: "1",
+    name: "Alex Morgan",
+    address: "0x1a2B3c4D5e6F7890aBcDeF1234567890AbCdEf12",
+    sent: 4.2,
+    received: 8.25,
+    transactionCount: 47,
+  },
+  {
+    id: "2",
+    name: "Samira Patel",
+    address: "0x9876FeDcBa0987654321AbCdEf1234567890FeDc",
+    sent: 6.1,
+    received: 2.22,
+    transactionCount: 34,
+  },
+  {
+    id: "3",
+    name: "Jordan Lee",
+    address: "0xAbCd1234EfGh5678IjKl9012MnOp3456QrSt7890",
+    sent: 2.5,
+    received: 3.28,
+    transactionCount: 28,
+  },
+  {
+    id: "4",
+    name: "Taylor Reed",
+    address: "0xDeAdBeEf0000CaFeBaBe11112222333344445555",
+    sent: 3.21,
+    received: 0.0,
+    transactionCount: 19,
+  },
+  {
+    id: "5",
+    name: "Riley Chen",
+    address: "0xFaCe0fF1Ce2024DeF1aBcD5678EfGh9012IjKlMn",
+    sent: 0.85,
+    received: 2.94,
+    transactionCount: 15,
+  },
+  {
+    id: "6",
+    name: "Casey Brooks",
+    address: "0x1111AaAa2222BbBb3333CcCc4444DdDd5555EeEe",
+    sent: 1.54,
+    received: 1.54,
+    transactionCount: 11,
+  },
+]
 
   // ======================================================
 
@@ -1312,8 +1288,8 @@ export default function HomePage() {
         )}
       </AnimatePresence>
       
-      {/* Frequent Contact card */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* Frequent Contact card */}
         <div className="md:col-span-2 xl:col-span-2">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
             <div className="p-6">
