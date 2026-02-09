@@ -1,73 +1,118 @@
-# 📑 Project Specification: SuiMind
+# 🧠 SuiMind: The First Proactive Chat-to-Execute (C2E) Agent on Sui
 
-**Subtitle:** The World’s First Proactive DeFAI Financial Agent  
-**Version:** 2.0 (Integrated Security & Intelligence)  
-**Target Platform:** Sui Network (Mainnet)  
-**Core Engine:** Google Gemini 2.0 Flash + CertiK/AML Security APIs
+![SuiMind Banner](https://img.shields.io/badge/Status-Live_Beta-0070f3) ![Sui](https://img.shields.io/badge/Built_on-Sui-4484f1) ![Gemini](https://img.shields.io/badge/Powered_by-Gemini_3.0-8e7cc3)
 
-## 1. Product Vision & Market Strategy (PM Perspective)
+**SuiMind** is not just a wallet you talk to—it's an agent that *acts* for you. 
 
-### 1.1 The Mission
-To demystify the blockchain by providing a Proactive Financial Co-pilot that transforms complex on-chain "objects" into human-centric intelligence. We are moving from the era of "reading balances" to the era of "Intent-Based Finance."
+Powered by **Google Gemini 3.0** and the **Sui Blockchain**, SuiMind transforms natural language into executed financial intents. From sending assets to analyzing complex on-chain data, SuiMind bridges the gap between human thought and blockchain execution.
 
-### 1.2 The "Sui Opportunity"
-Unlike Ethereum’s account-based model, Sui’s Object-Centric Model allows assets to have rich, on-chain metadata. SuiMind leverages this by using Gemini 2.0 Flash to interpret these objects—tracking their history, parent-child relationships, and value—providing a level of detail generic trackers cannot match.
+---
 
-### 1.3 Strategic Objectives
-*   **Accessibility:** Onboard users via zkLogin (Google/Twitch) so they never see a seed phrase.
-*   **Security:** Reduce wallet drains by 90% through real-time AI simulation and AML screening.
-*   **Capital Efficiency:** Automatically identify idle assets and suggest high-yield shifts in real-time.
+## 🚀 The "Wow" Factor: Why SuiMind?
 
-## 2. Functional Requirements (The "What")
+Traditional wallets are reactive readers. **SuiMind is a proactive executor.**
 
-### 2.1 AI-Powered Semantic Layer
-*   **[FR-1] Semantic Transaction Parsing:**
-    *   *Logic:* Translates raw SuiTransactionBlockResponse into plain language.
-    *   *Example:* "You swapped 100 SUI for 150 USDC on Cetus (Saved $0.50 via optimized routing)."
-*   **[FR-2] Natural Language CFO (Chat):**
-    *   *Requirement:* A chat interface for queries like "How much gas did I spend on NFTs this week?" or "Am I at risk of liquidation on Scallop?"
+### 1. Chat-to-Execute (C2E)
+Most AI wallets are glorified search engines. SuiMind builds and prepares transactions for you in real-time.
+- **You say:** *"Send 10 SUI to Alex for dinner."*
+- **SuiMind acts:** Instantly constructs a `TransferObject` transaction, resolves the address, and presents a "Sign Now" card.
 
-### 2.2 Proactive Agentic & Security Features
-*   **[FR-3] Proactive Risk Guard (Simulation):**
-    *   *Requirement:* A "Dry-Run" simulation showing what leaves and enters the wallet before signing.
-*   **[FR-4] Yield Optimization Engine:**
-    *   *Requirement:* Real-time scanning of Sui protocols (Navi, Scallop, etc.) to alert users of better interest rates.
-*   **[FR-5] High-Risk & AML Screening (The Protection Layer):**
-    *   *Requirement:* Before any transaction, SuiMind must scan the Target Address and Contract using security APIs (e.g., CertiK SkyInsights or Chainalysis).
-    *   *Functionality:* Detect if an address is associated with Money Laundering (AML), known hacks, sanctioned entities, or unverified "Rugpull" contracts.
+### 2. Deep Blockchain Insight (GraphQL-Native)
+Don't just check balances. Ask deep questions.
+- **You say:** *"How much gas did I spend on transactions last week?"*
+- **SuiMind acts:** Dynamically generates complex GraphQL queries to fetch, aggregate, and explain your on-chain history in plain English.
 
-## 3. UI/UX Design Specification (Designer Perspective)
+### 3. Multi-Agent Orchestration
+We don't rely on a single prompt. SuiMind employs a sophisticated **Multi-Agent System** using the Google Agent Development Kit (ADK):
+- **Mindy (Router):** The central orchestrator that routes requests to specialized agents.
+- **Greeting/Farewell Agents:** Handle conversational pleasantries.
+- **Parser Agent:** Decodes user intent from natural language.
+- **Analyst Agent:** Queries live blockchain data and staking APYs.
+- **Query Agent:** Executes GraphQL queries for transactions, balances, and staking data.
+- **Transaction Agent:** Securely constructs transaction payloads (transfers & payment requests).
 
-### 3.1 Design Language: "The Flow"
-The UI moves away from "Bank App" density toward an "Assistant" feel.
-*   **Visual Style:** Glassmorphism—semi-transparent cards with "Sui Blue" (#001B39 to #6FBEE5) gradients.
-*   **Typography:** Plus Jakarta Sans for modern, professional readability.
+---
 
-### 3.2 Key UI Components
-| Component | Interaction Detail |
-| :--- | :--- |
-| **The Universal Command Bar** | A floating central bar for text/voice commands (e.g., "Send 10 SUI to Elivius"). |
-| **The Security Shield** | A 3D animated icon that pulses Red for high AML risk and Green for verified entities. |
-| **The Simulation Overlay** | A bottom-sheet that appears before signing, providing a human translation of the risk. |
+## ✨ Key Features
 
-## 4. Technical Architecture (Developer Perspective)
+### 🗣️ Natural Language Actions
+Manage your assets with the speed of thought.
+- **Send Assets:** "Transfer 50 USDC to 0x..."
+- **Request Payments:** "Create a payment link for 5 SUI from 0x..."
+- **Reject Requests:** "Reject that last payment request."
 
-### 4.1 The Security Data Pipeline
+### 📊 Real-Time Staking Intelligence
+Stop guessing where to stake. SuiMind fetches **live Validator APY data** directly from the Sui network / fullnodes.
+- **Feature:** "What's the current staking APY?" -> Returns real-time validator performance metrics.
 
-$$Intent \rightarrow [Scan: AML/CertiK] \rightarrow [Simulate: Sui RPC] \rightarrow [Reason: Gemini 2.0] \rightarrow UI$$
+### 🎨 Glassmorphic Premium UI
+Built with **Next.js 14**, **Tailwind CSS**, and **Framer Motion**, the interface feels like a modern fintech app, not a crypto tool.
+- **Visuals:** Frosted glass aesthetics, smooth transitions, and responsive data visualization.
+- **Interactivity:** Dynamic "Orb" animations that react to AI thinking states.
 
-*   **Identity:** User logs in via zkLogin.
-*   **Screening:** The middleware calls CertiK SkyInsights API to get a risk score (0-100) for the target address.
-*   **Context Preparation:** Formats the risk score + raw transaction JSON into a "Context Packet."
-*   **Inference:** Gemini 2.0 Flash generates a summary: "Warning: This address is linked to a recent exploit. Signing will likely result in total loss."
+---
 
-### 4.2 Tech Stack
-*   **Frontend:** Next.js (App Router), Tailwind CSS v4, Framer Motion.
-*   **Sui Integration:** @mysten/sui.js for on-chain data.
-*   **AI Engine:** Google Gemini 2.0 Flash (Bidirectional streaming for low latency).
-*   **Security Feeds:** CertiK SkyInsights (Audit/Risk) + AML Bot (Compliance).
+## 🏗️ Technical Architecture
 
-## 5. Why SuiMind is "Outstanding"
-*   **The "Safety Wall":** While other wallets allow you to send money to a scammer, SuiMind stops you by searching CertiK databases automatically.
-*   **Speed of Thought:** Using Gemini 2.0 Flash ensures the "Security Report" is ready in <1 second, fitting perfectly into the transaction flow.
-*   **No Knowledge Barrier:** It feels like using a messaging app, making DeFi accessible to everyone from software engineers to retail beginners.
+SuiMind is a hybrid application combining a powerful Python-based AI backend with a reactive Next.js frontend.
+
+![Agent Architecture](docs/adk.png)
+
+### Backend (The Brain)
+- **Framework:** Python / Google Agent Development Kit (ADK)
+- **Intelligence:** **Gemini 3.0 Flash** (Optimized for low-latency reasoning)
+- **Agents:**
+  - `Mindy` (Router)
+  - `greeting_agent` / `farewell_agent` (Conversational)
+  - `parser_agent` (Intent Extraction)
+  - `analyst_agent` (Data Analysis)
+  - `query_agent` (GraphQL Execution)
+  - `transaction_agent` (Payload Construction)
+
+### Frontend (The Face)
+- **Framework:** Next.js 14 (App Router)
+- **Styling:** Tailwind CSS + Framer Motion
+- **Sui Integration:** `@mysten/sui.js` for signature management and zkLogin.
+
+---
+
+## 🛠️ Getting Started
+
+### Prerequisites
+- Node.js 18+
+- Python 3.10+
+- A Sui Wallet (e.g., Sui Wallet, Ethos)
+
+### Installation
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/Elivius/SuiMind.git
+   cd SuiMind
+   ```
+
+2. **Setup AI Backend**
+   ```bash
+   cd ai-agents
+   python -m venv .venv
+   source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+   ```
+   *Create a `.env` file in `ai-agents/` with your `GOOGLE_API_KEY`.*
+
+3. **Setup Frontend**
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+
+4. **Run the Application**
+   - **Backend:** `python run.py` (Runs on port 8080)
+   - **Frontend:** `npm run dev` (Runs on port 3000)
+
+---
+
+## 🏆 Hackathon Notes
+SuiMind challenges the status quo of "Chatbots in Crypto." By focusing on **Execution (C2E)** and **Live Data fetching**, we provide a glimpse into the future of Agentic Finance on Sui.
+
+*Built with ❤️ for the Gemini 3 Hackathon.*
