@@ -73,10 +73,107 @@ export function useInsightsData(): UseInsightsDataReturn {
                 totalOutFlow += amount
                 outFlowTransactionCount++
 
-                // Because if tx.label === Sent is P2P
-                //So will check first, if not P2P, then tx.label will be used(e.g. Smart Contract Interaction / Sui Storage Rebate)
-                const category = tx.label === "Sent" ? (tx.to || 'Other') : tx.label
-                expenseCategories[category] = (expenseCategories[category] || 0) + amount
+
+                const firestoreTx = firestoreTransactions[tx.id]; // tx.id is the digest
+
+                // DEBUG: Log matching attempt
+                console.log('[DEBUG] Matching tx.id:', tx.id, 'Found in Firestore:', !!firestoreTx);
+                if (!firestoreTx && tx.id) {
+                    console.log('[DEBUG] Available Firestore keys:', Object.keys(firestoreTransactions).slice(0, 5));
+                }
+
+                const remark = firestoreTx?.remark;
+                const categoryFromRemark = firestoreTx?.category; // Some records might have category directly
+
+                // Use Firestore amountSui if available (more accurate for payment requests)
+                // Fall back to blockchain amount if not in Firestore
+                const firestoreAmount = firestoreTx?.amountSui ? Number(firestoreTx.amountSui) : null;
+                const expenseAmount = firestoreAmount ?? amount;
+
+                // DEBUG: Log remark found
+                console.log('[DEBUG] Remark found:', remark, 'Category:', categoryFromRemark, 'FirestoreAmount:', firestoreAmount, 'Using:', expenseAmount);
+
+                let category = "Uncategorized";
+
+                const KNOWN_CATEGORIES = [
+                    "Food & Drink", "Accommodation", "Grocery", "Shop",
+                    "Transportation", "Entertainment", "Healthcare",
+                    "Rent & Utilities", "Education", "Travel", "Salary"
+                ];
+
+                const CATEGORY_KEYWORDS: Record<string, string[]> = {
+                    "Food & Drinks": ["food", "drink", "dining", "meal", "restaurant", "cafe", "coffee", "lunch", "dinner", "breakfast", "bar"],
+                    "Groceries": ["grocery", "groceries", "market", "supermarket", "mart"],
+                    "Shop": ["shop", "store", "buy", "purchase", "shopping", "clothes", "fashion", "mall"],
+                    "Transportation": ["transport", "taxi", "uber", "grab", "bus", "train", "fuel", "gas", "car", "parking", "petrol"],
+                    "Entertainment": ["entertainment", "movie", "cinema", "game", "fun", "subscription", "netflix", "spotify"],
+                    "Healthcare": ["health", "doctor", "hospital", "pharmacy", "medicine", "clinic"],
+                    "Rent & Utilities": ["rent", "utility", "bill", "electric", "water", "internet", "wifi", "phone", "electricity", "telco"],
+                    "Education": ["education", "school", "tuition", "course", "book", "collage", "university", "fees"],
+                    "Travel": ["travel", "flight", "hotel", "vacation", "trip", "ticket", "airline", "accommodation"],
+                    "Salary": ["salary", "wage", "income", "payroll", "bonus"]
+                };
+
+                if (remark) {
+                    const lowerRemark = remark.toLowerCase();
+                    const trimRemark = lowerRemark.trim();
+
+                    // 1. Check exact match first
+                    const exactMatch = KNOWN_CATEGORIES.find(c =>
+                        c.toLowerCase() === trimRemark
+                    );
+
+                    if (exactMatch) {
+                        category = exactMatch;
+                    } else {
+                        // 2. keyword matching
+                        let bestMatch = "";
+                        for (const [catName, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+                            if (keywords.some(k => trimRemark.includes(k))) {
+                                bestMatch = catName;
+                                break;
+                            }
+                        }
+
+                        // 3. Last fallback: check if remark contains category name
+                        if (!bestMatch) {
+                            const partialMatch = KNOWN_CATEGORIES.find(c =>
+                                trimRemark.includes(c.toLowerCase())
+                            );
+                            if (partialMatch) bestMatch = partialMatch;
+                        }
+
+                        if (bestMatch) {
+                            category = bestMatch;
+                        } else if (categoryFromRemark && KNOWN_CATEGORIES.includes(categoryFromRemark)) {
+                            // Firestore category field check
+                            category = categoryFromRemark;
+                        } else {
+                            category = "Other";
+                        }
+                    }
+                } else if (categoryFromRemark && KNOWN_CATEGORIES.includes(categoryFromRemark)) {
+                    category = categoryFromRemark;
+                } else {
+                    // Fallback for non-remarked transactions (e.g. valid P2P without remark)
+                    if (tx.label === "Sent" && tx.to) {
+                        category = "Transfer";
+                    } else {
+                        // Smart Contract Interactions, Storage Rebates, etc.
+                        category = "System";
+                    }
+                }
+
+                // Hide "System" or "Transfer" if we only want to show expenses? 
+                // The user asked for "percentage is food, shop, others". 
+                // Use "Other" for Transfer/System to ensure 100% distribution or filter them out?
+                // Let's map everything else to "Other" if it's a spend to match the user's "Others" request
+                if (category === "Transfer" || category === "System" || category === "Uncategorized") {
+                    category = "Other";
+                }
+
+                expenseCategories[category] = (expenseCategories[category] || 0) + expenseAmount
+                console.log('[DEBUG] Aggregating:', { txId: tx.id, category, blockchainAmount: amount, firestoreAmount: firestoreAmount, usingAmount: expenseAmount, runningTotal: expenseCategories[category] });
             }
 
             // --- Frequent Contacts Logic ---
@@ -149,7 +246,7 @@ export function useInsightsData(): UseInsightsDataReturn {
         // Sort Frequent Contacts (descending by txCount)
         const frequentContacts = Object.values(contactStats)
             .sort((a, b) => b.txCount - a.txCount)
-            .slice(0, 5); 
+            .slice(0, 5);
 
         // Get this month's and last month's net for comparison
         const thisMonthNetFlow = cashflow.length > 0 ? cashflow[cashflow.length - 1].netFlow : 0
@@ -182,7 +279,7 @@ export function useInsightsData(): UseInsightsDataReturn {
                 outFlowTransactionCount
             }
         }
-    }, [transactionData, account?.address])
+    }, [transactionData, account?.address, firestoreTransactions])
 
     return { cashflowData, expensesData, frequentContacts, totals, isLoading }
 }
