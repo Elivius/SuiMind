@@ -268,7 +268,7 @@ export default function RecentActivityPage() {
                                                     <p className={`font-semibold ${tx.type === "receive" ? "text-green-500" :
                                                         tx.type === "send" ? "text-red-500" : "text-blue-500"
                                                         }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
-                                                    <p className="text-xs text-white">{tx.usd}</p>
+
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-white">
                                                     <div className="flex flex-col gap-0.5">
@@ -379,7 +379,7 @@ export default function RecentActivityPage() {
                                                 <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" :
                                                     tx.type === "send" ? "text-red-500" : "text-blue-500"
                                                     }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
-                                                <p className="text-[10px] text-white/50">{tx.usd}</p>
+
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-2">
