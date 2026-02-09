@@ -131,7 +131,7 @@ export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
             <div className="p-6 pb-2 flex-shrink-0">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h2 className="text-2xl font-black text-white tracking-tight">Favourate Contacts</h2>
+                        <h2 className="text-2xl font-black text-white tracking-tight">Frequent Contacts</h2>
                         <p className="text-white/40 text-sm font-medium">Frequent & Pinned</p>
                     </div>
 
@@ -241,7 +241,11 @@ export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
                                                     <button onClick={handleSaveEdit} className="p-1 hover:bg-white/10 rounded-full text-emerald-400">
                                                         <Check className="w-4 h-4" />
                                                     </button>
-                                                    <button onClick={handleCancelEdit} className="p-1 hover:bg-white/10 rounded-full text-red-400">
+                                                    <button
+                                                        onMouseDown={(e) => e.preventDefault()}
+                                                        onClick={handleCancelEdit}
+                                                        className="p-1 hover:bg-white/10 rounded-full text-red-400"
+                                                    >
                                                         <X className="w-4 h-4" />
                                                     </button>
                                                 </div>
