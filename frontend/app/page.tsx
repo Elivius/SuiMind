@@ -199,8 +199,8 @@ export default function LandingPage() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-[#6FBEE5] group-hover:border-[#6FBEE5] transition-all group-hover:rotate-45">
-                                                        <ArrowUpRight className="w-5 h-5 text-white/50 group-hover:text-white" />
+                                                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-gradient-to-r group-hover:from-[#3B82F6] group-hover:to-[#9333EA] group-hover:border-white/20 transition-all duration-300 group-hover:rotate-45 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]">
+                                                        <ArrowUpRight className="w-5 h-5 text-white/50 group-hover:text-white transition-colors" />
                                                     </div>
                                                 </div>
                                                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
