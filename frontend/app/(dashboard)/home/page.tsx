@@ -118,6 +118,11 @@ export default function HomePage() {
   const [remark, setRemark] = useState('');
   const [isRemarkOpen, setIsRemarkOpen] = useState(false);
   const [remarkCategory, setRemarkCategory] = useState('');
+  const [pinnedAddresses, setPinnedAddresses] = useState<PinnedAddress[]>([])
+  const [pinInput, setPinInput] = useState("")
+  const [showPinInput, setShowPinInput] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [copiedCard, setCopiedCard] = useState<string | null>(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('recent_recipients');
