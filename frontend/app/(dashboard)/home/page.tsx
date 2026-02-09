@@ -560,7 +560,7 @@ export default function HomePage() {
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {/* Frequent Contact card */}
         <div className="md:col-span-2 xl:col-span-2">
           <div className="md:col-span-2 xl:col-span-2">
@@ -579,7 +579,7 @@ export default function HomePage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="xl:col-span-2">
+        <div className="xl:col-span-1">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
             <div className="p-6 h-full flex flex-col">
               <Button
@@ -688,7 +688,7 @@ export default function HomePage() {
         </div>
 
         {/* Mindy AI */}
-        <div className="xl:col-span-3">
+        <div className="xl:col-span-1">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden lg:h-[70vh]">
             <div className="p-4 h-full flex flex-col">
               <div className="flex items-center justify-between mb-4">
