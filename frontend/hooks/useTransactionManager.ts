@@ -9,11 +9,9 @@ Use to execute transactions:
 import { useState } from "react";
 import { useSignTransaction, useCurrentAccount } from "@mysten/dapp-kit";
 import { graphql } from '@mysten/sui/graphql/schemas/latest';
-import { Transaction } from '@mysten/sui/transactions';
 import { toast } from "sonner";
-import { PACKAGE_ID } from "@/lib/config";
-import { playSound } from "@/lib/sound-effects";
 import { gqlClient } from "@/lib/sui-client";
+import { buildTransferTx, buildCreatePaymentRequestTx, buildRejectRequestTx, buildDeleteNotificationTx } from "@/lib/tx-builders";
 
 const EXECUTE_TRANSACTION = graphql(`
   mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
@@ -99,19 +97,13 @@ export function useTransactionManager() {
 
         setIsSending(true);
         try {
-            const tx = new Transaction();
             const amountInMist = Math.floor(val * 1_000_000_000);
-
-            const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
-            tx.transferObjects([coin], recipient);
-            tx.setSender(account.address);
-
-            if (paymentRequestId) {
-                tx.moveCall({
-                    target: `${PACKAGE_ID}::request::settle_payment_request`,
-                    arguments: [tx.object(paymentRequestId)],
-                });
-            }
+            const tx = buildTransferTx({
+                sender: account.address,
+                recipient,
+                amountMist: amountInMist,
+                paymentRequestId,
+            });
 
             const { bytes, signature } = await signTransaction({ transaction: tx });
             const execution = await executeViaGraphQL(bytes, signature);
@@ -136,21 +128,16 @@ export function useTransactionManager() {
 
         setIsSending(true);
         try {
-            const tx = new Transaction();
-            const MODULE_NAME = "request";
-            const FUNCTION_NAME = "create_payment_request";
             const amountInMist = Math.floor(parseFloat(amount) * 1_000_000_000);
             const expirationTimestamp = Date.now() + (24 * 60 * 60 * 1000);
             const requestCode = code || "REQ-ABCD-" + Date.now();
 
-            tx.moveCall({
-                target: `${PACKAGE_ID}::${MODULE_NAME}::${FUNCTION_NAME}`,
-                arguments: [
-                    tx.pure.address(recipient),
-                    tx.pure.u64(amountInMist),
-                    tx.pure.string(requestCode),
-                    tx.pure.u64(expirationTimestamp),
-                ],
+            const tx = buildCreatePaymentRequestTx({
+                sender: account.address,
+                recipient,
+                amountMist: amountInMist,
+                code: requestCode,
+                expirationTimestamp,
             });
 
             const { bytes, signature } = await signTransaction({ transaction: tx });
@@ -175,11 +162,7 @@ export function useTransactionManager() {
 
         setIsSending(true);
         try {
-            const tx = new Transaction();
-            tx.moveCall({
-                target: `${PACKAGE_ID}::request::reject_request`,
-                arguments: [tx.object(requestId)],
-            });
+            const tx = buildRejectRequestTx({ requestId });
 
             const { bytes, signature } = await signTransaction({ transaction: tx });
             await executeViaGraphQL(bytes, signature);
@@ -201,13 +184,7 @@ export function useTransactionManager() {
 
         setIsSending(true);
         try {
-            const tx = new Transaction();
-            const func = type === 'paid' ? 'delete_paid' : 'delete_reject';
-
-            tx.moveCall({
-                target: `${PACKAGE_ID}::request::${func}`,
-                arguments: [tx.object(objectId)],
-            });
+            const tx = buildDeleteNotificationTx({ objectId, type });
 
             const { bytes, signature } = await signTransaction({ transaction: tx });
             await executeViaGraphQL(bytes, signature);

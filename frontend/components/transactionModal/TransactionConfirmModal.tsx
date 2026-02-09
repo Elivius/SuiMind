@@ -8,9 +8,10 @@
 import { motion as Motion, AnimatePresence } from "motion/react";
 import {
     X, SendHorizontal, Zap, CheckCircle2, Wallet,
-    ArrowDown, Bot, Sparkles, OctagonAlert
+    ArrowDown, Bot, Sparkles, OctagonAlert, Loader2
 } from "lucide-react";
 import { MindyAILogo } from "../icons";
+import { useDryRunTransaction } from "@/hooks";
 
 // Transaction types
 export type TransactionType = 'TRANSFER_SUI' | 'CREATE_PAYMENT_REQUEST' | 'REJECT_PAYMENT_REQUEST';
@@ -53,6 +54,9 @@ export function TransactionConfirmModal({
     const amount = typeof details.amount === 'string' ? parseFloat(details.amount) : details.amount;
     const isTransfer = details.type === 'TRANSFER_SUI';
     const isPaymentRequest = details.type === 'CREATE_PAYMENT_REQUEST';
+
+    // Dry run to get estimated gas
+    const { data: dryRunResult, isLoading: isDryRunLoading } = useDryRunTransaction({ details });
 
     // Theme colors & configuration
     const accentColor = isTransfer ? '#6FBEE5' : isPaymentRequest ? '#34d399' : '#f87171';
@@ -228,7 +232,18 @@ export function TransactionConfirmModal({
                                     {isTransfer && (
                                         <div className="flex justify-between items-center pt-2">
                                             <span className="text-white font-bold uppercase tracking-wider text-xs">Estimated Fee</span>
-                                            <span className="text-sm text-[#6FBEE5] font-bold">~0.002 SUI</span>
+                                            {isDryRunLoading ? (
+                                                <span className="flex items-center gap-1.5 text-sm text-[#6FBEE5]/70">
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                    Calculating...
+                                                </span>
+                                            ) : dryRunResult ? (
+                                                <span className="text-sm text-[#6FBEE5] font-bold">
+                                                    ~{dryRunResult.estimatedGasSui.toFixed(6)} SUI
+                                                </span>
+                                            ) : (
+                                                <span className="text-sm text-[#6FBEE5] font-bold">~0.002 SUI</span>
+                                            )}
                                         </div>
                                     )}
                                 </div>
