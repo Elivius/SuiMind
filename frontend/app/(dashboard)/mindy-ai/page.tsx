@@ -387,7 +387,6 @@ export default function MindyAIPage() {
                 <TransactionConfirmModal
                     isOpen={true}
                     details={transactionIntent}
-                    // message={transactionMessage} // TransactionConfirmModal does not take 'message', it takes 'aiMessage'
                     aiMessage={transactionMessage}
                     walletBalance={walletBalance}
                     isSending={isSending}
