@@ -51,7 +51,7 @@ export default function LandingPage() {
                     <FadeReveal delay={100} distance={20}>
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] text-xs font-bold uppercase tracking-widest mb-8">
                             <Bot className="w-4 h-4" />
-                            Empowering Sui Financial with Gemini 3.0
+                            Empowering Sui Financial with AI
                         </div>
                     </FadeReveal>
 
