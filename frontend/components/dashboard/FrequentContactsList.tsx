@@ -10,11 +10,14 @@ import { toast } from "sonner";
 
 interface Props {
     contacts: FrequentContact[];
+    onSend: (address: string) => void;
+    onRequest: (address: string) => void;
 }
 
-export function FrequentContactsList({ contacts }: Props) {
+export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
     const { contacts: addressBook, pinnedContacts, updateContactName, pinContact, unpinContact } = useAddressBook();
     const [editingAddress, setEditingAddress] = useState<string | null>(null);
+    const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
     const [editName, setEditName] = useState("");
     const [isAddingMode, setIsAddingMode] = useState(false);
     const [newPinAddress, setNewPinAddress] = useState("");
@@ -178,14 +181,44 @@ export function FrequentContactsList({ contacts }: Props) {
                         const displayInitials = (displayName.charAt(0) || "?").toUpperCase();
 
                         const isEditing = editingAddress === contact.address;
-                        // const isPinned = (contact as any).isPinned; // Type assertion or updated interface needed ideally
                         const isPinned = pinnedContacts?.includes(contact.address);
+                        const isSelected = selectedAddress === contact.address;
 
                         return (
-                            <div key={contact.address} className="group p-5 rounded-3xl bg-[#111] border border-white/5 hover:border-white/10 transition-all relative">
+                            <div
+                                key={contact.address}
+                                className={`group p-5 rounded-3xl bg-[#111] border transition-all relative overflow-hidden
+                                    ${isSelected ? 'border-[#6FBEE5] bg-[#1a1a1a]' : 'border-white/5 hover:border-white/10'}
+                                `}
+                                onClick={() => !isEditing && setSelectedAddress(contact.address)}
+                            >
                                 {isPinned && (
-                                    <div className="absolute top-3 right-3 text-[#6FBEE5] opacity-100 transition-opacity">
+                                    <div className="absolute top-3 right-3 text-[#6FBEE5] opacity-100 transition-opacity z-10">
                                         <Pin className="w-4 h-4 fill-current rotate-45" />
+                                    </div>
+                                )}
+
+                                {/* Interaction Overlay */}
+                                {isSelected && (
+                                    <div className="absolute inset-0 z-20 bg-[#111]/90 backdrop-blur-sm flex items-center justify-center gap-3 animate-in fade-in duration-200">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onSend(contact.address); setSelectedAddress(null); }}
+                                            className="px-4 py-2 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-transform hover:scale-105"
+                                        >
+                                            <ArrowUpRight className="w-4 h-4" /> Send
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onRequest(contact.address); setSelectedAddress(null); }}
+                                            className="px-4 py-2 bg-[#34D399] hover:bg-[#2BBF88] text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-transform hover:scale-105"
+                                        >
+                                            <ArrowDownLeft className="w-4 h-4" /> Request
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setSelectedAddress(null); }}
+                                            className="p-2 hover:bg-white/10 rounded-full text-white/60 hover:text-white transition-colors absolute top-2 right-2"
+                                        >
+                                            <X className="w-5 h-5" />
+                                        </button>
                                     </div>
                                 )}
 
@@ -198,7 +231,7 @@ export function FrequentContactsList({ contacts }: Props) {
                                         </div>
                                         <div>
                                             {isEditing ? (
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                                                     <input
                                                         ref={inputRef}
                                                         value={editName}
@@ -216,8 +249,8 @@ export function FrequentContactsList({ contacts }: Props) {
                                                 </div>
                                             ) : (
                                                 <div
-                                                    className="group/name flex items-center gap-2 cursor-pointer"
-                                                    onDoubleClick={() => handleStartEdit(contact)}
+                                                    className="group/name flex items-center gap-2 cursor-pointer relative z-10"
+                                                    onDoubleClick={(e) => { e.stopPropagation(); handleStartEdit(contact); }}
                                                 >
                                                     <h3 className="text-white font-bold text-lg leading-tight group-hover/name:text-blue-400 transition-colors" title="Double click to rename">
                                                         {displayName}
@@ -226,9 +259,10 @@ export function FrequentContactsList({ contacts }: Props) {
                                                 </div>
                                             )}
 
-                                            <div className="flex items-center gap-2 mt-0.5">
+                                            <div className="flex items-center gap-2 mt-0.5 relative z-10">
                                                 <span className="text-white/40 text-xs font-mono">{truncateAddress(contact.address)}</span>
-                                                <button className="text-white/20 hover:text-white transition-colors" onClick={() => {
+                                                <button className="text-white/20 hover:text-white transition-colors" onClick={(e) => {
+                                                    e.stopPropagation();
                                                     navigator.clipboard.writeText(contact.address);
                                                     toast.success("Address copied");
                                                 }}>
@@ -237,11 +271,11 @@ export function FrequentContactsList({ contacts }: Props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-end pt-1 pr-6">
+                                    <div className="flex flex-col items-end pt-1 pr-6 relative z-10">
                                         {/* Unpin button (only visible on hover for pinned items) */}
                                         {isPinned && (
                                             <button
-                                                onClick={() => handleUnpin(contact.address)}
+                                                onClick={(e) => { e.stopPropagation(); handleUnpin(contact.address); }}
                                                 className="text-white/20 hover:text-red-400 transition-colors p-1"
                                                 title="Unpin contact"
                                             >
@@ -250,7 +284,7 @@ export function FrequentContactsList({ contacts }: Props) {
                                         )}
                                         {!isPinned && (
                                             <button
-                                                onClick={() => pinContact(contact.address)}
+                                                onClick={(e) => { e.stopPropagation(); pinContact(contact.address); }}
                                                 className="text-white/10 hover:text-[#6FBEE5] transition-colors p-1 opacity-0 group-hover:opacity-100"
                                                 title="Pin contact"
                                             >
