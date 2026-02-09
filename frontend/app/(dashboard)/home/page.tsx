@@ -377,6 +377,73 @@ export default function HomePage() {
     }
   }, [rawSuggestions]);
 
+  // Frequent contact setup
+  interface TransactionContact {
+  id: string
+  name: string
+  address: string
+  sent: number
+  received: number
+  transactionCount: number
+}
+
+interface PinnedAddress {
+  id: string
+  address: string
+  label?: string
+}
+
+const CONTACTS: TransactionContact[] = [
+  {
+    id: "1",
+    name: "Alex Morgan",
+    address: "0x1a2B3c4D5e6F7890aBcDeF1234567890AbCdEf12",
+    sent: 4.2,
+    received: 8.25,
+    transactionCount: 47,
+  },
+  {
+    id: "2",
+    name: "Samira Patel",
+    address: "0x9876FeDcBa0987654321AbCdEf1234567890FeDc",
+    sent: 6.1,
+    received: 2.22,
+    transactionCount: 34,
+  },
+  {
+    id: "3",
+    name: "Jordan Lee",
+    address: "0xAbCd1234EfGh5678IjKl9012MnOp3456QrSt7890",
+    sent: 2.5,
+    received: 3.28,
+    transactionCount: 28,
+  },
+  {
+    id: "4",
+    name: "Taylor Reed",
+    address: "0xDeAdBeEf0000CaFeBaBe11112222333344445555",
+    sent: 3.21,
+    received: 0.0,
+    transactionCount: 19,
+  },
+  {
+    id: "5",
+    name: "Riley Chen",
+    address: "0xFaCe0fF1Ce2024DeF1aBcD5678EfGh9012IjKlMn",
+    sent: 0.85,
+    received: 2.94,
+    transactionCount: 15,
+  },
+  {
+    id: "6",
+    name: "Casey Brooks",
+    address: "0x1111AaAa2222BbBb3333CcCc4444DdDd5555EeEe",
+    sent: 1.54,
+    received: 1.54,
+    transactionCount: 11,
+  },
+]
+
   // ======================================================
 
   return (
