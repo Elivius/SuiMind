@@ -3,13 +3,14 @@
 import { Button, Card, Skeleton, CopyAddress } from "@/components/ui"
 import { ArrowUpRight, ArrowDownLeft, Zap, ChevronDown, Repeat, Sparkles, TrendingUp, CheckCircle2, Filter, Clock, Check, Bot, Users, Square, Trash2, Info, HelpingHand } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
-import { useGetDetailTransactions, useMindyAgent } from "@/hooks"
+import { useGetDetailTransactions, useMindyAgent, useTransactionManager, useGetBalances } from "@/hooks"
 import { useCurrentAccount } from "@mysten/dapp-kit"
-import { processTx, formatSuiAmount, truncateAddress } from "@/lib/utils"
+import { processTx, formatSuiAmount, truncateAddress, mistToSui } from "@/lib/utils"
 import { MindyAILogo } from "@/components/icons"
 import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { SendTransactionModal, RequestTransactionModal, TransactionConfirmModal } from "@/components/transactionModal"
 
 export default function RecentActivityPage() {
     const itemsPerPage = 10
@@ -24,8 +25,60 @@ export default function RecentActivityPage() {
     const [typeFilter, setTypeFilter] = useState("all")
     const [timeFilter, setTimeFilter] = useState("all")
     const [mindyInput, setMindyInput] = useState("")
-    const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
+    const {
+        messages: mindyMessages,
+        isLoading: isMindyLoading,
+        sendMessage: sendMindyMessage,
+        startSession: startMindySession,
+        pendingTransactionIntent,
+        clearTransactionIntent
+    } = useMindyAgent()
     const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
+
+    // ========= For Chat to Transaction (C2T) =========
+    // Transaction Manager
+    const { data: balanceData } = useGetBalances()
+    const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0
+    const { transferSui, createPaymentRequest, rejectRequest, isSending } = useTransactionManager()
+
+    // Derive transaction intent state
+    const hasTransactionIntent = !!pendingTransactionIntent?.transaction_intent;
+    const transactionIntent = pendingTransactionIntent?.transaction_intent;
+    const transactionMessage = pendingTransactionIntent?.message || "Mindy AI wants to execute a transaction.";
+
+    // Handle confirm transaction from modal
+    const handleConfirmTransaction = async (data?: { recipient: string; amount: string }) => {
+        if (!transactionIntent) return;
+
+        let success = false;
+
+        // Use data from modal if available (user might have edited it), otherwise fallback to intent data
+        const recipient = data?.recipient || transactionIntent.recipient!;
+        const amount = data?.amount || transactionIntent.amount?.toString() || '0';
+
+        switch (transactionIntent.type) {
+            case 'TRANSFER_SUI':
+                success = !!(await transferSui({
+                    amount,
+                    recipient,
+                    walletBalance: walletBalance
+                }));
+                break;
+            case 'CREATE_PAYMENT_REQUEST':
+                success = !!(await createPaymentRequest({
+                    amount,
+                    recipient,
+                    code: transactionIntent.request_code
+                }));
+                break;
+            case 'REJECT_PAYMENT_REQUEST':
+                success = await rejectRequest(transactionIntent.request_id!);
+                break;
+        }
+
+        // Don't clear intent here - let the modal show success screen first
+        // Modal will close via onClose callback when user clicks "Done"
+    };
 
     // Scroll to bottom when new Mindy messages arrive
     useEffect(() => {
@@ -261,14 +314,14 @@ export default function RecentActivityPage() {
                                                                     tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" /> :
                                                                         <Repeat className="w-5 h-5 text-white stroke-[3px]" />}
                                                         </div>
-                                                        <span className="capitalize font-medium text-white">{tx.type}</span>
+                                                        <span className="capitalize font-medium text-white">{tx.label === "Sui Storage Rebate" ? "rebate" : tx.type}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <p className={`font-semibold ${tx.type === "receive" ? "text-green-500" :
                                                         tx.type === "send" ? "text-red-500" : "text-blue-500"
                                                         }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
-                                                    <p className="text-xs text-white">{tx.usd}</p>
+
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-white">
                                                     <div className="flex flex-col gap-0.5">
@@ -371,7 +424,7 @@ export default function RecentActivityPage() {
                                                                 <Repeat className="w-4 h-4 text-white stroke-[3px]" />}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
+                                                    <p className="text-sm font-semibold text-white capitalize">{tx.label === "Sui Storage Rebate" ? "rebate" : tx.type}</p>
                                                     <p className="text-[10px] text-white/50">{tx.time}</p>
                                                 </div>
                                             </div>
@@ -379,7 +432,7 @@ export default function RecentActivityPage() {
                                                 <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" :
                                                     tx.type === "send" ? "text-red-500" : "text-blue-500"
                                                     }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
-                                                <p className="text-[10px] text-white/50">{tx.usd}</p>
+
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-2">
@@ -646,6 +699,48 @@ export default function RecentActivityPage() {
                     </Card>
                 </div>
             </div>
+            {/* AI Transaction Modals */}
+            {hasTransactionIntent && transactionIntent?.type === 'TRANSFER_SUI' && (
+                <SendTransactionModal
+                    isOpen={true}
+                    onClose={clearTransactionIntent}
+                    walletBalance={walletBalance}
+                    isSending={isSending}
+                    onConfirm={handleConfirmTransaction}
+                    initialRecipient={transactionIntent.recipient}
+                    initialAmount={transactionIntent.amount?.toString()}
+                    initialRemark={transactionIntent.remark}
+                    skipToConfirm={true}
+                    aiMessage={transactionMessage}
+                />
+            )}
+
+            {hasTransactionIntent && transactionIntent?.type === 'CREATE_PAYMENT_REQUEST' && (
+                <RequestTransactionModal
+                    isOpen={true}
+                    onClose={clearTransactionIntent}
+                    isSending={isSending}
+                    onConfirm={handleConfirmTransaction}
+                    initialRecipient={transactionIntent.recipient}
+                    initialAmount={transactionIntent.amount?.toString()}
+                    initialRemark={transactionIntent.remark}
+                    skipToConfirm={true}
+                    aiMessage={transactionMessage}
+                />
+            )}
+
+            {hasTransactionIntent && transactionIntent?.type === 'REJECT_PAYMENT_REQUEST' && (
+                <TransactionConfirmModal
+                    isOpen={true}
+                    details={transactionIntent}
+                    aiMessage={transactionMessage}
+                    walletBalance={walletBalance}
+                    isSending={isSending}
+                    onConfirm={() => handleConfirmTransaction()}
+                    onCancel={clearTransactionIntent}
+                    showAiBadge={!!transactionMessage}
+                />
+            )}
         </div>
     )
 }

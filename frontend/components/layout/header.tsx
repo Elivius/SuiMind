@@ -99,6 +99,7 @@ export function Header() {
     const handleReject = async (id: string) => {
         const success = await rejectRequest(id);
         if (success) {
+            playSound('rejected');
             await onTransactionSuccess();
             refetch();
             setSelectedRequestId(null);
@@ -233,8 +234,8 @@ export function Header() {
                                                                                     Request from {truncateAddress(req.requester)}
                                                                                 </p>
                                                                                 {req.remark && req.remark !== 'No remark' && (
-                                                                                    <p className="text-xs text-white/50 mb-1 italic">
-                                                                                        {'\"'}{req.remark}{'\"'}
+                                                                                    <p className="text-s text-white mb-1 italic">
+                                                                                        <span className="text-white not-italic">Category:</span>{'\"'}{req.remark}{'\"'}
                                                                                     </p>
                                                                                 )}
                                                                                 <p className="text-xl font-black text-white tracking-tight">
@@ -311,7 +312,7 @@ export function Header() {
                                                                 className="px-6 py-4 hover:bg-emerald-500/[0.02] flex items-center justify-between group"
                                                             >
                                                                 <div className="flex-1">
-                                                                    <p className="text-xs text-white/50 font-medium mb-1">
+                                                                    <p className="text-xs text-white font-medium mb-1">
                                                                         {truncateAddress(noti.paid_by)} paid you
                                                                     </p>
                                                                     <p className="text-lg font-black text-emerald-400">
@@ -342,8 +343,8 @@ export function Header() {
                                                                 className="px-6 py-4 hover:bg-red-500/[0.02] flex items-center justify-between group"
                                                             >
                                                                 <div className="flex-1">
-                                                                    <p className="text-xs text-white/50 font-medium mb-1">
-                                                                        Request to {truncateAddress(rej.rejected_by)} was declined
+                                                                    <p className="text-xs text-white font-medium mb-1">
+                                                                        Request to {truncateAddress(rej.rejected_by)} was <span className="text-red-400 font-bold">declined</span>
                                                                     </p>
                                                                     <div className="flex items-center gap-3">
                                                                         <p className="text-lg font-black text-white/20 line-through tracking-tight">
@@ -398,7 +399,7 @@ export function Header() {
                 initialAmount={selectedPaymentRequest?.amountSui?.toString() || ''}
                 initialRemark={selectedPaymentRequest?.remark !== 'No remark' ? selectedPaymentRequest?.remark : ''}
                 skipToConfirm={true}
-                aiMessage={selectedPaymentRequest ? `Fulfilling payment request${selectedPaymentRequest.remark && selectedPaymentRequest.remark !== 'No remark' ? `: ${selectedPaymentRequest.remark}` : ''}` : undefined}
+                manualMessage={selectedPaymentRequest ? `Fulfilling payment request${selectedPaymentRequest.remark && selectedPaymentRequest.remark !== 'No remark' ? `: ${selectedPaymentRequest.remark}` : ''}` : undefined}
                 showAiBadge={false}
             />
         </>

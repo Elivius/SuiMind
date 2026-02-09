@@ -8,7 +8,7 @@
 import { motion as Motion, AnimatePresence } from "motion/react";
 import {
     X, SendHorizontal, Zap, CheckCircle2, Wallet,
-    ArrowDown, Bot, Sparkles
+    ArrowDown, Bot, Sparkles, OctagonAlert
 } from "lucide-react";
 
 // Transaction types
@@ -31,6 +31,8 @@ interface TransactionConfirmModalProps {
     onCancel: () => void;
     // Optional: For AI-initiated transactions
     aiMessage?: string;
+    // Optional: For manual transactions (e.g., payment requests from header)
+    manualMessage?: string;
     showAiBadge?: boolean;
 }
 
@@ -42,6 +44,7 @@ export function TransactionConfirmModal({
     onConfirm,
     onCancel,
     aiMessage,
+    manualMessage,
     showAiBadge = false,
 }: TransactionConfirmModalProps) {
     if (!details) return null;
@@ -137,6 +140,19 @@ export function TransactionConfirmModal({
                                     <p className={`text-sm leading-relaxed ${isPaymentRequest ? "text-emerald-300" : "text-[#6FBEE5]"
                                         }`}>
                                         {aiMessage}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Manual Message (optional) - for non-AI flows like header payment requests */}
+                            {manualMessage && !aiMessage && (
+                                <div className={`mb-6 p-4 rounded-xl border flex items-start gap-3 ${isPaymentRequest ? "bg-emerald-400/10 border-emerald-400/20" : "bg-[#6FBEE5]/10 border-[#6FBEE5]/20"
+                                    }`}>
+                                    <OctagonAlert className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isPaymentRequest ? "text-emerald-300" : "text-[#6FBEE5]"
+                                        }`} />
+                                    <p className={`text-sm leading-relaxed ${isPaymentRequest ? "text-emerald-300" : "text-[#6FBEE5]"
+                                        }`}>
+                                        {manualMessage}
                                     </p>
                                 </div>
                             )}
