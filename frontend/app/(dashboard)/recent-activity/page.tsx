@@ -733,7 +733,6 @@ export default function RecentActivityPage() {
                 <TransactionConfirmModal
                     isOpen={true}
                     details={transactionIntent}
-                    // message={transactionMessage} // TransactionConfirmModal does not take 'message', it takes 'aiMessage'
                     aiMessage={transactionMessage}
                     walletBalance={walletBalance}
                     isSending={isSending}

@@ -530,51 +530,6 @@ export default function HomePage() {
         <TransactionConfirmModal
           isOpen={true}
           details={transactionIntent}
-          // message={transactionMessage} // TransactionConfirmModal does not take 'message', it takes 'aiMessage'
-          aiMessage={transactionMessage}
-          walletBalance={walletBalance}
-          isSending={isSending}
-          onConfirm={() => handleConfirmTransaction()}
-          onCancel={clearTransactionIntent}
-          showAiBadge={!!transactionMessage}
-        />
-      )}
-
-      {/* AI Transaction Modals */}
-      {hasTransactionIntent && transactionIntent?.type === 'TRANSFER_SUI' && (
-        <SendTransactionModal
-          isOpen={true}
-          onClose={clearTransactionIntent}
-          walletBalance={walletBalance}
-          isSending={isSending}
-          onConfirm={handleConfirmTransaction}
-          initialRecipient={transactionIntent.recipient}
-          initialAmount={transactionIntent.amount?.toString()}
-          initialRemark={transactionIntent.remark}
-          skipToConfirm={true}
-          aiMessage={transactionMessage}
-        />
-      )}
-
-      {hasTransactionIntent && transactionIntent?.type === 'CREATE_PAYMENT_REQUEST' && (
-        <RequestTransactionModal
-          isOpen={true}
-          onClose={clearTransactionIntent}
-          isSending={isSending}
-          onConfirm={handleConfirmTransaction}
-          initialRecipient={transactionIntent.recipient}
-          initialAmount={transactionIntent.amount?.toString()}
-          initialRemark={transactionIntent.remark}
-          skipToConfirm={true}
-          aiMessage={transactionMessage}
-        />
-      )}
-
-      {hasTransactionIntent && transactionIntent?.type === 'REJECT_PAYMENT_REQUEST' && (
-        <TransactionConfirmModal
-          isOpen={true}
-          details={transactionIntent}
-          // message={transactionMessage} // TransactionConfirmModal does not take 'message', it takes 'aiMessage'
           aiMessage={transactionMessage}
           walletBalance={walletBalance}
           isSending={isSending}
