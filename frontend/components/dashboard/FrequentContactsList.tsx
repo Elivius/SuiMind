@@ -123,7 +123,7 @@ export function FrequentContactsList({ contacts, onSend, onRequest, isLoading = 
     });
 
     const unpinnedList = contacts.filter(c => !pinnedContacts?.includes(c.address));
-    const displayList = [...pinnedList, ...unpinnedList].slice(0, 5);
+    const displayList = [...pinnedList, ...unpinnedList];
 
     return (
         <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh] flex flex-col overflow-hidden">
