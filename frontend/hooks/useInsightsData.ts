@@ -76,8 +76,6 @@ export function useInsightsData(): UseInsightsDataReturn {
 
                 const firestoreTx = firestoreTransactions[tx.id]; // tx.id is the digest
 
-                // DEBUG: Log matching attempt
-                console.log('[DEBUG] Matching tx.id:', tx.id, 'Found in Firestore:', !!firestoreTx);
                 if (!firestoreTx && tx.id) {
                     console.log('[DEBUG] Available Firestore keys:', Object.keys(firestoreTransactions).slice(0, 5));
                 }
@@ -90,8 +88,6 @@ export function useInsightsData(): UseInsightsDataReturn {
                 const firestoreAmount = firestoreTx?.amountSui ? Number(firestoreTx.amountSui) : null;
                 const expenseAmount = firestoreAmount ?? amount;
 
-                // DEBUG: Log remark found
-                console.log('[DEBUG] Remark found:', remark, 'Category:', categoryFromRemark, 'FirestoreAmount:', firestoreAmount, 'Using:', expenseAmount);
 
                 let category = "Uncategorized";
 
@@ -102,8 +98,8 @@ export function useInsightsData(): UseInsightsDataReturn {
                 ];
 
                 const CATEGORY_KEYWORDS: Record<string, string[]> = {
-                    "Food & Drinks": ["food", "drink", "dining", "meal", "restaurant", "cafe", "coffee", "lunch", "dinner", "breakfast", "bar"],
-                    "Groceries": ["grocery", "groceries", "market", "supermarket", "mart"],
+                    "Food & Drink": ["food", "drink", "dining", "meal", "restaurant", "cafe", "coffee", "lunch", "dinner", "breakfast", "bar"],
+                    "Grocery": ["grocery", "groceries", "market", "supermarket", "mart"],
                     "Shop": ["shop", "store", "buy", "purchase", "shopping", "clothes", "fashion", "mall"],
                     "Transportation": ["transport", "taxi", "uber", "grab", "bus", "train", "fuel", "gas", "car", "parking", "petrol"],
                     "Entertainment": ["entertainment", "movie", "cinema", "game", "fun", "subscription", "netflix", "spotify"],
@@ -170,7 +166,6 @@ export function useInsightsData(): UseInsightsDataReturn {
                 }
 
                 expenseCategories[category] = (expenseCategories[category] || 0) + expenseAmount
-                console.log('[DEBUG] Aggregating:', { txId: tx.id, category, blockchainAmount: amount, firestoreAmount: firestoreAmount, usingAmount: expenseAmount, runningTotal: expenseCategories[category] });
             }
 
             // --- Frequent Contacts Logic ---
