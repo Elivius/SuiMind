@@ -24,9 +24,12 @@ Don't just check balances. Ask deep questions.
 
 ### 3. Multi-Agent Orchestration
 We don't rely on a single prompt. SuiMind employs a sophisticated **Multi-Agent System** using the Google Agent Development Kit (ADK):
+- **Mindy (Router):** The central orchestrator that routes requests to specialized agents.
+- **Greeting/Farewell Agents:** Handle conversational pleasantries.
 - **Parser Agent:** Decodes user intent from natural language.
 - **Analyst Agent:** Queries live blockchain data and staking APYs.
-- **Transaction Agent:** securely constructs transaction payloads.
+- **Query Agent:** Executes GraphQL queries for transactions, balances, and staking data.
+- **Transaction Agent:** Securely constructs transaction payloads (transfers & payment requests).
 
 ---
 
@@ -53,14 +56,18 @@ Built with **Next.js 14**, **Tailwind CSS**, and **Framer Motion**, the interfac
 
 SuiMind is a hybrid application combining a powerful Python-based AI backend with a reactive Next.js frontend.
 
+![Agent Architecture](docs/adk.png)
+
 ### Backend (The Brain)
 - **Framework:** Python / Google Agent Development Kit (ADK)
 - **Intelligence:** **Gemini 3.0 Flash** (Optimized for low-latency reasoning)
 - **Agents:**
   - `Mindy` (Router)
+  - `greeting_agent` / `farewell_agent` (Conversational)
   - `parser_agent` (Intent Extraction)
+  - `analyst_agent` (Data Analysis)
+  - `query_agent` (GraphQL Execution)
   - `transaction_agent` (Payload Construction)
-  - `analyst_agent` (Data fetching via GraphQL/RPC)
 
 ### Frontend (The Face)
 - **Framework:** Next.js 14 (App Router)
@@ -80,7 +87,7 @@ SuiMind is a hybrid application combining a powerful Python-based AI backend wit
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yooJunyang323/SuiMind.git
+   git clone https://github.com/Elivius/SuiMind.git
    cd SuiMind
    ```
 
