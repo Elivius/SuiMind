@@ -1,14 +1,34 @@
 // Use to process transactions history and generate insights data
 
-import { useMemo } from "react"
+import { useMemo, useEffect, useState } from "react"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { useGetInsightTransactions } from "@/hooks"
 import { processTx, getMonthYearKey, getMonthDisplay } from "@/lib/utils"
 import type { ExpenseCategory, MonthlyCashflow, UseInsightsDataReturn, FrequentContact } from "@/types/insights"
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export function useInsightsData(): UseInsightsDataReturn {
     const account = useCurrentAccount()
     const { data: transactionData, isLoading } = useGetInsightTransactions()
+    const [firestoreTransactions, setFirestoreTransactions] = useState<Record<string, any>>({});
+
+    useEffect(() => {
+        const fetchFirestoreData = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "transactions"));
+                const data: Record<string, any> = {};
+                querySnapshot.forEach((doc) => {
+                    data[doc.id] = doc.data();
+                });
+                setFirestoreTransactions(data);
+            } catch (error) {
+                console.error("Error fetching Firestore transactions:", error);
+            }
+        };
+
+        fetchFirestoreData();
+    }, []);
 
     const { cashflowData, expensesData, frequentContacts, totals } = useMemo(() => {
         const transactions = transactionData?.transactions || []
