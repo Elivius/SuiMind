@@ -4,18 +4,19 @@ import { useMemo } from "react"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { useGetInsightTransactions } from "@/hooks"
 import { processTx, getMonthYearKey, getMonthDisplay } from "@/lib/utils"
-import type { ExpenseCategory, MonthlyCashflow, UseInsightsDataReturn } from "@/types/insights"
+import type { ExpenseCategory, MonthlyCashflow, UseInsightsDataReturn, FrequentContact } from "@/types/insights"
 
 export function useInsightsData(): UseInsightsDataReturn {
     const account = useCurrentAccount()
     const { data: transactionData, isLoading } = useGetInsightTransactions()
 
-    const { cashflowData, expensesData, totals } = useMemo(() => {
+    const { cashflowData, expensesData, frequentContacts, totals } = useMemo(() => {
         const transactions = transactionData?.transactions || []
 
         const processedTransactions = transactions
             .map((tx) => processTx(tx, account?.address))
             .filter((tx): tx is NonNullable<typeof tx> => tx !== null)
+
 
         // Aggregate by month for cashflow chart
         const monthlyData: Record<string, { inFlow: number; outFlow: number; displayMonth: string }> = {}
@@ -26,12 +27,19 @@ export function useInsightsData(): UseInsightsDataReturn {
         let inFlowTransactionCount = 0
         let outFlowTransactionCount = 0
 
+        const mockNames: Record<string, string> = {
+            "0x1a2b3c4d": "Alex Morgan", // This one will display if there is no transaction in the frequent contact ui
+        };
+
+        const contactStats: Record<string, FrequentContact> = {}
+
         processedTransactions.forEach(tx => {
             const amount = tx.amount || 0
             const timestamp = tx.timestampMs || Date.now()
             const monthKey = getMonthYearKey(timestamp)
             const displayMonth = getMonthDisplay(timestamp)
 
+            // --- Existing Logic ---
             if (!monthlyData[monthKey]) {
                 monthlyData[monthKey] = { inFlow: 0, outFlow: 0, displayMonth }
             }
@@ -45,10 +53,49 @@ export function useInsightsData(): UseInsightsDataReturn {
                 totalOutFlow += amount
                 outFlowTransactionCount++
 
-                // Becasue if tx.label === Sent is P2P
-                // So will check first, if not P2P then tx.label will be used (e.g. Smart Contract Interaction / Sui Storage Rebate)
+                // Because if tx.label === Sent is P2P
+                //So will check first, if not P2P, then tx.label will be used(e.g. Smart Contract Interaction / Sui Storage Rebate)
                 const category = tx.label === "Sent" ? (tx.to || 'Other') : tx.label
                 expenseCategories[category] = (expenseCategories[category] || 0) + amount
+            }
+
+            // --- Frequent Contacts Logic ---
+            let counterpart = "";
+            let isIncoming = false;
+
+            if (tx.type === "receive" && tx.from && tx.from !== "Unknown") {
+                counterpart = tx.from;
+                isIncoming = true;
+            } else if (tx.type === "send" && tx.to && tx.to !== "Unknown") {
+                counterpart = tx.to;
+                isIncoming = false;
+            }
+
+            if (counterpart) {
+                if (!contactStats[counterpart]) {
+                    contactStats[counterpart] = {
+                        address: counterpart,
+                        name: mockNames[counterpart.slice(0, 10)] || undefined,
+                        txCount: 0,
+                        sent: 0,
+                        received: 0,
+                        cashflow: 0,
+                        lastTxTime: 0
+                    };
+                }
+
+                contactStats[counterpart].txCount++;
+                if (timestamp > contactStats[counterpart].lastTxTime) {
+                    contactStats[counterpart].lastTxTime = timestamp;
+                }
+
+                if (isIncoming) {
+                    contactStats[counterpart].received += amount;
+                    contactStats[counterpart].cashflow += amount;
+                } else {
+                    contactStats[counterpart].sent += amount;
+                    contactStats[counterpart].cashflow -= amount;
+                }
             }
         })
 
@@ -79,6 +126,11 @@ export function useInsightsData(): UseInsightsDataReturn {
             .slice(0, 6)
             .map(([name, value]) => ({ name, value }))
 
+        // Sort Frequent Contacts (descending by txCount)
+        const frequentContacts = Object.values(contactStats)
+            .sort((a, b) => b.txCount - a.txCount)
+            .slice(0, 5); 
+
         // Get this month's and last month's net for comparison
         const thisMonthNetFlow = cashflow.length > 0 ? cashflow[cashflow.length - 1].netFlow : 0
         const lastMonthNetFlow = cashflow.length > 1 ? cashflow[cashflow.length - 2].netFlow : 0
@@ -98,6 +150,7 @@ export function useInsightsData(): UseInsightsDataReturn {
         return {
             cashflowData: cashflow.length > 0 ? cashflow : [{ month: 'No Data', inFlow: 0, outFlow: 0, netFlow: 0 }],
             expensesData: expenses.length > 0 ? expenses : [{ name: 'No Expenses', value: 0 }],
+            frequentContacts,
             totals: {
                 totalInFlow,
                 totalOutFlow,
@@ -111,5 +164,5 @@ export function useInsightsData(): UseInsightsDataReturn {
         }
     }, [transactionData, account?.address])
 
-    return { cashflowData, expensesData, totals, isLoading }
+    return { cashflowData, expensesData, frequentContacts, totals, isLoading }
 }

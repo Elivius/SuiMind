@@ -6,12 +6,13 @@ import {
   TrendingUp, ArrowUpRight, ArrowDownRight, ArrowDownLeft, Zap, Pencil, Eye, CheckCircle2,
   X, RefreshCcw, ArrowDown, ArrowUp, Send, DownloadCloud, SendHorizontal,
   Plus, AtSign, Sparkles, Bot, Users, Square, Trash2, Bell, Scale, Minus,
-  Wallet, Info, HelpingHand, ChevronDown, ChevronUp, Utensils, Home, ShoppingCart, ShoppingBag, MessageSquare
+  Wallet, Info, HelpingHand, ChevronDown, ChevronUp, Utensils, Home, ShoppingCart, ShoppingBag, MessageSquare,
+  Pin, Copy, Check, TrendingDown, ArrowLeftRight
 } from "lucide-react"
-import { useState, useRef, useEffect, useMemo } from "react"
+import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
 import { useRouter } from "next/navigation"
-import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager } from "@/hooks"
+import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager, useInsightsData } from "@/hooks"
 import { SendTransactionModal, RequestTransactionModal, TransactionConfirmModal } from "@/components/transactionModal"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
@@ -20,9 +21,10 @@ import remarkGfm from "remark-gfm"
 import { playSound } from "@/lib/sound-effects"
 import { toast } from "sonner"
 import { TX_DESC_STORAGE_REBATE, TX_DESC_CONTRACT_INTERACTION } from "@/lib/constants";
-import { db } from "@/lib/firebase"; // Import your initialized db
+import { db } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { HOME_PAGE_INSIGHTS, HOME_PAGE_SUGGESTIONS, getHomeInsightsContextPrompt, getHomeSuggestionsContextPrompt } from "@/lib/prompts";
+import { FrequentContactsList } from "@/components/dashboard/FrequentContactsList";
 
 
 
@@ -36,6 +38,7 @@ export default function HomePage() {
   const { data: balanceData, isLoading: isBalanceLoading, refetch } = useGetBalances();
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
   const { data: transactionData, isLoading: isTransactionLoading, refetch: refetchTransactions } = useGetDetailTransactions(20);
+  const { frequentContacts } = useInsightsData();
 
   const onTransactionSuccess = async () => {
     await refetch();
@@ -86,9 +89,9 @@ export default function HomePage() {
             timestamp: serverTimestamp(),
           });
 
-          // Continue with your success logic
+
           await onTransactionSuccess();
-          // The modal handles its own success state. We just need to clean up data.
+
           setActiveRequestObject(null);
           refetch();
           saveRecipient(sendRecipient);
@@ -97,7 +100,7 @@ export default function HomePage() {
         }
       }
     } else {
-      // This runs if execution was 'false' (transaction failed or cancelled)
+
       console.error("Transaction failed or was cancelled.");
     }
   };
@@ -116,14 +119,13 @@ export default function HomePage() {
       const digest = execution?.effects?.transaction?.digest;
       if (digest) {
         try {
-          // Save to request_remarks collection for cleaner lookup
+
           await setDoc(doc(db, "request_remarks", requestCode), {
             remark: reqRemark || "No remark",
             timestamp: serverTimestamp(),
             category: reqCategory || 'Other'
           });
 
-          // Also save to transactions for record keeping (optional but good for history)
           await setDoc(doc(db, "transactions", digest), {
             sender: account?.address,
             recipient: reqRecipient,
@@ -133,7 +135,6 @@ export default function HomePage() {
             requestCode: requestCode
           });
 
-          // Modal handles success UI
           saveRecipient(reqRecipient);
         } catch (dbError) {
           console.error("Firestore write failed:", dbError);
@@ -399,6 +400,24 @@ export default function HomePage() {
     }
   }, [rawSuggestions]);
 
+  // Frequent contact setup
+  interface TransactionContact {
+    id: string
+    name: string
+    address: string
+    sent: number
+    received: number
+    transactionCount: number
+  }
+
+  interface PinnedAddress {
+    id: string
+    address: string
+    label?: string
+  }
+
+
+
   // ======================================================
 
   return (
@@ -496,6 +515,8 @@ export default function HomePage() {
         initialAmount={requestAmount}
       />
 
+
+
       {/* AI Transaction Modals */}
       {hasTransactionIntent && transactionIntent?.type === 'TRANSFER_SUI' && (
         <SendTransactionModal
@@ -539,139 +560,26 @@ export default function HomePage() {
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-6">
-        <div className="md:col-span-2 xl:col-span-5">
-          <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
-            <div className="p-6">
-              <Button
-                variant="ghost"
-                className="justify-start text-2xl sm:text-3xl text-white font-black mb-10 p-0 h-auto hover:bg-transparent hover:scale-[1.05] transition-transform"
-                onClick={() => router.push('/insights')}
-              >
-                Monthly Cashflow
-              </Button>
-              <div className="space-y-6">
-                {/* Salary Input */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label htmlFor="salary" className="text-sm font-medium text-white">
-                      Monthly Salary
-                    </label>
-                    <button
-                      type="button"
-                      onClick={salaryModal.open}
-                      className="cursor-pointer group flex items-center gap-2 text-[#6FBEE5] hover:text-[#5DAED5] transition-all hover:scale-105 active:scale-95"
-                    >
-                      <Pencil className="w-4 h-4 flex-shrink-0" strokeWidth={2.5} />
-                      <span className="text-base font-bold underline underline-offset-4 decoration-[#6FBEE5]/40 group-hover:decoration-[#5DAED5]">
-                        Edit Salary
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* Active/Passive Display */}
-                  <div className="flex gap-6 mb-4">
-                    <div className="text-xs sm:text-sm text-white/60 font-medium uppercase tracking-wider">
-                      Active: <span className="text-[#6FBEE5] font-bold text-base sm:text-lg">${Number(activeSalary).toLocaleString()}</span>
-                    </div>
-                    <div className="text-xs sm:text-sm text-white/60 font-medium uppercase tracking-wider">
-                      Passive: <span className="text-[#6FBEE5] font-bold text-base sm:text-lg">${Number(passiveSalary).toLocaleString()}</span>
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
-                    <input
-                      id="salary"
-                      type="number"
-                      placeholder="0.00"
-                      value={salary}
-                      readOnly
-                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
-                    />
-                  </div>
-                </div>
-
-                {/* Expenses Input */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label htmlFor="expenses" className="text-sm font-medium text-white">
-                      Monthly Expenses
-                    </label>
-                    <button
-                      type="button"
-                      onClick={expensesModal.open}
-                      className="cursor-pointer group flex items-center gap-2 text-[#6FBEE5] hover:text-[#5DAED5] transition-all hover:scale-105 active:scale-95"
-                    >
-                      <Eye className="w-5 h-5" />
-                      <span className="text-base font-bold underline underline-offset-4 decoration-[#6FBEE5]/40 group-hover:decoration-[#5DAED5]">
-                        View More
-                      </span>
-                    </button>
-                  </div>
-                  <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white text-3xl font-black">$</span>
-                    <input
-                      id="expenses"
-                      type="number"
-                      placeholder="0.00"
-                      value={totalExpenses}
-                      readOnly
-                      className="w-full pl-12 pr-6 py-6 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/30 focus:outline-none transition-all text-3xl font-black cursor-not-allowed"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-white/10">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-gradient-to-br from-white/10 to-white/5 gap-4">
-                    <div className="min-w-0">
-                      <p className="text-white/60 text-sm sm:text-base mb-2">Available Balance</p>
-                      {balance > 0 ? (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-sky-400 truncate">
-                          ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </p>
-                      ) : balance === 0 ? (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-white truncate">
-                          ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </p>
-                      ) : (
-                        <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-red-400 truncate">
-                          ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </p>
-                      )}
-                    </div>
-                    <div
-                      className={`px-6 py-3 sm:px-8 sm:py-4 rounded-2xl self-start sm:self-center shrink-0 shadow-lg ${balance > 0 ? "bg-green-500/20 text-green-500 shadow-green-500/10" :
-                        balance < 0 ? "bg-red-500/20 text-red-500 shadow-red-500/10" :
-                          "bg-white/10 text-white shadow-white/5"
-                        }`}
-                    >
-                      {balance > 0 ? (
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5" />
-                          <span className="text-base sm:text-xl font-black uppercase tracking-wider">Surplus</span>
-                        </div>
-                      ) : balance < 0 ? (
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5 rotate-180" />
-                          <span className="text-base sm:text-xl font-black uppercase tracking-wider">Deficit</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <Minus className="w-6 h-6 sm:w-5 sm:h-5" />
-                          <span className="text-base sm:text-xl font-bold uppercase tracking-wider">Balanced</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* Frequent Contact card */}
+        <div className="md:col-span-2 xl:col-span-2">
+          <div className="md:col-span-2 xl:col-span-2">
+            <FrequentContactsList
+              contacts={frequentContacts}
+              onSend={(address) => {
+                setRecipient(address);
+                setShowSendUI(true);
+              }}
+              onRequest={(address) => {
+                setRequestRecipient(address);
+                setShowRequestUI(true);
+              }}
+            />
+          </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="xl:col-span-2">
+        <div className="xl:col-span-1">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
             <div className="p-6 h-full flex flex-col">
               <Button
@@ -780,7 +688,7 @@ export default function HomePage() {
         </div>
 
         {/* Mindy AI */}
-        <div className="xl:col-span-3">
+        <div className="xl:col-span-1">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden lg:h-[70vh]">
             <div className="p-4 h-full flex flex-col">
               <div className="flex items-center justify-between mb-4">
