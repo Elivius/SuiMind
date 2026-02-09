@@ -10,7 +10,7 @@ import {
   Pin, Copy, Check, TrendingDown, ArrowLeftRight
 } from "lucide-react"
 import { useState, useRef, useEffect, useMemo, useCallback } from "react"
-import { motion as Motion, AnimatePresence } from "motion/react"
+import { motion as Motion, AnimatePresence, motion } from "motion/react"
 import { useRouter } from "next/navigation"
 import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager, useInsightsData } from "@/hooks"
 import { SendTransactionModal, RequestTransactionModal, TransactionConfirmModal } from "@/components/transactionModal"
@@ -560,26 +560,24 @@ export default function HomePage() {
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <motion.div layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-4">
         {/* Frequent Contact card */}
-        <div className="md:col-span-2 xl:col-span-2">
-          <div className="md:col-span-2 xl:col-span-2">
-            <FrequentContactsList
-              contacts={frequentContacts}
-              onSend={(address) => {
-                setRecipient(address);
-                setShowSendUI(true);
-              }}
-              onRequest={(address) => {
-                setRequestRecipient(address);
-                setShowRequestUI(true);
-              }}
-            />
-          </div>
-        </div>
+        <motion.div layout className="md:col-span-2 xl:col-span-4">
+          <FrequentContactsList
+            contacts={frequentContacts}
+            onSend={(address) => {
+              setRecipient(address);
+              setShowSendUI(true);
+            }}
+            onRequest={(address) => {
+              setRequestRecipient(address);
+              setShowRequestUI(true);
+            }}
+          />
+        </motion.div>
 
         {/* Recent Activity */}
-        <div className="xl:col-span-1">
+        <motion.div layout className="xl:col-span-2">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
             <div className="p-6 h-full flex flex-col">
               <Button
@@ -669,7 +667,7 @@ export default function HomePage() {
                                 </div>
                               )}
                               {tx.to && (
-                                <div className="flex items-center text-white/60">
+                                <div className="flex items-center text-white/80">
                                   <span className="mr-1">To:</span>
                                   <CopyAddress fullAddress={tx.to} displayAddress={truncateAddress(tx.to)} />
                                 </div>
@@ -685,10 +683,10 @@ export default function HomePage() {
               </div>
             </div>
           </Card>
-        </div>
+        </motion.div>
 
         {/* Mindy AI */}
-        <div className="xl:col-span-1">
+        <motion.div layout className="xl:col-span-4">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden lg:h-[70vh]">
             <div className="p-4 h-full flex flex-col">
               <div className="flex items-center justify-between mb-4">
@@ -718,34 +716,34 @@ export default function HomePage() {
                         <MindyAILogo className="w-8 h-8 text-[#6FBEE5]" />
                       </div>
                       <div className="bg-white/10 rounded-xl rounded-tl-none px-4 py-3 max-w-[85%]">
-                        <p className="text-sm text-white/90">Hello! I&apos;m your AI financial assistant. How can I help you today?</p>
+                        <p className="font-medium text-white">Hello! I&apos;m your AI financial assistant. How can I help you today?</p>
                       </div>
                     </div>
 
                     {/* Quick Prompts - Colorful & Interactive */}
-                    <div className="flex flex-wrap gap-2.5 pt-5 pl-1 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                    <div className="flex flex-wrap gap-10 pt-5 pl-1 relative pb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
                       <button
                         onClick={() => sendMindyMessage("Analyze my wallet")}
                         disabled={isMindyLoading}
-                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20 disabled:opacity-50"
+                        className="group flex items-center gap-2 text-s px-8 py-3 rounded-2xl bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] hover:bg-[#6FBEE5] hover:text-white transition-all font-bold -rotate-1 -translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-[#6FBEE5]/10 hover:shadow-[#6FBEE5]/20 disabled:opacity-50"
                       >
-                        <Wallet className="w-4 h-4" />
+                        <Wallet className="w-6 h-6" />
                         Analyze wallet
                       </button>
                       <button
                         onClick={() => sendMindyMessage("Find yield opportunities")}
                         disabled={isMindyLoading}
-                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all font-bold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 disabled:opacity-50"
+                        className="group flex items-center gap-2 text-s px-8 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all font-bold rotate-1 translate-y-0.5 hover:rotate-0 hover:translate-y-0 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 disabled:opacity-50"
                       >
-                        <TrendingUp className="w-4 h-4" />
+                        <TrendingUp className="w-6 h-6" />
                         Find yield
                       </button>
                       <button
                         onClick={() => sendMindyMessage("Check risks in my portfolio")}
                         disabled={isMindyLoading}
-                        className="group flex items-center gap-2 text-sm px-5 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-bold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-lg shadow-red-500/10 hover:shadow-red-500/20 disabled:opacity-50"
+                        className="group flex items-center gap-2 text-s px-8 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-bold -rotate-0.5 translate-x-0.5 hover:rotate-0 hover:translate-x-0 shadow-lg shadow-red-500/10 hover:shadow-red-500/20 disabled:opacity-50"
                       >
-                        <CheckCircle2 className="w-4 h-4" />
+                        <CheckCircle2 className="w-6 h-6" />
                         Check risks
                       </button>
                     </div>
@@ -857,8 +855,8 @@ export default function HomePage() {
               </div>
             </div>
           </Card>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       <div className="mt-6">
         <Card className="border-white/20 backdrop-blur-xl bg-white/5">
@@ -964,274 +962,280 @@ export default function HomePage() {
         </Card>
       </div>
       {/* AI Insight Modal */}
-      {insightModal.isOpen && (
-        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${insightModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <div className={`relative w-full max-w-lg group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${insightModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
-            {/* Glowing Border Background */}
-            <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
+      {
+        insightModal.isOpen && (
+          <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${insightModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+            <div className={`relative w-full max-w-lg group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${insightModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
+              {/* Glowing Border Background */}
+              <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
 
-            <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
+              <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
 
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-                      <MindyAILogo className="w-10 h-10" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <h2 className="text-2xl font-black tracking-tight">Mindy AI Insight</h2>
-                        {/* Regenerate Button in Header */}
-                        {!isInsightLoading && (
-                          <button
-                            onClick={handleRegenerateInsight}
-                            className="p-1.5 rounded-lg text-white/50 hover:text-[#27C8F5] hover:bg-white/5 transition-all"
-                            title="Regenerate Insight"
-                          >
-                            <RefreshCcw className="w-5 h-5" />
-                          </button>
-                        )}
+                <div className="p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                        <MindyAILogo className="w-10 h-10" />
                       </div>
-                      <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">By Mindy AI</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={insightModal.close}
-                    className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors text-white/30 hover:text-white"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
-
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/5 mb-8 min-h-[120px] flex items-center justify-center relative group/insight">
-                  {/* Regenerate Button - Absolute Top Right */}
-
-                  {isInsightLoading ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="flex space-x-1.5">
-                        <div className="w-2 h-2 bg-[#F527EB] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                        <div className="w-2 h-2 bg-[#27C8F5] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                        <div className="w-2 h-2 bg-[#4D27F5] rounded-full animate-bounce"></div>
-                      </div>
-                      <span className="text-xs text-white font-bold uppercase tracking-widest animate-pulse">Analyzing Finances...</span>
-                    </div>
-                  ) : insightError ? (
-                    <div className="flex flex-col items-center gap-3 py-2">
-                      <p className="text-red-400 text-sm font-medium text-center">
-                        {insightError || "Failed to generate insight"}
-                      </p>
-                      <Button
-                        onClick={handleRegenerateInsight}
-                        size="sm"
-                        className="bg-white/5 hover:bg-white/10 text-white border border-white/10 h-8 text-xs"
-                      >
-                        <RefreshCcw className="w-3 h-3 mr-2" />
-                        Retry
-                      </Button>
-                    </div>
-                  ) : insight ? (
-                    <div className="text-white/80 leading-relaxed text-lg font-medium animate-in fade-in slide-in-from-bottom-2 duration-500">
-                      <ReactMarkdown
-                        components={{
-                          strong: ({ node: _node, ...props }) => <span className="text-[#6FBEE5] font-bold" {...props} />,
-                          em: ({ node: _node, ...props }) => <span className="text-green-400 font-bold not-italic" {...props} />,
-                          p: ({ node: _node, ...props }) => <p className="mb-3 last:mb-0" {...props} />,
-                        }}
-                      >
-                        {insight}
-                      </ReactMarkdown>
-                    </div>
-                  ) : (
-                    <p className="text-white/40 text-sm">No insight available. Try regenerating.</p>
-                  )}
-                </div>
-
-                <Button
-                  className="w-full bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white py-6 rounded-xl font-black shadow-lg shadow-[#3B82F6]/20 border border-white/10 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => {
-                    insightModal.close()
-                    router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this financial insight:\n\n${insight}`)}`)
-                  }}
-                  disabled={isInsightLoading}
-                >
-                  Learn More @ Mindy AI
-                </Button>
-              </div>
-            </Card>
-          </div>
-        </div>
-      )}
-
-      {/* Salary Edit Modal */}
-      {salaryModal.isOpen && (
-        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${salaryModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <div className={`relative w-full max-w-xl group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${salaryModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
-            {/* Glowing Border Background */}
-            <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
-
-            <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
-              {/* Top Accent Line */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
-
-              <div className="p-10 md:p-12">
-                <div className="flex items-center justify-between mb-12">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-                      <Pencil className="w-8 h-8 text-[#6FBEE5]" />
-                    </div>
-                    <div>
-                      <h2 className="text-3xl font-black tracking-tight">Edit Salary</h2>
-                    </div>
-                  </div>
-                  <button
-                    onClick={salaryModal.close}
-                    className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
-                  >
-                    <X className="w-7 h-7" />
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Active Income</label>
-                    <div className="relative group">
-                      <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
-                      <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-2xl px-5 py-6 group-focus-within:border-[#6FBEE5]/50 transition-all">
-                        <span className="text-2xl font-bold text-[#6FBEE5] mr-3">$</span>
-                        <input
-                          type="number"
-                          placeholder="0.00"
-                          value={activeSalary}
-                          onFocus={(e) => {
-                            if (activeSalary === "0.00") setActiveSalary("");
-                          }}
-                          onBlur={(e) => {
-                            if (e.target.value === "") setActiveSalary("0.00");
-                          }}
-                          onChange={(e) => setActiveSalary(e.target.value)}
-                          className={`bg-transparent border-none text-2xl font-bold focus:outline-none w-full placeholder:text-white/10 ${activeSalary === "0.00" ? "text-white/30" : "text-white"}`}
-                        />
+                      <div>
+                        <div className="flex items-center gap-3">
+                          <h2 className="text-2xl font-black tracking-tight">Mindy AI Insight</h2>
+                          {/* Regenerate Button in Header */}
+                          {!isInsightLoading && (
+                            <button
+                              onClick={handleRegenerateInsight}
+                              className="p-1.5 rounded-lg text-white/50 hover:text-[#27C8F5] hover:bg-white/5 transition-all"
+                              title="Regenerate Insight"
+                            >
+                              <RefreshCcw className="w-5 h-5" />
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">By Mindy AI</p>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Passive Income</label>
-                    <div className="relative group">
-                      <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
-                      <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-2xl px-5 py-6 group-focus-within:border-[#6FBEE5]/50 transition-all">
-                        <span className="text-2xl font-bold text-[#6FBEE5] mr-3">$</span>
-                        <input
-                          type="number"
-                          placeholder="0.00"
-                          value={passiveSalary}
-                          onFocus={(e) => {
-                            if (passiveSalary === "0.00") setPassiveSalary("");
-                          }}
-                          onBlur={(e) => {
-                            if (e.target.value === "") setPassiveSalary("0.00");
-                          }}
-                          onChange={(e) => setPassiveSalary(e.target.value)}
-                          className={`bg-transparent border-none text-2xl font-bold focus:outline-none w-full placeholder:text-white/10 ${passiveSalary === "0.00" ? "text-white/30" : "text-white"}`}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-10 pt-8 border-t border-white/5">
-                  <div className="flex items-end justify-between mb-8 px-1">
-                    <span className="text-white text-xs font-bold uppercase tracking-widest pb-1">Total Monthly</span>
-                    <span className="text-3xl font-black text-white">
-                      ${(Number(activeSalary) + Number(passiveSalary)).toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button
-                      variant="ghost"
-                      className="py-6 rounded-xl border border-white/50 text-white/60 hover:text-white hover:bg-white/5 h-auto text-xs font-bold uppercase tracking-widest"
-                      onClick={salaryModal.close}
+                    <button
+                      onClick={insightModal.close}
+                      className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors text-white/30 hover:text-white"
                     >
-                      Discard
-                    </Button>
-                    <Button
-                      className="py-6 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white font-black h-auto text-xs uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20 border border-white/10"
-                      onClick={() => {
-                        setSalary((Number(activeSalary) + Number(passiveSalary)).toString())
-                        salaryModal.close()
-                      }}
-                    >
-                      Apply
-                    </Button>
+                      <X className="w-6 h-6" />
+                    </button>
                   </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      )}
 
-      {/* Expenses Breakdown Modal */}
-      {expensesModal.isOpen && (
-        <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
-          <div className={`relative w-full max-w-xl group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${expensesModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
-            {/* Glowing Border Background */}
-            <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
+                  <div className="p-6 rounded-2xl bg-white/5 border border-white/5 mb-8 min-h-[120px] flex items-center justify-center relative group/insight">
+                    {/* Regenerate Button - Absolute Top Right */}
 
-            <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
-
-              <div className="p-10 md:p-12">
-                <div className="flex items-center justify-between mb-12">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-                      <Eye className="w-8 h-8 text-[#6FBEE5]" />
-                    </div>
-                    <div>
-                      <h2 className="text-3xl font-black tracking-tight">Expenses</h2>
-                    </div>
-                  </div>
-                  <button
-                    onClick={expensesModal.close}
-                    className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
-                  >
-                    <X className="w-7 h-7" />
-                  </button>
-                </div>
-
-                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-8">
-                  {expenseCategories.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-6 rounded-[24px] bg-[#141415] border border-white/5 hover:border-[#6FBEE5]/30 hover:bg-white/[0.02] transition-all group">
-                      <div className="flex items-center gap-6">
-                        <p className="text-lg font-bold text-white group-hover:text-[#6FBEE5] transition-colors">{item.name}</p>
+                    {isInsightLoading ? (
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="flex space-x-1.5">
+                          <div className="w-2 h-2 bg-[#F527EB] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                          <div className="w-2 h-2 bg-[#27C8F5] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                          <div className="w-2 h-2 bg-[#4D27F5] rounded-full animate-bounce"></div>
+                        </div>
+                        <span className="text-xs text-white font-bold uppercase tracking-widest animate-pulse">Analyzing Finances...</span>
                       </div>
-                      <span className="text-2xl font-black text-white tracking-tight">$ {Number(item.amount).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-8 border-t border-white/5">
-                  <div className="flex items-end justify-between mb-8 px-1">
-                    <span className="text-white text-xs font-bold uppercase tracking-widest pb-1">Total Spending</span>
-                    <span className="text-3xl font-black text-white">
-                      ${expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0).toLocaleString()}
-                    </span>
+                    ) : insightError ? (
+                      <div className="flex flex-col items-center gap-3 py-2">
+                        <p className="text-red-400 text-sm font-medium text-center">
+                          {insightError || "Failed to generate insight"}
+                        </p>
+                        <Button
+                          onClick={handleRegenerateInsight}
+                          size="sm"
+                          className="bg-white/5 hover:bg-white/10 text-white border border-white/10 h-8 text-xs"
+                        >
+                          <RefreshCcw className="w-3 h-3 mr-2" />
+                          Retry
+                        </Button>
+                      </div>
+                    ) : insight ? (
+                      <div className="text-white/80 leading-relaxed text-lg font-medium animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        <ReactMarkdown
+                          components={{
+                            strong: ({ node: _node, ...props }) => <span className="text-[#6FBEE5] font-bold" {...props} />,
+                            em: ({ node: _node, ...props }) => <span className="text-green-400 font-bold not-italic" {...props} />,
+                            p: ({ node: _node, ...props }) => <p className="mb-3 last:mb-0" {...props} />,
+                          }}
+                        >
+                          {insight}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-white/40 text-sm">No insight available. Try regenerating.</p>
+                    )}
                   </div>
 
                   <Button
-                    className="w-full bg-white/5 hover:bg-white/10 text-white py-6 rounded-xl font-bold border border-white/5 shadow-xl h-auto text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
-                    onClick={expensesModal.close}
+                    className="w-full bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white py-6 rounded-xl font-black shadow-lg shadow-[#3B82F6]/20 border border-white/10 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => {
+                      insightModal.close()
+                      router.push(`/mindy-ai?prompt=${encodeURIComponent(`Tell me more about this financial insight:\n\n${insight}`)}`)
+                    }}
+                    disabled={isInsightLoading}
                   >
-                    Dismiss
+                    Learn More @ Mindy AI
                   </Button>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+
+      {/* Salary Edit Modal */}
+      {
+        salaryModal.isOpen && (
+          <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${salaryModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+            <div className={`relative w-full max-w-xl group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${salaryModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
+              {/* Glowing Border Background */}
+              <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
+
+              <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
+                {/* Top Accent Line */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
+
+                <div className="p-10 md:p-12">
+                  <div className="flex items-center justify-between mb-12">
+                    <div className="flex items-center gap-5">
+                      <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                        <Pencil className="w-8 h-8 text-[#6FBEE5]" />
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-black tracking-tight">Edit Salary</h2>
+                      </div>
+                    </div>
+                    <button
+                      onClick={salaryModal.close}
+                      className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
+                    >
+                      <X className="w-7 h-7" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Active Income</label>
+                      <div className="relative group">
+                        <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
+                        <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-2xl px-5 py-6 group-focus-within:border-[#6FBEE5]/50 transition-all">
+                          <span className="text-2xl font-bold text-[#6FBEE5] mr-3">$</span>
+                          <input
+                            type="number"
+                            placeholder="0.00"
+                            value={activeSalary}
+                            onFocus={(e) => {
+                              if (activeSalary === "0.00") setActiveSalary("");
+                            }}
+                            onBlur={(e) => {
+                              if (e.target.value === "") setActiveSalary("0.00");
+                            }}
+                            onChange={(e) => setActiveSalary(e.target.value)}
+                            className={`bg-transparent border-none text-2xl font-bold focus:outline-none w-full placeholder:text-white/10 ${activeSalary === "0.00" ? "text-white/30" : "text-white"}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-white uppercase tracking-widest ml-1">Passive Income</label>
+                      <div className="relative group">
+                        <div className="absolute inset-0 bg-[#6FBEE5]/5 rounded-xl blur-lg transition-opacity opacity-0 group-focus-within:opacity-100" />
+                        <div className="relative flex items-center bg-[#141415] border border-white/5 rounded-2xl px-5 py-6 group-focus-within:border-[#6FBEE5]/50 transition-all">
+                          <span className="text-2xl font-bold text-[#6FBEE5] mr-3">$</span>
+                          <input
+                            type="number"
+                            placeholder="0.00"
+                            value={passiveSalary}
+                            onFocus={(e) => {
+                              if (passiveSalary === "0.00") setPassiveSalary("");
+                            }}
+                            onBlur={(e) => {
+                              if (e.target.value === "") setPassiveSalary("0.00");
+                            }}
+                            onChange={(e) => setPassiveSalary(e.target.value)}
+                            className={`bg-transparent border-none text-2xl font-bold focus:outline-none w-full placeholder:text-white/10 ${passiveSalary === "0.00" ? "text-white/30" : "text-white"}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-10 pt-8 border-t border-white/5">
+                    <div className="flex items-end justify-between mb-8 px-1">
+                      <span className="text-white text-xs font-bold uppercase tracking-widest pb-1">Total Monthly</span>
+                      <span className="text-3xl font-black text-white">
+                        ${(Number(activeSalary) + Number(passiveSalary)).toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button
+                        variant="ghost"
+                        className="py-6 rounded-xl border border-white/50 text-white/60 hover:text-white hover:bg-white/5 h-auto text-xs font-bold uppercase tracking-widest"
+                        onClick={salaryModal.close}
+                      >
+                        Discard
+                      </Button>
+                      <Button
+                        className="py-6 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#9333EA] hover:from-[#9333EA] hover:to-[#3B82F6] text-white font-black h-auto text-xs uppercase tracking-widest shadow-xl shadow-[#3B82F6]/20 border border-white/10"
+                        onClick={() => {
+                          setSalary((Number(activeSalary) + Number(passiveSalary)).toString())
+                          salaryModal.close()
+                        }}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Expenses Breakdown Modal */}
+      {
+        expensesModal.isOpen && (
+          <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6 transition-all duration-500 animate-in fade-in ${expensesModal.isClosing ? "opacity-0 invisible" : "opacity-100 visible"}`}>
+            <div className={`relative w-full max-w-xl group transition-all duration-500 ease-out animate-in fade-in zoom-in-95 ${expensesModal.isClosing ? "opacity-0 scale-95 translate-y-4" : "opacity-100 scale-100 translate-y-0"}`}>
+              {/* Glowing Border Background */}
+              <div className="absolute -inset-[3px] bg-gradient-to-r from-[#6FBEE5] via-[#A890FE] to-[#FF3DBC] rounded-[34px] opacity-75 blur-lg group-hover:opacity-100 animate-border-flow transition-opacity duration-500" />
+
+              <Card className="relative overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-2xl border border-white/10 p-0 rounded-[32px] text-white w-full shadow-2xl">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#6FBEE5] to-transparent shadow-[0_0_20px_rgba(111,190,229,0.5)]" />
+
+                <div className="p-10 md:p-12">
+                  <div className="flex items-center justify-between mb-12">
+                    <div className="flex items-center gap-5">
+                      <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                        <Eye className="w-8 h-8 text-[#6FBEE5]" />
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-black tracking-tight">Expenses</h2>
+                      </div>
+                    </div>
+                    <button
+                      onClick={expensesModal.close}
+                      className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/5 transition-all text-white/30 hover:text-white active:scale-90"
+                    >
+                      <X className="w-7 h-7" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-8">
+                    {expenseCategories.map((item) => (
+                      <div key={item.id} className="flex items-center justify-between p-6 rounded-[24px] bg-[#141415] border border-white/5 hover:border-[#6FBEE5]/30 hover:bg-white/[0.02] transition-all group">
+                        <div className="flex items-center gap-6">
+                          <p className="text-lg font-bold text-white group-hover:text-[#6FBEE5] transition-colors">{item.name}</p>
+                        </div>
+                        <span className="text-2xl font-black text-white tracking-tight">$ {Number(item.amount).toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-8 border-t border-white/5">
+                    <div className="flex items-end justify-between mb-8 px-1">
+                      <span className="text-white text-xs font-bold uppercase tracking-widest pb-1">Total Spending</span>
+                      <span className="text-3xl font-black text-white">
+                        ${expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0).toLocaleString()}
+                      </span>
+                    </div>
+
+                    <Button
+                      className="w-full bg-white/5 hover:bg-white/10 text-white py-6 rounded-xl font-bold border border-white/5 shadow-xl h-auto text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
+                      onClick={expensesModal.close}
+                    >
+                      Dismiss
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )
+      }
+    </div >
   )
 }
