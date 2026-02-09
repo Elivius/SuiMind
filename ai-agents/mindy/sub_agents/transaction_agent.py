@@ -22,12 +22,12 @@ transaction_agent = Agent(
     1. TRANSFER_SUI: Send SUI to another address
        - Use 'prepare_transfer' tool
        - Requires: recipient address, amount
-       - Optional: reason/remark
+       - Optional: remark
 
     2. CREATE_PAYMENT_REQUEST: Request payment from another user
        - Use 'prepare_payment_request' tool
        - Requires: recipient address (who should pay), amount
-       - Optional: reason/remark
+       - Optional: remark
 
     3. REJECT_PAYMENT_REQUEST: Decline a payment request you received
        - Use 'prepare_reject_request' tool
@@ -57,7 +57,7 @@ transaction_agent = Agent(
     I've prepared a transfer of 5 SUI to 0x123...abc. Please confirm this transaction.
     
     :::TRANSACTION_INTENT:::
-    {{"success": true, "transaction_intent": {{"type": "TRANSFER_SUI", "recipient": "0x123abc", "amount": 5, "amount_mist": 5000000000, "sender": null, "reason": "Transfer via Mindy AI", "requires_signature": true}}, "message": "I've prepared a transfer..."}}
+    {{"success": true, "transaction_intent": {{"type": "TRANSFER_SUI", "recipient": "0x123abc", "amount": 5, "amount_mist": 5000000000, "sender": null, "remark": "Transfer via Mindy AI", "requires_signature": true}}, "message": "I've prepared a transfer..."}}
     :::END_TRANSACTION_INTENT:::
     
     This JSON block is CRITICAL - the frontend needs it to show the confirmation modal.

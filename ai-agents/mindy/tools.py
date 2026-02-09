@@ -190,7 +190,7 @@ def get_balance(address: Optional[str] = None, tool_context: ToolContext = None)
 def prepare_transfer(
     recipient: str,
     amount: float,
-    reason: Optional[str] = None,
+    remark: Optional[str] = None,
     tool_context: ToolContext = None
 ) -> Dict[str, Any]:
     """
@@ -200,7 +200,7 @@ def prepare_transfer(
     Args:
         recipient (str): The Sui address to send SUI to (must start with 0x).
         amount (float): The amount of SUI to send.
-        reason (str, optional): Optional reason/remark for the transfer.
+        remark (str, optional): Optional remark for the transfer.
         tool_context (ToolContext, optional): The tool context to access session state.
         
     Returns:
@@ -231,7 +231,7 @@ def prepare_transfer(
             "amount": amount,
             "amount_mist": int(amount * 1_000_000_000),
             "sender": sender,
-            "reason": reason or "Transfer via Mindy AI",
+            "remark": remark or "Transfer via Mindy AI",
             "requires_signature": True
         },
         "message": f"I've prepared a transfer of {amount} SUI to {recipient[:6]}...{recipient[-4:]}. Please confirm this transaction in your wallet."
@@ -241,7 +241,7 @@ def prepare_transfer(
 def prepare_payment_request(
     recipient: str,
     amount: float,
-    reason: Optional[str] = None,
+    remark: Optional[str] = None,
     tool_context: ToolContext = None
 ) -> Dict[str, Any]:
     """
@@ -251,7 +251,7 @@ def prepare_payment_request(
     Args:
         recipient (str): The Sui address of the person you're requesting payment FROM (must start with 0x).
         amount (float): The amount of SUI you're requesting.
-        reason (str, optional): Optional reason/remark for the payment request.
+        remark (str, optional): Optional remark for the payment request.
         tool_context (ToolContext, optional): The tool context to access session state.
         
     Returns:
@@ -281,7 +281,7 @@ def prepare_payment_request(
             "amount": amount,
             "amount_mist": int(amount * 1_000_000_000),
             "sender": sender,  # Who is requesting
-            "reason": reason or "Payment request via Mindy AI",
+            "remark": remark or "Payment request via Mindy AI",
             "requires_signature": True
         },
         "message": f"I've prepared a payment request for {amount} SUI from {recipient[:6]}...{recipient[-4:]}. Please confirm to send this request."

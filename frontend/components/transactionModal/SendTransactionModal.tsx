@@ -218,7 +218,7 @@ export function SendTransactionModal({
                     type: 'TRANSFER_SUI',
                     recipient,
                     amount,
-                    reason: remark
+                    remark
                 }}
                 walletBalance={walletBalance}
                 isSending={isSending}
@@ -561,7 +561,7 @@ export function SendTransactionModal({
                                                 type: 'TRANSFER_SUI',
                                                 recipient,
                                                 amount,
-                                                reason: remark
+                                                remark
                                             }}
                                             walletBalance={walletBalance}
                                             isSending={isSending}
