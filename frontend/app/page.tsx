@@ -49,9 +49,13 @@ export default function LandingPage() {
                 {/* HERO SECTION */}
                 <section className="px-6 md:px-12 pt-12 md:pt-20 pb-20 md:pb-32 w-full mx-auto text-center">
                     <FadeReveal delay={100} distance={20}>
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6FBEE5]/10 border border-[#6FBEE5]/20 text-[#6FBEE5] text-xs font-bold uppercase tracking-widest mb-8">
-                            <Bot className="w-4 h-4" />
-                            Empowering Sui Financial with AI
+                        <div className="inline-flex items-center gap-4 px-6 py-3 rounded-full bg-white/10 border border-white/10 backdrop-blur-xl shadow-[0_0_30px_-10px_rgba(111,190,229,0.2)] mb-8 hover:bg-white/[0.05] hover:border-[#6FBEE5]/30 transition-all duration-500 group cursor-default">
+                            <div className="p-2 bg-transparent rounded-full">
+                                <MindyAILogo className="w-10 h-10" />
+                            </div>
+                            <span className="text-sm sm:text-base md:text-lg font-bold tracking-widest text-white/90 uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-[#6FBEE5]/20 to-white/90 group-hover:via-[#6FBEE5] transition-all duration-700">
+                                Empowering Sui Financial with gemini 3.0
+                            </span>
                         </div>
                     </FadeReveal>
 
@@ -63,7 +67,7 @@ export default function LandingPage() {
                     </FadeReveal>
 
                     <FadeReveal delay={500} distance={30} triggerOnce blur={false} scale={1}>
-                        <p className="text-white/60 text-lg sm:text-xl max-w-xl lg:max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
+                        <p className="text-white text-lg sm:text-xl max-w-xl lg:max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
                             The next generation of financial intelligence on Sui. Track activity, analyze cashflow, and get AI insights to grow your wealth.
                         </p>
                     </FadeReveal>
