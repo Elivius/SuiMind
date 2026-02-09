@@ -164,10 +164,7 @@ export function useInsightsData(): UseInsightsDataReturn {
                     }
                 }
 
-                // Hide "System" or "Transfer" if we only want to show expenses? 
-                // The user asked for "percentage is food, shop, others". 
-                // Use "Other" for Transfer/System to ensure 100% distribution or filter them out?
-                // Let's map everything else to "Other" if it's a spend to match the user's "Others" request
+
                 if (category === "Transfer" || category === "System" || category === "Uncategorized") {
                     category = "Other";
                 }
