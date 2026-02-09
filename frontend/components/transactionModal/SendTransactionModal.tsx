@@ -136,14 +136,7 @@ export function SendTransactionModal({
                                             </div>
                                             <div>
                                                 <h2 className="text-2xl font-black text-white tracking-tight">Send SUI</h2>
-                                                {aiMessage ? (
-                                                    <div className="flex items-center gap-2 text-sm text-white/50">
-                                                        <Bot className="w-4 h-4" />
-                                                        <span>{aiMessage}</span>
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-[#6FBEE5] text-sm font-medium">Quick and secure transfer</p>
-                                                )}
+                                                <p className="text-[#6FBEE5] text-sm font-medium">Quick and secure transfer</p>
                                             </div>
                                         </div>
                                         <button
