@@ -316,7 +316,7 @@ export function Header() {
                                                                         {truncateAddress(noti.paid_by)} paid you
                                                                     </p>
                                                                     <p className="text-lg font-black text-emerald-400">
-                                                                        +{noti.amountSui} <span className="text-[10px] text-emerald-400/50 ml-1">SUI</span>
+                                                                        +{noti.amountSui} <span className="text-[10px] text-emerald-400 ml-1">SUI</span>
                                                                     </p>
                                                                 </div>
                                                                 <button

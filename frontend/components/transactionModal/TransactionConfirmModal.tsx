@@ -10,6 +10,7 @@ import {
     X, SendHorizontal, Zap, CheckCircle2, Wallet,
     ArrowDown, Bot, Sparkles, OctagonAlert
 } from "lucide-react";
+import { MindyAILogo } from "../icons";
 
 // Transaction types
 export type TransactionType = 'TRANSFER_SUI' | 'CREATE_PAYMENT_REQUEST' | 'REJECT_PAYMENT_REQUEST';
@@ -135,7 +136,7 @@ export function TransactionConfirmModal({
                             {aiMessage && (
                                 <div className={`mb-6 p-4 rounded-xl border flex items-start gap-3 ${isPaymentRequest ? "bg-emerald-400/10 border-emerald-400/20" : "bg-[#6FBEE5]/10 border-[#6FBEE5]/20"
                                     }`}>
-                                    <Bot className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isPaymentRequest ? "text-emerald-300" : "text-[#6FBEE5]"
+                                    <MindyAILogo className={`w-8 h-8 flex-shrink-0 mt-0.5 ${isPaymentRequest ? "text-emerald-300" : "text-[#6FBEE5]"
                                         }`} />
                                     <p className={`text-sm leading-relaxed ${isPaymentRequest ? "text-emerald-300" : "text-[#6FBEE5]"
                                         }`}>
@@ -297,9 +298,9 @@ export function TransactionConfirmModal({
 
                             {/* AI Badge Footer */}
                             {showAiBadge && (
-                                <div className="mt-8 flex items-center justify-center gap-2 opacity-40">
-                                    <Bot className="w-4 h-4 text-white" />
-                                    <span className="text-xs font-medium text-white uppercase tracking-widest">
+                                <div className="mt-8 flex items-center justify-center gap-2">
+                                    <MindyAILogo className="w-7 h-7 text-white" />
+                                    <span className="text-sm font-bold text-white">
                                         Transaction Initiated by Mindy AI
                                     </span>
                                 </div>
