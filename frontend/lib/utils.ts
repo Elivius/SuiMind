@@ -74,6 +74,14 @@ export function processTx(node: any, address?: string) {
     (balanceChangesJson.address === address)
   );
 
+  // Debug
+  if (node.digest === 'DrCodZtbMoPVZNWDthdCkKDnztDqFBbKYzDWheAwt3vM' || node.digest === '7L2d6kZ2zC8BTxzjXhDJwPrEbWiY3kzvoQj6g7crcgmc') {
+    console.log('[DEBUG processTx] Digest:', node.digest);
+    console.log('[DEBUG processTx] All balance changes:', JSON.stringify(balanceChanges, null, 2));
+    console.log('[DEBUG processTx] My address:', address);
+    console.log('[DEBUG processTx] My change:', myChange);
+  }
+
   if (!myChange) return null;
 
   // 3. Calculate Amount & Type

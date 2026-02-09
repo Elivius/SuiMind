@@ -13,7 +13,9 @@ query getInsightTransactions($address: SuiAddress!, $limit: Int = 50, $before: S
       startCursor
     }
     nodes {
+      digest
       effects {
+        status
         timestamp
         balanceChangesJson
       }
