@@ -399,7 +399,7 @@ export function Header() {
                 initialAmount={selectedPaymentRequest?.amountSui?.toString() || ''}
                 initialRemark={selectedPaymentRequest?.remark !== 'No remark' ? selectedPaymentRequest?.remark : ''}
                 skipToConfirm={true}
-                aiMessage={selectedPaymentRequest ? `Fulfilling payment request${selectedPaymentRequest.remark && selectedPaymentRequest.remark !== 'No remark' ? `: ${selectedPaymentRequest.remark}` : ''}` : undefined}
+                manualMessage={selectedPaymentRequest ? `Fulfilling payment request${selectedPaymentRequest.remark && selectedPaymentRequest.remark !== 'No remark' ? `: ${selectedPaymentRequest.remark}` : ''}` : undefined}
                 showAiBadge={false}
             />
         </>

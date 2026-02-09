@@ -12,7 +12,7 @@ import { useState, useRef, useEffect, useMemo } from "react"
 import { motion as Motion, AnimatePresence } from "motion/react"
 import { useRouter } from "next/navigation"
 import { useModal, useGetBalances, useGetDetailTransactions, useMindyAgent, useMindyInsight, usePaymentRequests, useTransactionManager } from "@/hooks"
-import { SendTransactionModal, RequestTransactionModal } from "@/components/transactionModal"
+import { SendTransactionModal, RequestTransactionModal, TransactionConfirmModal } from "@/components/transactionModal"
 import { useCurrentAccount } from "@mysten/dapp-kit"
 import { MindyAILogo, SuiMindLogo } from "@/components/icons"
 import ReactMarkdown from "react-markdown"
@@ -199,8 +199,6 @@ export default function HomePage() {
 
 
   // ==============  Balance & Recent Transaction  ==============  
-
-
   // Play sound when new notifications arrive
   const prevBalance = useRef(0)
   const isFirstLoadBalance = useRef(true)
@@ -231,8 +229,55 @@ export default function HomePage() {
 
   // ==============  Mindy Chat  ==============  
   const [mindyInput, setMindyInput] = useState("")
-  const { messages: mindyMessages, isLoading: isMindyLoading, sendMessage: sendMindyMessage, startSession: startMindySession } = useMindyAgent()
+  const {
+    messages: mindyMessages,
+    isLoading: isMindyLoading,
+    sendMessage: sendMindyMessage,
+    startSession: startMindySession,
+    pendingTransactionIntent,
+    clearTransactionIntent
+  } = useMindyAgent()
   const mindyMessagesEndRef = useRef<HTMLDivElement>(null)
+
+  // ========= For Chat to Transaction (C2T) =========
+  // Derive transaction intent state
+  const hasTransactionIntent = !!pendingTransactionIntent?.transaction_intent;
+  const transactionIntent = pendingTransactionIntent?.transaction_intent;
+  const transactionMessage = pendingTransactionIntent?.message || "Mindy AI wants to execute a transaction.";
+
+  // Handle confirm transaction from modal
+  const handleConfirmTransaction = async (data?: { recipient: string; amount: string }) => {
+    if (!transactionIntent) return;
+
+    let success = false;
+
+    // Use data from modal if available (user might have edited it), otherwise fallback to intent data
+    const recipient = data?.recipient || transactionIntent.recipient!;
+    const amount = data?.amount || transactionIntent.amount?.toString() || '0';
+
+    switch (transactionIntent.type) {
+      case 'TRANSFER_SUI':
+        success = !!(await transferSui({
+          amount,
+          recipient,
+          walletBalance: walletBalance
+        }));
+        break;
+      case 'CREATE_PAYMENT_REQUEST':
+        success = !!(await createPaymentRequest({
+          amount,
+          recipient,
+          code: transactionIntent.request_code
+        }));
+        break;
+      case 'REJECT_PAYMENT_REQUEST':
+        success = await rejectRequest(transactionIntent.request_id!);
+        break;
+    }
+
+    // Don't clear intent here - let the modal show success screen first
+    // Modal will close via onClose callback when user clicks "Done"
+  };
 
   useEffect(() => {
     if (mindyMessages.length > 0) {
@@ -450,6 +495,49 @@ export default function HomePage() {
         initialRecipient={requestRecipient}
         initialAmount={requestAmount}
       />
+
+      {/* AI Transaction Modals */}
+      {hasTransactionIntent && transactionIntent?.type === 'TRANSFER_SUI' && (
+        <SendTransactionModal
+          isOpen={true}
+          onClose={clearTransactionIntent}
+          walletBalance={walletBalance}
+          isSending={isSending}
+          onConfirm={handleConfirmTransaction}
+          initialRecipient={transactionIntent.recipient}
+          initialAmount={transactionIntent.amount?.toString()}
+          initialRemark={transactionIntent.remark}
+          skipToConfirm={true}
+          aiMessage={transactionMessage}
+        />
+      )}
+
+      {hasTransactionIntent && transactionIntent?.type === 'CREATE_PAYMENT_REQUEST' && (
+        <RequestTransactionModal
+          isOpen={true}
+          onClose={clearTransactionIntent}
+          isSending={isSending}
+          onConfirm={handleConfirmTransaction}
+          initialRecipient={transactionIntent.recipient}
+          initialAmount={transactionIntent.amount?.toString()}
+          initialRemark={transactionIntent.remark}
+          skipToConfirm={true}
+          aiMessage={transactionMessage}
+        />
+      )}
+
+      {hasTransactionIntent && transactionIntent?.type === 'REJECT_PAYMENT_REQUEST' && (
+        <TransactionConfirmModal
+          isOpen={true}
+          details={transactionIntent}
+          aiMessage={transactionMessage}
+          walletBalance={walletBalance}
+          isSending={isSending}
+          onConfirm={() => handleConfirmTransaction()}
+          onCancel={clearTransactionIntent}
+          showAiBadge={!!transactionMessage}
+        />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-6">
         <div className="md:col-span-2 xl:col-span-5">

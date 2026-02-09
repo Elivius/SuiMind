@@ -30,6 +30,7 @@ interface SendTransactionModalProps {
     initialAmount?: string;
     skipToConfirm?: boolean; // For bypassing form (AI-initiated) - directly to confirmation page
     aiMessage?: string;
+    manualMessage?: string; // For non-AI flows (e.g., header payment requests)
     showAiBadge?: boolean; // Explicit control over AI badge visibility
     initialRemark?: string; // Pre-fill remark when skipping form
 }
@@ -45,6 +46,7 @@ export function SendTransactionModal({
     initialAmount = '',
     skipToConfirm = false,
     aiMessage,
+    manualMessage,
     showAiBadge,
     initialRemark = '',
 }: SendTransactionModalProps) {
@@ -227,6 +229,7 @@ export function SendTransactionModal({
                 onConfirm={handleConfirm}
                 onCancel={handleClose}
                 aiMessage={aiMessage}
+                manualMessage={manualMessage}
                 showAiBadge={showAiBadge ?? !!aiMessage}
             />
         );
@@ -570,6 +573,7 @@ export function SendTransactionModal({
                                             onConfirm={handleConfirm}
                                             onCancel={() => setShowConfirm(false)}
                                             aiMessage={aiMessage}
+                                            manualMessage={manualMessage}
                                             showAiBadge={showAiBadge ?? !!aiMessage}
                                         />
                                     )}
