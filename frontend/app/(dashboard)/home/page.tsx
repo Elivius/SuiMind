@@ -38,7 +38,7 @@ export default function HomePage() {
   const { data: balanceData, isLoading: isBalanceLoading, refetch } = useGetBalances();
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
   const { data: transactionData, isLoading: isTransactionLoading, refetch: refetchTransactions } = useGetDetailTransactions(20);
-  const { frequentContacts, isLoading: isInsightsLoading } = useInsightsData();
+  const { frequentContacts, expensesData, isLoading: isInsightsLoading } = useInsightsData();
   const { data: stakingData } = useStakingData();
 
   const onTransactionSuccess = async () => {
@@ -308,22 +308,32 @@ export default function HomePage() {
   const salaryModal = useModal()
   const expensesModal = useModal()
 
-  const [expenseCategories] = useState([
-    { id: 1, name: "Rent & Utilities", amount: "1200", icon: "🏠" },
-    { id: 2, name: "Groceries", amount: "400", icon: "🛒" },
-    { id: 3, name: "Transportation", amount: "150", icon: "🚗" },
-    { id: 4, name: "Entertainment", amount: "200", icon: "🎬" },
-    { id: 5, name: "Healthcare", amount: "100", icon: "🏥" },
-  ])
+  // Map real expense data from useInsightsData to the expected format
+  const expenseCategories = useMemo(() => {
+    // Icons for known categories from useInsightsData.ts
+    const CATEGORY_ICONS: Record<string, string> = {
+      "Food & Drinks": "🍽️",
+      "Groceries": "🛒",
+      "Shop": "🛍️",
+      "Transportation": "🚗",
+      "Entertainment": "🎬",
+      "Healthcare": "🏥",
+      "Rent & Utilities": "🏠",
+      "Education": "📚",
+      "Travel": "✈️",
+      "Accommodation": "🏨",
+      "Other": "📋",
+    };
 
-  const calculateBalance = () => {
-    const salaryNum = Number.parseFloat(salary) || 0
-    const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
-    return salaryNum - totalExpenses
-  }
+    return expensesData.map((e, idx) => ({
+      id: idx + 1,
+      name: e.name,
+      amount: e.value.toFixed(2),
+      icon: CATEGORY_ICONS[e.name] || "📋"
+    }));
+  }, [expensesData]);
 
-  const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0)
-  const balance = calculateBalance()
+  const totalExpenses = expenseCategories.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
   // ==============  AI Insight  ==============  
   const insightModal = useModal()
