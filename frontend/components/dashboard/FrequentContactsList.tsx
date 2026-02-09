@@ -248,6 +248,7 @@ export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
                                             ) : (
                                                 <div
                                                     className="group/name flex items-center gap-2 cursor-pointer relative z-10"
+                                                    onClick={(e) => e.stopPropagation()}
                                                     onDoubleClick={(e) => { e.stopPropagation(); handleStartEdit(contact); }}
                                                 >
                                                     <h3 className="text-white font-bold text-lg leading-tight group-hover/name:text-blue-400 transition-colors" title="Double click to rename">
