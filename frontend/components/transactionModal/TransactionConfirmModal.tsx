@@ -18,7 +18,7 @@ export interface TransactionDetails {
     type: TransactionType;
     recipient?: string;
     amount?: number | string;
-    reason?: string;
+    remark?: string;
     request_id?: string;
 }
 
@@ -198,12 +198,12 @@ export function TransactionConfirmModal({
                                         </div>
                                     )}
 
-                                    {/* Reason Row (Optional) */}
-                                    {details.reason && (
+                                    {/* Remark Row (Optional) */}
+                                    {details.remark && (
                                         <div className="flex justify-between items-center pt-2">
                                             <span className={`font-bold uppercase tracking-wider text-xs ${isPaymentRequest ? 'text-emerald-300/80' : 'text-white'
-                                                }`}>Reason</span>
-                                            <span className="text-sm text-white/50">{details.reason}</span>
+                                                }`}>Remark</span>
+                                            <span className="text-sm text-white/50">{details.remark}</span>
                                         </div>
                                     )}
 
