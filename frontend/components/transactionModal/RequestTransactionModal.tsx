@@ -26,6 +26,7 @@ interface RequestTransactionModalProps {
     recentRecipients?: string[];
     initialRecipient?: string;
     initialAmount?: string;
+    initialRemark?: string; // Pre-fill remark when skipping form
     skipToConfirm?: boolean; // For bypassing form (AI-initiated) - directly to confirmation page
     aiMessage?: string;
 }
@@ -38,6 +39,7 @@ export function RequestTransactionModal({
     recentRecipients = [],
     initialRecipient = '',
     initialAmount = '',
+    initialRemark = '',
     skipToConfirm = false,
     aiMessage,
 }: RequestTransactionModalProps) {
@@ -55,6 +57,7 @@ export function RequestTransactionModal({
         if (isOpen) {
             setRecipient(initialRecipient);
             setAmount(initialAmount);
+            setRemark(initialRemark);
             setShowConfirm(skipToConfirm);
             setShowSuccess(false);
         } else {
@@ -419,7 +422,7 @@ export function RequestTransactionModal({
                                                 type: 'CREATE_PAYMENT_REQUEST',
                                                 recipient,
                                                 amount,
-                                                reason: remark
+                                                remark
                                             }}
                                             isSending={isSending}
                                             onConfirm={handleConfirm}
