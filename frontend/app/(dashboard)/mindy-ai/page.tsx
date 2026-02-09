@@ -11,11 +11,11 @@ import {
     FileText,
     Camera,
     Banknote,
-    Zap,
+    UserRound,
     Trash2,
     Square,
     Users,
-    Bot
+    FileChartColumn
 } from "lucide-react"
 import { Card } from "@/components/ui"
 import { MindyAILogo } from "@/components/icons"
@@ -32,7 +32,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 const QUICK_ACTIONS = [
     {
         icon: <Sparkles className="w-8 h-8 text-amber-300" />,
-        title: "What can SuiMind do?",
+        title: "What can Mindy AI do?",
         prompt: "What are your main features and how can you help me?",
         className: "w-full lg:max-w-[400px] xl:max-w-[450px] xl:rotate-[-2deg] xl:-translate-x-4",
         gradient: "hover:from-amber-300/20 hover:to-amber-500/20 hover:border-amber-300/50",
@@ -41,9 +41,9 @@ const QUICK_ACTIONS = [
         hideOnTablet: false
     },
     {
-        icon: <Scan className="w-8 h-8 text-blue-400" />,
-        title: "Pay via screenshot",
-        prompt: "I want to upload a screenshot to make a payment.",
+        icon: <UserRound className="w-8 h-8 text-blue-400" />,
+        title: "Request @someone",
+        prompt: "I want to request SUI from a address.",
         className: "w-full lg:max-w-[340px] xl:max-w-[360px] xl:rotate-[1.5deg] xl:translate-y-4",
         gradient: "hover:from-blue-400/20 hover:to-blue-600/20 hover:border-blue-400/50",
         textColor: "group-hover:text-blue-400",
@@ -53,7 +53,7 @@ const QUICK_ACTIONS = [
     {
         icon: <AtSign className="w-8 h-8 text-[#6FBEE5]" />,
         title: "Pay @someone",
-        prompt: "I want to send some SUI to a contact.",
+        prompt: "I want to send SUI to a address.",
         className: "w-full lg:max-w-[320px] xl:max-w-[340px] xl:rotate-[-1.2deg] xl:-translate-y-6 xl:translate-x-8",
         gradient: "hover:from-[#6FBEE5]/20 hover:to-[#4A9FD8]/20 hover:border-[#6FBEE5]/50",
         textColor: "group-hover:text-[#6FBEE5]",
@@ -62,8 +62,8 @@ const QUICK_ACTIONS = [
     },
     {
         icon: <FileText className="w-8 h-8 text-purple-400" />,
-        title: "Upload file and pay",
-        prompt: "I want to upload a document or file for payment.",
+        title: "Analyse & Compare transactions",
+        prompt: "I want to analyse and compare my last 2 transactions.",
         className: "w-full lg:max-w-[420px] xl:max-w-[480px] xl:rotate-[2deg] xl:translate-x-[-10px] xl:translate-y-2",
         gradient: "hover:from-purple-400/20 hover:to-purple-600/20 hover:border-purple-400/50",
         textColor: "group-hover:text-purple-400",
@@ -71,9 +71,9 @@ const QUICK_ACTIONS = [
         hideOnTablet: true
     },
     {
-        icon: <Camera className="w-8 h-8 text-orange-400" />,
-        title: "Snap and pay",
-        prompt: "I want to use my camera to snap a QR and pay.",
+        icon: <FileChartColumn className="w-8 h-8 text-orange-400" />,
+        title: "Check Staking APY",
+        prompt: "What is the current staking APY and epoch?",
         className: "w-full lg:max-w-[340px] xl:max-w-[380px] xl:rotate-[-1.5deg] xl:translate-y-[-4px] xl:translate-x-4",
         gradient: "hover:from-orange-400/20 hover:to-orange-600/20 hover:border-orange-400/50",
         textColor: "group-hover:text-orange-400",
@@ -83,7 +83,7 @@ const QUICK_ACTIONS = [
     {
         icon: <Banknote className="w-8 h-8 text-emerald-300" />,
         title: "Show latest transfers",
-        prompt: "Show me my latest transaction history.",
+        prompt: "Show me my latest transaction.",
         className: "w-full lg:max-w-[380px] xl:max-w-[420px] xl:rotate-[1deg] xl:translate-x-20 xl:translate-y-8",
         gradient: "hover:from-emerald-300/20 hover:to-emerald-500/20 hover:border-emerald-300/50",
         textColor: "group-hover:text-emerald-300",
@@ -198,7 +198,7 @@ export default function MindyAIPage() {
         <>
             <div className={`w-full mx-auto px-4 sm:px-6 pb-4 flex flex-col relative overflow-hidden transition-all duration-700 ease-in-out ${hasMindyMessages
                 ? "pt-7 h-[calc(100vh-60px)]"
-                : "pt-1 h-[calc(100vh-140px)]"
+                : "pt-1 h-[calc(100vh-100px)]"
                 }`}>
                 <div className="flex-1 flex flex-col relative z-10 max-w-6xl mx-auto w-full min-h-0">
 

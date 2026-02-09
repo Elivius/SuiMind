@@ -18,6 +18,7 @@ import {
 import { truncateAddress } from "@/lib/utils";
 import { TransactionConfirmModal } from "./TransactionConfirmModal";
 import { playSound } from "@/lib/sound-effects";
+import { MindyAILogo } from "../icons";
 
 interface RequestTransactionModalProps {
     isOpen: boolean;
