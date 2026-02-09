@@ -140,7 +140,7 @@ export default function InsightsPage() {
 
             {/* Expenses Distribution */}
             <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-white">Expense Distribution (by Recipient)</h2>
+                <h2 className="text-2xl font-bold text-white">Expense Distribution (6 Months)</h2>
                 <ExpensesPieChart data={expensesData} isLoading={isLoading} />
             </div>
         </div>
