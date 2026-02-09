@@ -6,7 +6,7 @@
 import { RefreshCcw, ArrowUpRight } from "lucide-react"
 import { Button, Card, Skeleton } from "@/components/ui"
 import { useRouter } from "next/navigation"
-import { useMindyInsight } from "@/hooks"
+import { useMindyInsight, useStakingData } from "@/hooks"
 import { MindyAILogo } from "@/components/icons"
 import { useEffect, useState } from "react"
 import { INSIGHTS_PAGE_SUGGESTIONS, getInsightsPageContextPrompt } from "@/lib/prompts"
@@ -22,6 +22,7 @@ interface MindySuggestionCardProps {
 export function MindySuggestionCard({ balance, totals, expensesData, isLoading }: MindySuggestionCardProps) {
     const router = useRouter()
     const [suggestion, setSuggestion] = useState<any>(null)
+    const { data: stakingData } = useStakingData();
 
     const {
         insight: rawSuggestions,
@@ -39,6 +40,7 @@ export function MindySuggestionCard({ balance, totals, expensesData, isLoading }
             netFlow: totals.thisMonthNetFlow,
             monthOverMonthChange: totals.monthOverMonthChange,
             topExpenses: expensesData,
+            stakingApy: stakingData?.avgApy
         }))
     }
 
@@ -49,9 +51,10 @@ export function MindySuggestionCard({ balance, totals, expensesData, isLoading }
                 netFlow: totals.thisMonthNetFlow,
                 monthOverMonthChange: totals.monthOverMonthChange,
                 topExpenses: expensesData,
+                stakingApy: stakingData?.avgApy
             }))
         }
-    }, [isLoading, balance, totals, expensesData, fetchSuggestions, rawSuggestions, isSuggestionsLoading, suggestionsError])
+    }, [isLoading, balance, totals, expensesData, fetchSuggestions, rawSuggestions, isSuggestionsLoading, suggestionsError, stakingData])
 
     useEffect(() => {
         if (rawSuggestions) {
@@ -127,8 +130,8 @@ export function MindySuggestionCard({ balance, totals, expensesData, isLoading }
                         ) : (
                             <p className="text-white/50 text-lg">Unable to generate insight at this moment. Please try again later.</p>
                         )}
+                    </div>
                 </div>
-        </div>
             </Card >
         </div >
     )
