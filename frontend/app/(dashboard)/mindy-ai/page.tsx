@@ -11,11 +11,11 @@ import {
     FileText,
     Camera,
     Banknote,
-    Zap,
+    UserRound,
     Trash2,
     Square,
     Users,
-    Bot
+    FileChartColumn
 } from "lucide-react"
 import { Card } from "@/components/ui"
 import { MindyAILogo } from "@/components/icons"
@@ -41,9 +41,9 @@ const QUICK_ACTIONS = [
         hideOnTablet: false
     },
     {
-        icon: <Scan className="w-8 h-8 text-blue-400" />,
-        title: "Pay via screenshot",
-        prompt: "I want to upload a screenshot to make a payment.",
+        icon: <UserRound className="w-8 h-8 text-blue-400" />,
+        title: "Request @someone",
+        prompt: "I want to request some SUI from a contact.",
         className: "w-full lg:max-w-[340px] xl:max-w-[360px] xl:rotate-[1.5deg] xl:translate-y-4",
         gradient: "hover:from-blue-400/20 hover:to-blue-600/20 hover:border-blue-400/50",
         textColor: "group-hover:text-blue-400",
@@ -62,8 +62,8 @@ const QUICK_ACTIONS = [
     },
     {
         icon: <FileText className="w-8 h-8 text-purple-400" />,
-        title: "Upload file and pay",
-        prompt: "I want to upload a document or file for payment.",
+        title: "Compare my transaction",
+        prompt: "I want to compare my transaction history.",
         className: "w-full lg:max-w-[420px] xl:max-w-[480px] xl:rotate-[2deg] xl:translate-x-[-10px] xl:translate-y-2",
         gradient: "hover:from-purple-400/20 hover:to-purple-600/20 hover:border-purple-400/50",
         textColor: "group-hover:text-purple-400",
@@ -71,9 +71,9 @@ const QUICK_ACTIONS = [
         hideOnTablet: true
     },
     {
-        icon: <Camera className="w-8 h-8 text-orange-400" />,
-        title: "Snap and pay",
-        prompt: "I want to use my camera to snap a QR and pay.",
+        icon: <FileChartColumn className="w-8 h-8 text-orange-400" />,
+        title: "Analyse my last transaction",
+        prompt: "I want to analyse my last transaction.",
         className: "w-full lg:max-w-[340px] xl:max-w-[380px] xl:rotate-[-1.5deg] xl:translate-y-[-4px] xl:translate-x-4",
         gradient: "hover:from-orange-400/20 hover:to-orange-600/20 hover:border-orange-400/50",
         textColor: "group-hover:text-orange-400",
@@ -198,7 +198,7 @@ export default function MindyAIPage() {
         <>
             <div className={`w-full mx-auto px-4 sm:px-6 pb-4 flex flex-col relative overflow-hidden transition-all duration-700 ease-in-out ${hasMindyMessages
                 ? "pt-7 h-[calc(100vh-60px)]"
-                : "pt-1 h-[calc(100vh-140px)]"
+                : "pt-1 h-[calc(100vh-100px)]"
                 }`}>
                 <div className="flex-1 flex flex-col relative z-10 max-w-6xl mx-auto w-full min-h-0">
 
