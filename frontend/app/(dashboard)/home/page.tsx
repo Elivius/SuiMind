@@ -38,7 +38,7 @@ export default function HomePage() {
   const { data: balanceData, isLoading: isBalanceLoading, refetch } = useGetBalances();
   const walletBalance = balanceData?.totalBalance ? mistToSui(balanceData.totalBalance) : 0;
   const { data: transactionData, isLoading: isTransactionLoading, refetch: refetchTransactions } = useGetDetailTransactions(20);
-  const { frequentContacts } = useInsightsData();
+  const { frequentContacts, isLoading: isInsightsLoading } = useInsightsData();
   const { data: stakingData } = useStakingData();
 
   const onTransactionSuccess = async () => {
@@ -570,6 +570,7 @@ export default function HomePage() {
         <motion.div layout className="md:col-span-2 xl:col-span-4">
           <FrequentContactsList
             contacts={frequentContacts}
+            isLoading={isInsightsLoading}
             onSend={(address) => {
               setRecipient(address);
               setShowSendUI(true);
