@@ -142,7 +142,7 @@ export function FrequentContactsList({ contacts }: Props) {
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end">
-                                        <span className="text-white/40 text-xs font-bold mb-1">{contact.txCount} txns</span>
+                                        <span className="text-white/40 text-xs font-bold mb-1">{contact.txCount} transactions</span>
                                     </div>
                                 </div>
 
