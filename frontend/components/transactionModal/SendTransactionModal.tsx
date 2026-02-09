@@ -29,6 +29,8 @@ interface SendTransactionModalProps {
     initialAmount?: string;
     skipToConfirm?: boolean; // For bypassing form (AI-initiated) - directly to confirmation page
     aiMessage?: string;
+    showAiBadge?: boolean; // Explicit control over AI badge visibility
+    initialRemark?: string; // Pre-fill remark when skipping form
 }
 
 export function SendTransactionModal({
@@ -42,6 +44,8 @@ export function SendTransactionModal({
     initialAmount = '',
     skipToConfirm = false,
     aiMessage,
+    showAiBadge,
+    initialRemark = '',
 }: SendTransactionModalProps) {
     const [recipient, setRecipient] = useState(initialRecipient);
     const [amount, setAmount] = useState(initialAmount);
@@ -57,6 +61,7 @@ export function SendTransactionModal({
         if (isOpen) {
             setRecipient(initialRecipient);
             setAmount(initialAmount);
+            setRemark(initialRemark);
             setShowConfirm(skipToConfirm);
             setShowSuccess(false);
         } else {
@@ -98,6 +103,132 @@ export function SendTransactionModal({
         { id: 'Shop', icon: <ShoppingBag className="w-3 h-3" /> },
         { id: 'Other', icon: <Pencil className="w-3 h-3" /> }
     ];
+
+    // When skipToConfirm is true, render TransactionConfirmModal directly without outer wrapper
+    // This avoids double animations (outer modal + inner modal both animating)
+    if (skipToConfirm && showConfirm) {
+        // Show success screen after transaction completes
+        if (showSuccess) {
+            return (
+                <AnimatePresence>
+                    {isOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                            <Motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                                onClick={handleClose}
+                            />
+                            <Motion.div
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                className="relative z-10 w-full max-w-lg overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-[#0D1117]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl" />
+                                <div className="relative p-8">
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-[#6FBEE5]/20 rounded-2xl flex items-center justify-center border border-[#6FBEE5]/30">
+                                                <SendHorizontal className="w-6 h-6 text-[#6FBEE5]" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-2xl font-black text-white tracking-tight">Send SUI</h2>
+                                                <p className="text-[#6FBEE5] text-sm font-medium">Quick and secure transfer</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={handleClose}
+                                            className="p-2 hover:bg-white/5 rounded-full transition-colors group"
+                                        >
+                                            <X className="w-6 h-6 text-white/40 group-hover:text-white" />
+                                        </button>
+                                    </div>
+
+                                    <Motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="flex flex-col items-center justify-center py-12 space-y-8"
+                                    >
+                                        <div className="relative">
+                                            <Motion.div
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                                                className="w-24 h-24 bg-[#6FBEE5]/20 rounded-full flex items-center justify-center border-2 border-[#6FBEE5]/50 shadow-[0_0_40px_rgba(111,190,229,0.2)]"
+                                            >
+                                                <Motion.svg
+                                                    width="48"
+                                                    height="48"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    className="text-[#6FBEE5]"
+                                                >
+                                                    <Motion.path
+                                                        d="M20 6L9 17L4 12"
+                                                        initial={{ pathLength: 0 }}
+                                                        animate={{ pathLength: 1 }}
+                                                        transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                                                    />
+                                                </Motion.svg>
+                                            </Motion.div>
+                                            <Motion.div
+                                                initial={{ scale: 0, opacity: 0 }}
+                                                animate={{ scale: [1, 1.5, 1], opacity: [0, 1, 0] }}
+                                                transition={{ duration: 1, delay: 0.5 }}
+                                                className="absolute inset-0 bg-[#6FBEE5]/30 rounded-full -z-10"
+                                            />
+                                        </div>
+
+                                        <div className="text-center space-y-2">
+                                            <h3 className="text-3xl font-black text-white tracking-tight">Transaction Successful!</h3>
+                                            <p className="text-[#6FBEE5] font-medium">Transaction completed successfully</p>
+                                        </div>
+
+                                        <button
+                                            onClick={handleClose}
+                                            className="w-full py-4 px-6 bg-[#6FBEE5] hover:bg-[#5DAED5] text-white font-black rounded-2xl transition-all shadow-[0_0_20px_rgba(111,190,229,0.3)] group relative overflow-hidden"
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                                            <span className="relative z-10 flex items-center justify-center gap-3 text-white text-2xl">
+                                                Done
+                                                <CheckCircle2 className="w-8 h-8 text-white" />
+                                            </span>
+                                        </button>
+                                    </Motion.div>
+                                </div>
+                            </Motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+            );
+        }
+
+        // Show confirmation modal
+        return (
+            <TransactionConfirmModal
+                isOpen={isOpen}
+                details={{
+                    type: 'TRANSFER_SUI',
+                    recipient,
+                    amount,
+                    reason: remark
+                }}
+                walletBalance={walletBalance}
+                isSending={isSending}
+                onConfirm={handleConfirm}
+                onCancel={handleClose}
+                aiMessage={aiMessage}
+                showAiBadge={showAiBadge ?? !!aiMessage}
+            />
+        );
+    }
 
     return (
         <AnimatePresence>
@@ -437,7 +568,7 @@ export function SendTransactionModal({
                                             onConfirm={handleConfirm}
                                             onCancel={() => setShowConfirm(false)}
                                             aiMessage={aiMessage}
-                                            showAiBadge={!!aiMessage}
+                                            showAiBadge={showAiBadge ?? !!aiMessage}
                                         />
                                     )}
                                 </>
