@@ -175,7 +175,6 @@ export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
                     </div>
                 ) : (
                     displayList.map((contact, idx) => {
-                        // Use name from address book if available, otherwise will use the sui address
                         const savedName = addressBook[contact.address];
                         const displayName = savedName || contact.name || truncateAddress(contact.address);
                         const displayInitials = (displayName.charAt(0) || "?").toUpperCase();
