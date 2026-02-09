@@ -7,6 +7,6 @@ export * from "./useMindyAgent";
 export * from "./usePaymentRequests";
 export * from "./useRegisterEnokiWallets";
 export * from "./useMindyInsight";
+export * from "./useAddressBook";
 export * from "./useTransactionManager";
-
 export * from "./useModal";

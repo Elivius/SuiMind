@@ -37,9 +37,20 @@ export interface InsightsTotals {
     outFlowTransactionCount: number  // Combined total across all months
 }
 
+export interface FrequentContact {
+    address: string
+    name?: string
+    txCount: number
+    sent: number
+    received: number
+    cashflow: number
+    lastTxTime: number
+}
+
 export interface UseInsightsDataReturn {
     cashflowData: MonthlyCashflow[]
     expensesData: ExpenseCategory[]
+    frequentContacts: FrequentContact[]
     totals: InsightsTotals
     isLoading: boolean
 }
