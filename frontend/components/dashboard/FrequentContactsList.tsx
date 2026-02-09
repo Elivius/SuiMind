@@ -122,7 +122,7 @@ export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
     });
 
     const unpinnedList = contacts.filter(c => !pinnedContacts?.includes(c.address));
-    const displayList = [...pinnedList, ...unpinnedList].slice(0, 5);
+    const displayList = [...pinnedList, ...unpinnedList];
 
     return (
         <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh] flex flex-col overflow-hidden">
@@ -185,7 +185,7 @@ export function FrequentContactsList({ contacts, onSend, onRequest }: Props) {
             </div>
 
             {/* List section */}
-            <div className="flex-1 overflow-hidden px-6 pb-6 space-y-2">
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6 space-y-2">
                 {displayList.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center p-10">
                         <div className="w-20 h-20 bg-white/[0.02] border border-white/5 rounded-[2.5rem] flex items-center justify-center mb-6">
