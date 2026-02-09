@@ -376,7 +376,7 @@ export default function HomePage() {
                 </h2>
                 {/* AI Insight beside the number */}
                 <div
-                  className="group relative overflow-hidden flex items-center justify-between px-8 py-5 rounded-[20px] bg-black/20 border border-white/10 cursor-pointer hover:border-[#6FBEE5]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(111,190,229,0.2)] self-start sm:self-center min-w-[340px] backdrop-blur-md"
+                  className="group relative overflow-hidden flex items-center justify-between px-9 py-5 rounded-[20px] bg-black/20 border border-white/10 cursor-pointer hover:border-white/20 transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] self-start sm:self-center min-w-[380px] backdrop-blur-md"
                   onClick={insightModal.open}
                 >
                   {/* Hover Gradients */}
@@ -384,17 +384,16 @@ export default function HomePage() {
 
                   {/* Left Side: Icon + Text */}
                   <div className="relative z-10 flex flex-col gap-1.5">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <div className="bg-transparent w-15 h-15 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                         <MindyAILogo className="w-15 h-15 text-[#6FBEE5]" />
                       </div>
-                      <h4 className="text-lg font-black text-white tracking-wide">AI Insight</h4>
+                      <h4 className="text-lg font-black text-white tracking-wide">Mindy AI Insight</h4>
                     </div>
                     <p className="text-sm font-medium text-white/50 group-hover:text-white/80 transition-colors pl-1">Tap for analysis</p>
                   </div>
 
-                  {/* Right Side: Arrow Action */}
-                  <div className="relative z-10 w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-[#6FBEE5] group-hover:border-[#6FBEE5] transition-all duration-300 group-hover:rotate-45">
+                  <div className="relative z-10 w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-gradient-to-r group-hover:from-[#3B82F6] group-hover:to-[#9333EA] group-hover:border-white transition-all duration-300 group-hover:rotate-45 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]">
                     <ArrowUpRight className="w-6 h-6 text-white/60 group-hover:text-white transition-colors" />
                   </div>
                 </div>
@@ -402,25 +401,28 @@ export default function HomePage() {
             </div>
 
             {/* Right side: Send & Request Buttons */}
-            <div className="flex flex-row lg:flex-col gap-3">
+            <div className="flex flex-row lg:flex-col gap-4">
               <Button
-                onClick={() => setShowSendUI(true)} disabled={isSending || !account} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => setShowSendUI(true)}
+                disabled={isSending || !account}
+                className="flex-1 lg:flex-none lg:min-w-[210px] py-6 sm:py-10 text-base sm:text-lg font-bold bg-[#6FBEE5]/30 hover:bg-[#6FBEE5]/20 text-white border border-[#6FBEE5] rounded-2xl transition-all duration-300 group relative flex items-center justify-center overflow-hidden"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0">
-                  <SendHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors ml-0.5" />
-                </div>
-                <div className="flex flex-col center w-16 sm:w-20">
-                  <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors">Send</span>
+                <div className="w-[150px] flex items-center gap-8">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#6FBEE5]/40 border border-[#6FBEE5] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#6FBEE5] transition-all duration-300 shrink-0 shadow-lg shadow-[#6FBEE5]/20">
+                    <SendHorizontal className="w-5 h-5 sm:w-6 sm:h-6 text-white transition-colors" />
+                  </div>
+                  <span className="leading-none text-[#CCEEFF] group-hover:text-white transition-colors font-black tracking-tight text-xl translate-y-[1px]">Send</span>
                 </div>
               </Button>
               <Button
-                onClick={() => setShowRequestUI(true)} className="flex-1 lg:flex-none lg:min-w-[170px] px-4 sm:px-6 py-5 sm:py-8 text-sm sm:text-base font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center gap-3 overflow-hidden"
+                onClick={() => setShowRequestUI(true)}
+                className="flex-1 lg:flex-none lg:min-w-[210px] py-6 sm:py-10 text-base sm:text-lg font-bold bg-[#34D399]/30 hover:bg-[#34D399]/20 text-white border border-[#34D399] rounded-2xl transition-all duration-300 group relative flex items-center justify-center overflow-hidden"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0">
-                  <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5 text-white transition-colors" />
-                </div>
-                <div className="flex flex-col items-center w-16 sm:w-20">
-                  <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors">Request</span>
+                <div className="w-[150px] flex items-center gap-5">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#34D399]/40 border border-[#34D399] flex items-center justify-center group-hover:scale-110 group-hover:bg-[#34D399] transition-all duration-300 shrink-0 shadow-lg shadow-[#34D399]/20">
+                    <ArrowDown className="w-5 h-5 sm:w-6 sm:h-6 text-white transition-colors" />
+                  </div>
+                  <span className="leading-none text-[#CCFCDF] group-hover:text-white transition-colors font-black tracking-tight text-xl translate-y-[1px]">Request</span>
                 </div>
               </Button>
             </div>
@@ -449,8 +451,8 @@ export default function HomePage() {
         initialAmount={requestAmount}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div className="md:col-span-2 xl:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-6">
+        <div className="md:col-span-2 xl:col-span-5">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
             <div className="p-6">
               <Button
@@ -581,7 +583,7 @@ export default function HomePage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="xl:col-span-1">
+        <div className="xl:col-span-2">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 lg:h-[70vh]">
             <div className="p-6 h-full flex flex-col">
               <Button
@@ -591,7 +593,7 @@ export default function HomePage() {
               >
                 Recent Activity
               </Button>
-              <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2 pt-12 -mt-12">
+              <div className="space-y-6 flex-1 pt-12 -mt-12">
                 {isTransactionLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <div
@@ -680,7 +682,7 @@ export default function HomePage() {
                           )}
                         </div>
                       </div>
-                      <span className="text-sm text-white">{tx.usd}</span>
+
                     </div>
                   ))
                 )}
@@ -690,7 +692,7 @@ export default function HomePage() {
         </div>
 
         {/* Mindy AI */}
-        <div className="xl:col-span-1">
+        <div className="xl:col-span-3">
           <Card className="border-white/20 backdrop-blur-xl bg-white/5 h-full overflow-hidden lg:h-[70vh]">
             <div className="p-4 h-full flex flex-col">
               <div className="flex items-center justify-between mb-4">
@@ -887,7 +889,7 @@ export default function HomePage() {
               {suggestionsError ? (
                 <div className="col-span-full p-6 rounded-xl bg-red-500/10 border border-red-500/20 flex flex-col items-center justify-center text-center gap-3">
                   <div className="p-3 bg-red-500/20 rounded-full">
-                    <Bot className="w-6 h-6 text-red-500" />
+                    <X className="w-6 h-6 text-red-500" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-white font-medium">Failed to load suggestions</p>
@@ -979,16 +981,16 @@ export default function HomePage() {
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-                      <Zap className="w-6 h-6 text-[#6FBEE5]" />
+                      <MindyAILogo className="w-10 h-10" />
                     </div>
                     <div>
                       <div className="flex items-center gap-3">
-                        <h2 className="text-2xl font-black tracking-tight">AI Insight</h2>
+                        <h2 className="text-2xl font-black tracking-tight">Mindy AI Insight</h2>
                         {/* Regenerate Button in Header */}
                         {!isInsightLoading && (
                           <button
                             onClick={handleRegenerateInsight}
-                            className="p-1.5 rounded-lg text-white/50 hover:text-[#6FBEE5] hover:bg-white/5 transition-all"
+                            className="p-1.5 rounded-lg text-white/50 hover:text-[#27C8F5] hover:bg-white/5 transition-all"
                             title="Regenerate Insight"
                           >
                             <RefreshCcw className="w-5 h-5" />
@@ -1012,11 +1014,11 @@ export default function HomePage() {
                   {isInsightLoading ? (
                     <div className="flex flex-col items-center gap-3">
                       <div className="flex space-x-1.5">
-                        <div className="w-2 h-2 bg-[#6FBEE5] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                        <div className="w-2 h-2 bg-[#6FBEE5] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                        <div className="w-2 h-2 bg-[#6FBEE5] rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-[#F527EB] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-2 h-2 bg-[#27C8F5] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-2 h-2 bg-[#4D27F5] rounded-full animate-bounce"></div>
                       </div>
-                      <span className="text-xs text-white/40 font-bold uppercase tracking-widest animate-pulse">Analyzing Finances...</span>
+                      <span className="text-xs text-white font-bold uppercase tracking-widest animate-pulse">Analyzing Finances...</span>
                     </div>
                   ) : insightError ? (
                     <div className="flex flex-col items-center gap-3 py-2">

@@ -130,7 +130,7 @@ export function ExpensesPieChart({ data, isLoading }: ExpensesPieChartProps) {
                         <div key={entry.name} className="flex items-center gap-3">
                             <div className="w-3 h-3 rounded-full" style={{ background: CHART_FLAT_COLORS[index % CHART_FLAT_COLORS.length] }} />
                             <span className="text-sm text-white/60 truncate">{entry.name.startsWith('0x') ? truncateAddress(entry.name) : entry.name}</span>
-                            <span className="text-sm font-semibold ml-auto">{total > 0 ? ((entry.value / total) * 100).toFixed(0) : 0}%</span>
+                            <span className="text-sm font-semibold ml-auto">{total > 0 ? ((entry.value / total) * 100).toFixed(2) : 0}%</span>
                         </div>
                     ))}
                 </div>

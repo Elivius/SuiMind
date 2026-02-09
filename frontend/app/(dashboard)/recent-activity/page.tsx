@@ -261,14 +261,14 @@ export default function RecentActivityPage() {
                                                                     tx.type === "send" ? <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" /> :
                                                                         <Repeat className="w-5 h-5 text-white stroke-[3px]" />}
                                                         </div>
-                                                        <span className="capitalize font-medium text-white">{tx.type}</span>
+                                                        <span className="capitalize font-medium text-white">{tx.label === "Sui Storage Rebate" ? "rebate" : tx.type}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <p className={`font-semibold ${tx.type === "receive" ? "text-green-500" :
                                                         tx.type === "send" ? "text-red-500" : "text-blue-500"
                                                         }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
-                                                    <p className="text-xs text-white">{tx.usd}</p>
+
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-white">
                                                     <div className="flex flex-col gap-0.5">
@@ -371,7 +371,7 @@ export default function RecentActivityPage() {
                                                                 <Repeat className="w-4 h-4 text-white stroke-[3px]" />}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-semibold text-white capitalize">{tx.type}</p>
+                                                    <p className="text-sm font-semibold text-white capitalize">{tx.label === "Sui Storage Rebate" ? "rebate" : tx.type}</p>
                                                     <p className="text-[10px] text-white/50">{tx.time}</p>
                                                 </div>
                                             </div>
@@ -379,7 +379,7 @@ export default function RecentActivityPage() {
                                                 <p className={`text-sm font-bold ${tx.type === "receive" ? "text-green-500" :
                                                     tx.type === "send" ? "text-red-500" : "text-blue-500"
                                                     }`}>{tx.type === "receive" ? "+" : tx.type === "send" ? "-" : ""}{formatSuiAmount(tx.amount || 0)} SUI</p>
-                                                <p className="text-[10px] text-white/50">{tx.usd}</p>
+
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-2">
