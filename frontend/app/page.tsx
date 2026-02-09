@@ -28,17 +28,17 @@ export default function LandingPage() {
             <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-6 md:py-12 w-full mx-auto">
                 <FadeReveal direction="none" duration={800} className="w-fit">
                     <div className="flex items-center gap-2">
-                        <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20 flex-shrink-0 transition-transform hover:scale-105 duration-300">
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden flex items-center justify-center shadow-lg shadow-[#6FBEE5]/20 flex-shrink-0 transition-transform hover:scale-105 duration-300">
                             <SuiMindLogo />
                         </div>
-                        <span className="text-3xl md:text-4xl font-bold tracking-tighter">SuiMind</span>
+                        <span className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter">SuiMind</span>
                     </div>
                 </FadeReveal>
 
                 <FadeReveal direction="none" duration={800} className="w-fit">
                     <Button
                         onClick={() => router.push("/login")}
-                        className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md rounded-xl px-6 py-4 md:px-9 md:py-6 text-base md:text-lg font-bold transition-all hover:scale-105 active:scale-95"
+                        className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md rounded-xl px-4 py-3 md:px-9 md:py-6 text-sm md:text-lg font-bold transition-all hover:scale-105 active:scale-95"
                     >
                         Launch App
                     </Button>
@@ -60,7 +60,7 @@ export default function LandingPage() {
                     </FadeReveal>
 
                     <FadeReveal delay={300} distance={50} triggerOnce blur={false} scale={1}>
-                        <h1 className="text-4xl sm:text-6xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-[0.9] mb-8">
+                        <h1 className="text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-[1.0] sm:leading-[0.9] mb-8">
                             Your Money, <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6FBEE5] via-white to-[#4A9FCC]">Intelligently</span> <br />Managed.
                         </h1>
@@ -89,41 +89,41 @@ export default function LandingPage() {
                 <section className="px-6 md:px-12 py-20 md:py-32 w-full mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                         <FadeReveal delay={100} direction="up" distance={60}>
-                            <Card className="p-8 md:p-10 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full flex flex-col items-center text-center">
-                                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-[#4385f5]/30 via-[#e94335]/20 to-[#fcbc05]/30 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-[#4385f5]/20 border border-white/10">
-                                    <TrendingUp className="w-12 h-12 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                            <Card className="p-6 md:p-10 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full flex flex-col items-center text-center">
+                                <div className="w-16 h-16 md:w-24 md:h-24 rounded-[2rem] bg-gradient-to-br from-[#4385f5]/30 via-[#e94335]/20 to-[#fcbc05]/30 flex items-center justify-center mb-6 md:mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-[#4385f5]/20 border border-white/10">
+                                    <TrendingUp className="w-8 h-8 md:w-12 md:h-12 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                                 </div>
-                                <h3 className="text-4xl font-bold mb-4">
+                                <h3 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4385f5] via-[#e94335] to-[#fcbc05]"> Cashflow Master
                                     </span>
                                 </h3>
-                                <p className="text-white/80 leading-relaxed font-medium">Take full control of your financial flow by managing your active and passive income with intuitive visual insights into your monthly spending patterns.</p>
+                                <p className="text-white/80 leading-relaxed font-medium text-sm md:text-base">Take full control of your financial flow by managing your active and passive income with intuitive visual insights into your monthly spending patterns.</p>
                             </Card>
                         </FadeReveal>
 
                         <FadeReveal delay={300} direction="up" distance={60}>
-                            <Card className="p-8 md:p-10 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full flex flex-col items-center text-center">
-                                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-[#4891ee]/30 via-[#877acc]/20 to-[#cd666e]/30 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-[#877acc]/20 border border-white/10">
-                                    <MindyAILogo className="w-20 h-20 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                            <Card className="p-6 md:p-10 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full flex flex-col items-center text-center">
+                                <div className="w-16 h-16 md:w-24 md:h-24 rounded-[2rem] bg-gradient-to-br from-[#4891ee]/30 via-[#877acc]/20 to-[#cd666e]/30 flex items-center justify-center mb-6 md:mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-[#877acc]/20 border border-white/10">
+                                    <MindyAILogo className="w-12 h-12 md:w-20 md:h-20 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                                 </div>
-                                <h3 className="text-6xl font-bold mb-4">
+                                <h3 className="text-4xl md:text-6xl font-bold mb-3 md:mb-4">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4891ee] via-[#877acc] to-[#cd666e]"> Mindy AI
                                     </span>
                                 </h3>
-                                <p className="text-white/80 leading-relaxed font-medium">Powered by Gemini 3.0 AI, your intelligent financial assistant analyzes your Sui blockchain activity in real-time to deliver personalized insights and actionable growth strategies.</p>
+                                <p className="text-white/80 leading-relaxed font-medium text-sm md:text-base">Powered by Gemini 3.0 AI, your intelligent financial assistant analyzes your Sui blockchain activity in real-time to deliver personalized insights and actionable growth strategies.</p>
                             </Card>
                         </FadeReveal>
 
                         <FadeReveal delay={500} direction="up" distance={60}>
-                            <Card className="p-8 md:p-10 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full flex flex-col items-center text-center">
-                                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-[#4385f5]/30 via-[#34a853]/20 to-[#e94335]/30 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-[#34a853]/20 border border-white/10">
-                                    <BarChart3 className="w-12 h-12 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                            <Card className="p-6 md:p-10 border-white/10 bg-white/5 backdrop-blur-xl hover:border-[#6FBEE5]/30 transition-all group h-full flex flex-col items-center text-center">
+                                <div className="w-16 h-16 md:w-24 md:h-24 rounded-[2rem] bg-gradient-to-br from-[#4385f5]/30 via-[#34a853]/20 to-[#e94335]/30 flex items-center justify-center mb-6 md:mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-[#34a853]/20 border border-white/10">
+                                    <BarChart3 className="w-8 h-8 md:w-12 md:h-12 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                                 </div>
-                                <h3 className="text-4xl font-bold mb-4">
+                                <h3 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4385f5] via-[#34a853] to-[#e94335]"> Smart Insights
                                     </span>
                                 </h3>
-                                <p className="text-white/80 leading-relaxed font-medium">Transform complex blockchain data into beautiful, actionable visualizations. Track spending patterns, analyze transaction history, and discover financial opportunities at a glance.</p>
+                                <p className="text-white/80 leading-relaxed font-medium text-sm md:text-base">Transform complex blockchain data into beautiful, actionable visualizations. Track spending patterns, analyze transaction history, and discover financial opportunities at a glance.</p>
                             </Card>
                         </FadeReveal>
                     </div>
@@ -164,13 +164,12 @@ export default function LandingPage() {
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#6FBEE5] to-[#4A9FCC] rounded-[3rem] blur-[100px] opacity-20 animate-pulse" />
 
                                 <div className="relative space-y-4">
-                                    {/* Decision Card 1 */}
                                     <FadeReveal direction="right" distance={40} delay={200} scale={0.95}>
-                                        <div className="transform -rotate-2 hover:rotate-0 transition-all duration-500 -translate-x-8 sm:-translate-x-12">
-                                            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl p-5 md:p-6 rounded-3xl shadow-2xl flex items-center justify-between gap-4 border-l-4 border-l-blue-500/50">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                                                        <TrendingUp className="w-6 h-6 text-blue-500" />
+                                        <div className="transform -rotate-1 sm:-rotate-2 hover:rotate-0 transition-all duration-500 translate-x-0 sm:-translate-x-12">
+                                            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl p-4 md:p-6 rounded-3xl shadow-2xl flex items-center justify-between gap-3 md:gap-4 border-l-4 border-l-blue-500/50">
+                                                <div className="flex items-center gap-3 md:gap-4">
+                                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                                                        <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-blue-500" />
                                                     </div>
                                                     <div>
                                                         <p className="text-white text-[10px] uppercase font-bold tracking-widest mb-1">Monthly Cashflow</p>
@@ -184,33 +183,32 @@ export default function LandingPage() {
                                         </div>
                                     </FadeReveal>
 
-                                    {/* Decision Card 2 - Main AI Mind */}
                                     <FadeReveal direction="right" distance={40} delay={300} scale={0.95}>
                                         <div className="z-10 relative">
-                                            <Card className="border-[#6FBEE5]/30 bg-gradient-to-br from-[#6FBEE5]/20 via-black/40 to-black/60 backdrop-blur-3xl p-6 md:p-8 rounded-[2.5rem] shadow-2xl overflow-hidden relative group">
+                                            <Card className="border-[#6FBEE5]/30 bg-gradient-to-br from-[#6FBEE5]/20 via-black/40 to-black/60 backdrop-blur-3xl p-5 md:p-8 rounded-[2.5rem] shadow-2xl overflow-hidden relative group">
                                                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#6FBEE5]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-[#6FBEE5]/20 transition-colors" />
-                                                <div className="flex items-center justify-between mb-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 flex items-center justify-center shadow-[0_0_20px_rgba(111,190,229,0.3)] border border-white/10">
-                                                            <MindyAILogo className="w-7 h-7 sm:w-8 sm:h-8" />
+                                                <div className="flex items-center justify-between mb-4 md:mb-6">
+                                                    <div className="flex items-center gap-3 md:gap-4">
+                                                        <div className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-white/10 flex items-center justify-center shadow-[0_0_20px_rgba(111,190,229,0.3)] border border-white/10">
+                                                            <MindyAILogo className="w-5 h-5 md:w-8 md:h-8" />
                                                         </div>
                                                         <div>
-                                                            <h4 className="text-lg sm:text-xl font-black text-white leading-tight">Mindy AI Insight</h4>
+                                                            <h4 className="text-base md:text-xl font-black text-white leading-tight">Mindy AI Insight</h4>
                                                             <div className="flex gap-1 mt-1.5">
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-[#6FBEE5] animate-bounce" />
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-[#6FBEE5] animate-bounce [animation-delay:0.2s]" />
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-[#6FBEE5] animate-bounce [animation-delay:0.4s]" />
+                                                                <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-[#6FBEE5] animate-bounce" />
+                                                                <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-[#6FBEE5] animate-bounce [animation-delay:0.2s]" />
+                                                                <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-[#6FBEE5] animate-bounce [animation-delay:0.4s]" />
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-gradient-to-r group-hover:from-[#3B82F6] group-hover:to-[#9333EA] group-hover:border-white/20 transition-all duration-300 group-hover:rotate-45 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]">
-                                                        <ArrowUpRight className="w-5 h-5 text-white/50 group-hover:text-white transition-colors" />
+                                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-gradient-to-r group-hover:from-[#3B82F6] group-hover:to-[#9333EA] group-hover:border-white/20 transition-all duration-300 group-hover:rotate-45 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]">
+                                                        <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-white/50 group-hover:text-white transition-colors" />
                                                     </div>
                                                 </div>
-                                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                                                    <div className="h-1.5 w-full bg-gradient-to-r from-[#6FBEE5] to-transparent rounded-full opacity-50" />
-                                                    <div className="h-1.5 w-3/4 bg-white/10 rounded-full" />
-                                                    <p className="text-white/60 text-xs font-medium pt-1">Analyze spending patterns...</p>
+                                                <div className="p-3 md:p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                                                    <div className="h-1 md:h-1.5 w-full bg-gradient-to-r from-[#6FBEE5] to-transparent rounded-full opacity-50" />
+                                                    <div className="h-1 md:h-1.5 w-3/4 bg-white/10 rounded-full" />
+                                                    <p className="text-white/60 text-[10px] md:text-xs font-medium pt-1">Analyze spending patterns...</p>
                                                 </div>
                                             </Card>
                                         </div>
@@ -218,11 +216,11 @@ export default function LandingPage() {
 
                                     {/* Decision Card 3 */}
                                     <FadeReveal direction="right" distance={40} delay={400} scale={0.95}>
-                                        <div className="transform rotate-3 hover:rotate-0 transition-all duration-500 translate-x-8 sm:translate-x-12">
-                                            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl p-5 md:p-6 rounded-3xl shadow-2xl flex items-center gap-4">
+                                        <div className="transform rotate-2 sm:rotate-3 hover:rotate-0 transition-all duration-500 translate-x-0 sm:translate-x-12">
+                                            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl p-4 md:p-6 rounded-3xl shadow-2xl flex items-center gap-3 md:gap-4">
                                                 <div className="flex -space-x-3">
-                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/20 border-2 border-[#1a1a1a] z-20">
-                                                        <ArrowDownLeft className="w-5 h-5 text-white stroke-[3px]" />
+                                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/20 border-2 border-[#1a1a1a] z-20">
+                                                        <ArrowDownLeft className="w-4 h-4 md:w-5 md:h-5 text-white stroke-[3px]" />
                                                     </div>
                                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/20 border-2 border-[#1a1a1a] z-10">
                                                         <ArrowUpRight className="w-5 h-5 text-white stroke-[3px]" />
