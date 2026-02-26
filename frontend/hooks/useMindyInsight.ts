@@ -85,7 +85,11 @@ export const useMindyInsight = (): UseMindyInsightResult => {
                     if (retryResponse.text) {
                         setInsight(retryResponse.text);
                         localStorage.setItem(`mindy_ai_insight_${context}`, retryResponse.text);
+                    } else if (retryResponse.error) {
+                        setError(retryResponse.error);
                     }
+                } else {
+                    setError("Failed to re-initialize insight session");
                 }
             } else {
                 setError("Failed to generate insight");
@@ -116,6 +120,22 @@ export const useMindyInsight = (): UseMindyInsightResult => {
             if (response.text) {
                 setInsight(response.text);
                 localStorage.setItem(`mindy_ai_insight_${context}`, response.text);
+            } else if (response.error === "SESSION_EXPIRED") {
+                // Handle expiration by clearing and retrying once
+                localStorage.removeItem('mindy_ai_insight_session_id');
+
+                const newSession = await getSession();
+                if (newSession) {
+                    const retryResponse = await sendMessageToAgent(newSession.userId, newSession.sessionId, prompt);
+                    if (retryResponse.text) {
+                        setInsight(retryResponse.text);
+                        localStorage.setItem(`mindy_ai_insight_${context}`, retryResponse.text);
+                    } else if (retryResponse.error) {
+                        setError(retryResponse.error);
+                    }
+                } else {
+                    setError("Failed to re-initialize insight session");
+                }
             } else {
                 setError("Failed to regenerate insight");
             }

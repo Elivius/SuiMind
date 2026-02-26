@@ -138,7 +138,7 @@ export const useMindyAgent = () => {
             let finalSessionId = forceNew ? undefined : storedSessionId; // if forceNew is true, we create a new session (When user clicks delete chat)
             let finalUserId = storedUserId;
 
-            // Simplified logic: If we don't have a session in state (or we forced new - user create new chat), try to create
+            // Simplified logic: If we don't have a session in state (or we forced new - user create new chat)
             if (!finalSessionId || !finalUserId) {
                 // Pass storedUserId so we keep the same user identity but get a NEW session ID (If user create new chat - remain same user id)
                 const sessionData = await createSession(account?.address as string, finalUserId);
