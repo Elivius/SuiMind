@@ -1,0 +1,30 @@
+services:
+  ai-agent:
+    build:
+      context: ./ai-agents
+    container_name: suimind-ai-agent
+    volumes:
+      - ./ai-agents:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: suimind-frontend
+    volumes:
+      - ./frontend:/app
+      # Anonymous volumes to prevent host node_modules/.next from overriding container's
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    environment:
+      - AI_AGENT_URL=http://ai-agent:8080
+      - NEXT_PUBLIC_NETWORK=testnet
+    depends_on:
+      - ai-agent
+    restart: always
