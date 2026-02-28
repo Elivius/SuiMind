@@ -6,3 +6,4 @@ fastapi==0.118.3
 google-adk
 litellm
 python-dotenv
+uvicorn
