@@ -4,7 +4,7 @@
 
 **SuiMind** is not just a wallet you talk to—it's an agent that *acts* for you. 
 
-Powered by **Google Gemini 3.0** and the **Sui Blockchain**, SuiMind transforms natural language into executed financial intents. From sending assets to analyzing complex on-chain data, SuiMind bridges the gap between human thought and blockchain execution.
+Powered by **Google Gemini 3.1** and the **Sui Blockchain**, SuiMind transforms natural language into executed financial intents. From sending assets to analyzing complex on-chain data, SuiMind bridges the gap between human thought and blockchain execution.
 
 ---
 
@@ -79,17 +79,35 @@ SuiMind is a hybrid application combining a powerful Python-based AI backend wit
 ## 🛠️ Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- Python 3.10+
+- Docker and Docker Compose (Recommended)
+- Node.js 18+ (For manual setup)
+- Python 3.10+ (For manual setup)
 - A Sui Wallet (e.g., Sui Wallet, Ethos)
 
-### Installation
+### Installation & Running
 
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/Elivius/SuiMind.git
    cd SuiMind
    ```
+
+#### Option A: Docker (Recommended)
+
+2. **Set up Environment Variables**
+   - Create a `.env` file in the `ai-agents/` directory and add your Google API key:
+     ```env
+     GOOGLE_API_KEY=your_api_key_here
+     ```
+
+3. **Run the Application**
+   ```bash
+   docker-compose up -d
+   ```
+   - The **Frontend** will be available at `http://localhost:3000`
+   - The **AI Backend** will be available at `http://localhost:8080`
+
+#### Option B: Manual Setup
 
 2. **Setup AI Backend**
    ```bash
