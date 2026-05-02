@@ -13,6 +13,7 @@ DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash")
 GEMINI_2_5_FLASH_LITE = os.getenv("GEMINI_2_5_FLASH_LITE", "gemini-2.5-flash-lite")
 GEMINI_2_5_FLASH = os.getenv("GEMINI_2_5_FLASH", "gemini-2.5-flash")
 GEMINI_3_FLASH_PREVIEW = os.getenv("GEMINI_3_FLASH_PREVIEW", "gemini-2.0-flash-thinking-exp-01-21")
+GEMINI_3_1_FLASH_LITE_PREVIEW = os.getenv("GEMINI_3_1_FLASH_LITE_PREVIEW", "gemini-3.1-flash-lite-preview")
 
 # Backward compatibility (optional, or just for generic agent use)
 if DEFAULT_LLM_MODEL.startswith("gemini"):
