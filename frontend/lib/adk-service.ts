@@ -208,8 +208,11 @@ export const getSessionHistory = async (
         }
         return history;
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error fetching history:", error);
+        if (error.cause && error.cause.code === 'ECONNREFUSED') {
+            throw new Error("Agent server is offline.");
+        }
         throw error; // Throw error so we can handle it in the hook (stop polling)
     }
 };
