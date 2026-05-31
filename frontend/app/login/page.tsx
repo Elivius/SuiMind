@@ -45,7 +45,7 @@ export default function LoginPage() {
                     <h1 className="text-4xl sm:text-6xl font-black tracking-tighter mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
                         SuiMind
                     </h1>
-                    <p className="text-white text-base sm:text-lg font-medium tracking-wide text-center">Gemini 3.0 AI-Powered Financial Intelligence</p>
+                    <p className="text-white text-base sm:text-lg font-medium tracking-wide text-center">Gemini 3 AI-Powered Financial Intelligence</p>
                 </div>
 
                 <Card className="border-white/20 backdrop-blur-2xl bg-white/5 p-8 shadow-2xl relative overflow-hidden group rounded-2xl">

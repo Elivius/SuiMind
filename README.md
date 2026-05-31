@@ -1,6 +1,6 @@
 # 🧠 SuiMind: The First Proactive Chat-to-Execute (C2E) Agent on Sui
 
-![SuiMind Banner](https://img.shields.io/badge/Status-Live_Beta-0070f3) ![Sui](https://img.shields.io/badge/Built_on-Sui-4484f1) ![Gemini](https://img.shields.io/badge/Powered_by-Gemini_3.0-8e7cc3)
+![SuiMind Banner](https://img.shields.io/badge/Status-Live_Beta-0070f3) ![Sui](https://img.shields.io/badge/Built_on-Sui-4484f1) ![Gemini](https://img.shields.io/badge/Powered_by-Gemini_3-8e7cc3)
 
 **SuiMind** is not just a wallet you talk to—it's an agent that *acts* for you. 
 
@@ -60,7 +60,7 @@ SuiMind is a hybrid application combining a powerful Python-based AI backend wit
 
 ### Backend (The Brain)
 - **Framework:** Python / Google Agent Development Kit (ADK)
-- **Intelligence:** **Gemini 3.0 Flash** (Optimized for low-latency reasoning)
+- **Intelligence:** **Gemini 3 Flash** (Optimized for low-latency reasoning)
 - **Agents:**
   - `Mindy` (Router)
   - `greeting_agent` / `farewell_agent` (Conversational)
