@@ -38,7 +38,8 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   icons: {
-    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
+    icon: [{ url: "/SuiMindLogo.png", type: "image/png" }],
+    apple: [{ url: "/SuiMindLogo.png", type: "image/png" }],
   },
 }
 
