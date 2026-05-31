@@ -54,7 +54,7 @@ export default function LandingPage() {
                                 <MindyAILogo className="w-10 h-10" />
                             </div>
                             <span className="text-sm sm:text-base md:text-lg font-bold tracking-widest text-white/90 uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-[#6FBEE5]/20 to-white/90 group-hover:via-[#6FBEE5] transition-all duration-700">
-                                Empowering Sui Financial with gemini 3.0
+                                Empowering Sui Financial with gemini 3
                             </span>
                         </div>
                     </FadeReveal>
@@ -110,7 +110,7 @@ export default function LandingPage() {
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4891ee] via-[#877acc] to-[#cd666e]"> Mindy AI
                                     </span>
                                 </h3>
-                                <p className="text-white/80 leading-relaxed font-medium text-sm md:text-base">Powered by Gemini 3.0 AI, your intelligent financial assistant analyzes your Sui blockchain activity in real-time to deliver personalized insights and actionable growth strategies.</p>
+                                <p className="text-white/80 leading-relaxed font-medium text-sm md:text-base">Powered by Gemini 3 AI, your intelligent financial assistant analyzes your Sui blockchain activity in real-time to deliver personalized insights and actionable growth strategies.</p>
                             </Card>
                         </FadeReveal>
 
@@ -142,7 +142,7 @@ export default function LandingPage() {
                             <div className="space-y-6">
                                 {[
                                     "Real-time Sui blockchain transaction tracking",
-                                    "Gemini 3.0 AI-powered financial insights",
+                                    "Gemini 3 AI-powered financial insights",
                                     "Interactive cashflow visualizations",
                                     "Smart expense pattern recognition"
                                 ].map((item, i) => (
@@ -254,7 +254,7 @@ export default function LandingPage() {
 
                             <FadeReveal delay={300} distance={10} direction="none">
                                 <p className="text-white/80 text-lg sm:text-xl mb-12 relative z-10 font-medium max-w-2xl mx-auto">
-                                    Experience the power of Gemini 3.0 AI combined with real-time Sui blockchain insights. Transform your financial future today.
+                                    Experience the power of Gemini 3 AI combined with real-time Sui blockchain insights. Transform your financial future today.
                                 </p>
                             </FadeReveal>
 
