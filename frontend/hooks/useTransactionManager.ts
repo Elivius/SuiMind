@@ -16,7 +16,6 @@ import { buildTransferTx, buildCreatePaymentRequestTx, buildRejectRequestTx, bui
 const EXECUTE_TRANSACTION = graphql(`
   mutation ExecuteTransaction($transactionDataBcs: Base64!, $signatures: [Base64!]!) {
     executeTransaction(transactionDataBcs: $transactionDataBcs, signatures: $signatures) {
-      errors
       effects {
         status
         transaction {
@@ -55,10 +54,12 @@ export function useTransactionManager() {
             },
         });
 
-        const execution = result.data?.executeTransaction;
-        if (execution?.errors && execution.errors.length > 0) {
-            throw new Error(`Execution Error: ${execution.errors[0]}`);
+        if (result.errors && result.errors.length > 0) {
+            console.error("GraphQL Top-Level Error:", result.errors);
+            throw new Error(`RPC Submission Error: ${result.errors[0].message}`);
         }
+
+        const execution = result.data?.executeTransaction;
 
         const statusObj = execution?.effects?.status;
         // Check if status is a string "SUCCESS" or an object with status "success"
@@ -66,9 +67,10 @@ export function useTransactionManager() {
             (typeof statusObj === 'object' && statusObj !== null && 'status' in statusObj && (statusObj as any).status === 'success');
 
         if (!isSuccess) {
+            const digest = execution?.effects?.transaction?.digest || "unknown";
             const errorMsg = (typeof statusObj === 'object' && statusObj !== null && 'error' in statusObj)
-                ? (statusObj as any).error
-                : "Transaction failed on-chain";
+                ? `${(statusObj as any).error} (Digest: ${digest})`
+                : `Transaction failed on-chain (Digest: ${digest})`;
             throw new Error(errorMsg);
         }
 
