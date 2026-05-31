@@ -11,15 +11,35 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
-  title: "SuiMind - AI-Powered DeFi Wallet",
+  metadataBase: new URL("https://sui-mind.vercel.app"),
+  title: {
+    default: "SuiMind - AI-Powered DeFi Wallet",
+    template: "%s | SuiMind",
+  },
   description: "The World's First Proactive DeFAI Financial Agent on Sui Network",
+  keywords: ["DeFi", "AI wallet", "Sui Network", "DeFAI", "crypto agent", "SuiMind"],
+  authors: [{ name: "SuiMind" }],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    siteName: "SuiMind",
+    title: "SuiMind - AI-Powered DeFi Wallet",
+    description: "The World's First Proactive DeFAI Financial Agent on Sui Network",
+    url: "https://sui-mind.vercel.app",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "SuiMind" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SuiMind - AI-Powered DeFi Wallet",
+    description: "The World's First Proactive DeFAI Financial Agent on Sui Network",
+    images: ["/og-image.png"],
+  },
   icons: {
-    icon: [
-      {
-        url: "/favicon.ico",
-        type: "image/x-icon",
-      },
-    ],
+    icon: [{ url: "/SuiMindLogo.png", type: "image/png" }],
+    apple: [{ url: "/SuiMindLogo.png", type: "image/png" }],
   },
 }
 
