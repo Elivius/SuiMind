@@ -4,7 +4,7 @@
 
 **SuiMind** is not just a wallet you talk to—it's an agent that *acts* for you. 
 
-Powered by **Google Gemini 3.1** and the **Sui Blockchain**, SuiMind transforms natural language into executed financial intents. From sending assets to analyzing complex on-chain data, SuiMind bridges the gap between human thought and blockchain execution.
+Powered by **Google Gemini 3** and the **Sui Blockchain**, SuiMind transforms natural language into executed financial intents. From sending assets to analyzing complex on-chain data, SuiMind bridges the gap between human thought and blockchain execution.
 
 ---
 
