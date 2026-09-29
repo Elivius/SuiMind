@@ -22,6 +22,8 @@ services:
       - /app/.next
     ports:
       - "3000:3000"
+    env_file:
+      - ./frontend/.env
     environment:
       - AI_AGENT_URL=http://ai-agent:8080
       - NEXT_PUBLIC_NETWORK=testnet

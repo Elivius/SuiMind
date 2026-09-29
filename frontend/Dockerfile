@@ -4,8 +4,8 @@ FROM node:20-slim
 # Set working directory
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm 9 (matches lockfile version 9.0)
+RUN npm install -g pnpm@9
 
 # Copy package files
 COPY package.json pnpm-lock.yaml* ./
