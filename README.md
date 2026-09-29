@@ -72,7 +72,41 @@ SuiMind is a hybrid application combining a powerful Python-based AI backend wit
 ### Frontend (The Face)
 - **Framework:** Next.js 14 (App Router)
 - **Styling:** Tailwind CSS + Framer Motion
-- **Sui Integration:** `@mysten/sui.js` for signature management and zkLogin.
+- **Sui Integration:** `@mysten/sui` for transaction construction and GraphQL query execution.
+
+### 🔄 Session Management & Chat Retrieval Flow
+
+SuiMind maintains persistent conversations across page reloads and cross-page navigation through a hybrid client-server retrieval architecture:
+
+```
+┌─────────────────────────┐
+│ Browser (Local Storage) │
+│  - mindy_ai_user_id     │
+│  - mindy_ai_session_id  │
+└────────────┬────────────┘
+             │ 1. Read on page load (useMindyAgent.ts)
+             ▼
+┌─────────────────────────┐
+│ Next.js Server Action   │  getSessionHistory(userId, sessionId)
+│ (frontend/adk-service)  │
+└────────────┬────────────┘
+             │ 2. GET /apps/mindy/users/{userId}/sessions/{sessionId}
+             ▼
+┌─────────────────────────┐
+│ AI Agent (FastAPI / ADK)│  Loads session history events
+│ (port 8080)             │
+└────────────┬────────────┘
+             │ 3. Returns message events
+             ▼
+┌─────────────────────────┐
+│ Frontend State          │  Parses intent & renders conversation UI
+└─────────────────────────┘
+```
+
+1. **Client-Side Identifiers (`localStorage`):** The browser only stores lightweight session tokens (`mindy_ai_user_id` and `mindy_ai_session_id`). Raw chat history is never bloated into local browser storage.
+2. **Server Action Retrieval:** On component mount or navigation, `useMindyAgent` invokes the Next.js Server Action `getSessionHistory(userId, sessionId)`.
+3. **Backend Event Fetching:** The Next.js server proxies the request to the Google ADK Agent service (`http://ai-agent:8080`), retrieving full conversational turn events.
+4. **Intent Extraction:** The client formats the event stream, stripping raw transaction markers (`:::TRANSACTION_INTENT:::`) from the chat bubble while automatically parsing the payload into an interactive on-chain signing card.
 
 ---
 
@@ -80,9 +114,9 @@ SuiMind is a hybrid application combining a powerful Python-based AI backend wit
 
 ### Prerequisites
 - Docker and Docker Compose (Recommended)
-- Node.js 18+ (For manual setup)
+- Node.js 20+ (For manual setup)
 - Python 3.10+ (For manual setup)
-- A Sui Wallet (e.g., Sui Wallet, Ethos)
+- A Sui Wallet (e.g., Sui Wallet, Ethos, Slingshot, or zkLogin via Google)
 
 ### Installation & Running
 
@@ -95,14 +129,31 @@ SuiMind is a hybrid application combining a powerful Python-based AI backend wit
 #### Option A: Docker (Recommended)
 
 2. **Set up Environment Variables**
-   - Create a `.env` file in the `ai-agents/` directory and add your Google API key:
+   - In `ai-agents/.env`:
      ```env
-     GOOGLE_API_KEY=your_api_key_here
+     GOOGLE_API_KEY=your_google_gemini_api_key
+     ```
+   - In `frontend/.env`:
+     ```env
+     NEXT_PUBLIC_ENOKI_API_KEY=your_enoki_public_key
+     NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_oauth_client_id
+     NEXT_PUBLIC_NETWORK=testnet
+     NEXT_PUBLIC_GQL_URL=https://graphql.testnet.sui.io/graphql
+     AI_AGENT_URL=http://localhost:8000
+
+     # Firebase Configuration (Optional)
+     NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+     NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+     NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
      ```
 
 3. **Run the Application**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
    - The **Frontend** will be available at `http://localhost:3000`
    - The **AI Backend** will be available at `http://localhost:8080`
@@ -121,12 +172,12 @@ SuiMind is a hybrid application combining a powerful Python-based AI backend wit
 3. **Setup Frontend**
    ```bash
    cd ../frontend
-   npm install
+   cmd /c pnpm install
    ```
 
 4. **Run the Application**
    - **Backend:** `python run.py` (Runs on port 8080)
-   - **Frontend:** `npm run dev` (Runs on port 3000)
+   - **Frontend:** `cmd /c pnpm dev` (Runs on port 3000)
 
 ---
 
